@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>BAM Automotive Company | Temperature Profiles</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script defer src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+<div class="app-shell">
+  <header class="app-header">
+    <div class="header-identity">
+      <div class="company-logo"><img id="company-logo-image" alt="BAM Automotive Company logo"></div>
+      <div><div class="brand">BAM Automotive Company</div><h1>Temperature profiles</h1><p>Explore oven recordings, one process at a time.</p></div>
+    </div>
+    <span class="header-tag">THERMAL DATA WORKSPACE</span>
+  </header>
+  <nav class="nav-tabs" aria-label="Process workspaces"><button type="button" class="active" data-stage="ed">ED</button><button type="button" data-stage="primer">Primer</button><button type="button" data-stage="sealer">Sealer</button><button type="button" data-stage="bc">BC</button></nav>
+  <div id="workspace" aria-live="polite"></div>
+  <footer class="app-footer">Developed by Nazanin Ghaemi-Zadeh</footer>
+</div>
+</body>
+</html>
