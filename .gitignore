@@ -1,0 +1,8 @@
+.Rhistory
+.RData
+.Ruserdata
+.Rproj.user/
+site/
+renv/library/
+*.xls
+*.xlsx
