@@ -90,3 +90,15 @@ input[type=checkbox]{accent-color:var(--navy);}
 button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #e6a574;outline-offset:3px;}
 @media(max-width:1100px){.chart-panel{padding:22px 16px}.upload-panel{padding:20px 18px}.metric{padding:12px 10px}.metric strong{font-size:20px}.header-tag{display:none}}
 @media(max-width:760px){.app-shell{padding:20px 12px}.app-header{padding:26px 22px;border-radius:14px;margin-bottom:20px}.header-identity{flex-direction:column;align-items:flex-start;gap:18px}.company-logo{flex-basis:72px}h1{font-size:29px}.app-header p{font-size:12px}.nav-tabs{width:100%;gap:2px;margin-bottom:18px}.nav-tabs button{flex:1;padding:11px 9px}.stage-layout{grid-template-columns:1fr}.upload-panel{padding:22px}.chart-panel{padding:22px 12px}.metrics{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:16px}.empty-state{min-height:320px;padding:20px 12px}.chart-actions .btn{flex:1}}
+
+/* Consistent pairs across all worksheet metadata sections. */
+.source-metadata-table{width:100%;table-layout:fixed;}
+.source-metadata-table td{width:50%;overflow-wrap:anywhere;}
+.source-metadata-table td:first-child{font-weight:500;}
+/* Custom channel legend: line + colored marker on a single non-wrapping row. */
+.channel-legend{width:100%;overflow-x:auto;overflow-y:hidden;padding:8px 0 2px;scrollbar-width:thin;}
+.channel-legend-track{display:flex;align-items:center;justify-content:center;gap:30px;min-width:max-content;width:max-content;margin:0 auto;white-space:nowrap;}
+.channel-legend-item{display:inline-flex;align-items:center;gap:10px;flex:none;font:13px 'Times New Roman',Times,serif;color:#20354b;}
+.legend-symbol{position:relative;display:inline-flex;align-items:center;justify-content:center;width:35px;height:16px;flex:none;}
+.legend-symbol:before{content:'';position:absolute;left:0;right:0;top:7px;height:2px;border-radius:2px;background:var(--channel-color);}
+.legend-symbol i{position:relative;display:block;width:10px;height:10px;background:var(--channel-color);border:1px solid white;border-radius:50%;box-shadow:0 0 0 1px var(--channel-color);}

@@ -59,7 +59,20 @@ function excelTime(v,date1904){
    let m=s.match(/^(\d\d?):(\d\d):(\d\d)$/);if(m)return Date.UTC(2000,0,1,+m[1],+m[2],+m[3]);
  }return NaN;
 }
-function display(c){if(!c||c.v===undefined||c.v===null)return '';if(c.t==='d'&&c.v instanceof Date)return c.v.toISOString().slice(0,19).replace('T',' ');if(c.t==='n'&&c.z&&/[ymdhHsS]/.test(c.z)&&c.w)return String(c.w);return String(c.v);}
+// Limit visible worksheet numerics to three decimal places; never round the underlying Excel data.
+function worksheetNumber(value){
+ if(!Number.isFinite(value))return String(value);
+ // toFixed keeps the display predictable for the engineering measurements used here.
+ return String(Number(value.toFixed(3)));
+}
+function display(c){
+ if(!c||c.v===undefined||c.v===null)return '';
+ if(c.t==='d'&&c.v instanceof Date)return c.v.toISOString().slice(0,19).replace('T',' ');
+ // Dates, clock times and Excel durations must keep their workbook formatting.
+ if(c.t==='n'&&c.z&&/[ymdhHsS]/.test(c.z)&&c.w)return String(c.w);
+ if(c.t==='n'&&typeof c.v==='number')return worksheetNumber(c.v);
+ return String(c.v);
+}
 function parseSheet(ws,fn,sheet,date1904,buffer){
  const range=XLSX.utils.decode_range(ws['!ref']||'A1'),rows=[];
  for(let i=0;i<=range.e.r;i++){let a=[];for(let j=0;j<=range.e.c;j++)a.push(ws[XLSX.utils.encode_cell({r:i,c:j})]||null);rows.push(a);}
@@ -148,14 +161,15 @@ function renderMain(){
  $('chart-panel').innerHTML=`<div class="chart-heading"><div><p class="eyebrow">${STAGES[tab]} / TEMPERATURE PROFILE</p><h2>${esc(r.project)}</h2><p class="secondary">${clock(r.start)} - ${clock(r.end)} | ${esc(r.fileName)}</p></div><span class="device-label">${esc(r.device)}</span></div>
  <div class="metrics"><div class="metric"><span>Recorded duration</span><strong>${nice(r.duration)} min</strong></div><div class="metric"><span>Time samples</span><strong>${r.reads.length}</strong></div><div class="metric"><span>Visible channels</span><strong>${chs.length}</strong></div><div class="metric"><span>Median interval</span><strong>${nice(r.step)} s</strong></div></div>
  ${r.notes.length?'<div class="import-errors"><ul>'+r.notes.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></div>':''}
- <div class="analysis-card"><h3>Temperature profile</h3><div class="plot-surface" id="plot-profile" style="height:540px"></div></div>
+ <div class="analysis-card"><h3>Temperature profile</h3><div class="plot-surface" id="plot-profile" style="height:500px"></div><div class="channel-legend" id="legend-profile" aria-label="Channel colors for temperature profile"></div></div>
  <div class="analysis-card"><h3>Channel temperature spread</h3><p class="field-note">Highest minus lowest temperature at the same reading, across selected channels. Air is included when selected.</p><div class="plot-surface" id="plot-spread" style="height:370px"></div></div>
  <div class="analysis-card"><h3>Time in temperature bands</h3><p class="field-note">Minutes in each band, estimated by linear interpolation. Missing readings and long gaps are excluded; darker cells mean more time.</p><div class="plot-surface" id="plot-bands" style="height:420px"></div><div class="field-note" id="band-coverage"></div></div>
- <div class="analysis-card"><h3>Peak temperatures by uploaded file</h3><p class="field-note">All active channels across uploaded files in this process. Uses the matching worksheet name where available, otherwise the first readable worksheet.</p><div class="plot-surface" id="plot-peaks" style="height:360px"></div></div>
+ <div class="analysis-card"><h3>Peak temperatures by uploaded file</h3><p class="field-note">All active channels across uploaded files in this process. Uses the matching worksheet name where available, otherwise the first readable worksheet.</p><div class="plot-surface" id="plot-peaks" style="height:360px"></div><div class="channel-legend" id="legend-peaks" aria-label="Channel colors for peak temperatures"></div></div>
  <div class="chart-actions"><button class="btn" id="download-xlsx">Download Excel</button><button class="btn" id="download-png">Download all charts (PNG)</button></div>
  <p class="field-note export-note">Excel has two sheets: the selected source worksheet, recolored, and all four charts. PNG contains the same four charts and uses the same colors.</p>
  <h3 class="section-title">Uploaded worksheet</h3><p class="field-note">Original sections, fields and values in source order. Blank cells remain blank. Scroll the readings table to view every row.</p><div id="source-sections"></div>`;
  $('download-xlsx').onclick=downloadExcel;$('download-png').onclick=downloadPNG;
+ renderChannelLegends(chs);
  // Avoid blocking the initial chart paint with a potentially very long worksheet table.
  const later=()=>{if(v===drawVersion&&$('source-sections'))renderSource(r);};
  if('requestIdleCallback' in window)requestIdleCallback(later,{timeout:1800});
@@ -170,6 +184,12 @@ function renderMain(){
   results.forEach((x,i)=>{if(x.status==='rejected'){const el=$('plot-'+['profile','spread','bands','peaks'][i]);if(el)el.textContent='Chart error: '+x.reason.message;}});
  });
 }
+function renderChannelLegends(chs){
+ const markup='<div class="channel-legend-track">'+chs.map(ch=>
+  `<span class="channel-legend-item"><span class="legend-symbol" style="--channel-color:${color(ch)}"><i></i></span><span>${esc(ch)}</span></span>`
+ ).join('')+'</div>';
+ for(const id of ['legend-profile','legend-peaks']){const node=$(id);if(node)node.innerHTML=markup;}
+}
 function segments(r,ch){const out=[];let part=[],last=null;
  for(const d of r.reads){let t=d.values[ch];if(!num(t)){if(part.length)out.push(part);part=[];last=null;continue;}
   if(last!==null&&d.ts-last>r.step*1500+1){if(part.length)out.push(part);part=[];}
@@ -183,7 +203,7 @@ function profile(r,chs){
   text:seg.map(d=>ch+'<br>'+d.elapsed.toFixed(2)+' min<br>'+d.values[ch].toFixed(1)+' C<br>'+clock(d.ts)),hoverinfo:'text'
  }));}
  let all=[];for(const d of r.reads)for(const ch of chs)if(num(d.values[ch]))all.push({x:d.elapsed,y:d.values[ch],ch});
- const lay=plotLayout('Elapsed time from first reading (min)','Recorded temperature (°C)',100);
+ const lay=plotLayout('Elapsed time from first reading (min)','Recorded temperature (°C)',88);lay.showlegend=false;
  if(all.length){let hi=-Infinity,lo=Infinity,p=all[0];for(let a of all){if(a.y>hi){hi=a.y;p=a;}lo=Math.min(lo,a.y);}
   const span=Math.max(1,hi-lo);lay.xaxis.range=[0,r.duration];lay.yaxis.range=[lo-span*.08,hi+span*.14];
   lay.annotations=[{x:p.x,y:p.y,text:'Peak: '+p.y.toFixed(1)+' C ('+p.ch+')',showarrow:true,arrowhead:2,ax:p.x>r.duration/2?-65:65,ay:-38,font:{family:'Times New Roman',size:13,color:'#243247'}}];
@@ -236,9 +256,9 @@ function peaks(records,chs){
   }
   if(x.length)data.push({type:'scatter',mode:'markers',x,y,text,name:ch,marker:{size:11,color:color(ch)},hovertemplate:'%{text}<br>Peak: %{y:.1f} °C<extra></extra>'});
  }
- const lay=plotLayout('File name','Peak temperature (°C)',170);
+ const lay=plotLayout('File name','Peak temperature (°C)',125);lay.showlegend=false;
  lay.xaxis.tickmode='array';lay.xaxis.tickvals=records.map((r,i)=>i+1);lay.xaxis.ticktext=records.map(r=>r.fileName);lay.xaxis.range=[.5,records.length+.5];lay.xaxis.tickangle=records.some(r=>r.fileName.length>20)?-20:0;
- lay.legend.y=-.47;lay.legend.entrywidth=145;lay.legend.tracegroupgap=30;
+
  return Plotly.newPlot('plot-peaks',data,lay,config);
 }
 function sourceSections(r){
@@ -253,23 +273,66 @@ function sourceSections(r){
 }
 function renderSource(r){
  const container=$('source-sections'),top=new Map(),hidden=new Set();
- for(const m of r.merges){top.set(m.s.r+','+m.s.c,m);for(let i=m.s.r;i<=m.e.r;i++)for(let j=m.s.c;j<=m.e.c;j++)if(i!==m.s.r||j!==m.s.c)hidden.add(i+','+j);}
+ if(!container)return;
+ for(const m of r.merges){
+  top.set(m.s.r+','+m.s.c,m);
+  for(let i=m.s.r;i<=m.e.r;i++)for(let j=m.s.c;j<=m.e.c;j++)
+   if(i!==m.s.r||j!==m.s.c)hidden.add(i+','+j);
+ }
  const frag=document.createDocumentFragment();
  for(const sec of sourceSections(r)){
+  const first=sec.start+(sec.skip?1:0);
+  const isMetadata=sec.kind==='metadata';
+  // Only real nonempty values count. Merged blanks and worksheet formatting
+  // must not create unwanted empty rows at the bottom of any source table.
+  const rowIndexes=[];
+  for(let i=first;i<=sec.end;i++){
+   const values=r.rows[i].map((cell,j)=>hidden.has(i+','+j)?'':display(cell));
+   if(values.some(x=>x.trim()!==''))rowIndexes.push(i);
+  }
+  if(!rowIndexes.length)continue;
   const section=document.createElement('section');section.className='source-section';
   const heading=document.createElement('h4');heading.textContent=sec.title;section.appendChild(heading);
   const grid=document.createElement('div');grid.className='source-grid'+(sec.kind==='readings'?' source-readings':'');
-  const table=document.createElement('table');table.className='table';const tbody=document.createElement('tbody');
-  for(let i=sec.start+(sec.skip?1:0);i<=sec.end;i++){
-   let tr=document.createElement('tr');for(let j=0;j<r.rows[i].length;j++){
-    const k=i+','+j;if(hidden.has(k))continue;
-    let cell=document.createElement(i===r.head||(sec.kind==='summary'&&i===sec.start)?'th':'td');
-    cell.textContent=display(r.rows[i][j]);const m=top.get(k);
-    if(m){cell.rowSpan=m.e.r-m.s.r+1;cell.colSpan=m.e.c-m.s.c+1;}
-    tr.appendChild(cell);
-   }tbody.appendChild(tr);
-  }table.appendChild(tbody);grid.appendChild(table);section.appendChild(grid);frag.appendChild(section);
- }container.replaceChildren(frag);
+  const table=document.createElement('table');table.className='table'+(isMetadata?' source-metadata-table':'');
+  if(isMetadata){
+   const cols=document.createElement('colgroup');
+   const firstCol=document.createElement('col');firstCol.style.width='50%';
+   const secondCol=document.createElement('col');secondCol.style.width='50%';
+   cols.append(firstCol,secondCol);table.appendChild(cols);
+  }
+  const tbody=document.createElement('tbody');
+  for(const i of rowIndexes){
+   const tr=document.createElement('tr');
+   if(isMetadata){
+    const values=r.rows[i].map((cell,j)=>hidden.has(i+','+j)?'':display(cell))
+     .filter(x=>x.trim()!=='');
+    // Keep every value in its original order, even when the sheet stores its
+    // value in column F rather than B or contains additional details.
+    const label=document.createElement('td');label.textContent=values[0]||'';
+    const value=document.createElement('td');
+    if(values.length>1){
+     values.slice(1).forEach((v,j)=>{
+      if(j>0)value.appendChild(document.createTextNode(' | '));
+      value.appendChild(document.createTextNode(v));
+     });
+    }
+    tr.append(label,value);
+   }else{
+    for(let j=0;j<r.rows[i].length;j++){
+     const k=i+','+j;if(hidden.has(k))continue;
+     const cell=document.createElement(i===r.head||(sec.kind==='summary'&&i===sec.start)?'th':'td');
+     cell.textContent=display(r.rows[i][j]);const m=top.get(k);
+     if(m){cell.rowSpan=m.e.r-m.s.r+1;cell.colSpan=m.e.c-m.s.c+1;}
+     tr.appendChild(cell);
+    }
+   }
+   if(tr.childElementCount)tbody.appendChild(tr);
+  }
+  if(!tbody.childElementCount)continue;
+  table.appendChild(tbody);grid.appendChild(table);section.appendChild(grid);frag.appendChild(section);
+ }
+ container.replaceChildren(frag);
 }
 function saveBlob(blob,name){const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1500);}
 async function images(){
