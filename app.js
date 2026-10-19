@@ -4,6 +4,37 @@
 const STAGES={ed:'ED',primer:'Primer',sealer:'Sealer',bc:'BC'};
 const COLORS={Ch1:'#167F83',Ch2:'#D08B4F',Ch3:'#526AC1',Ch4:'#9C5B83',Ch5:'#657C3C',Ch6:'#B75151'};
 const states=Object.fromEntries(Object.keys(STAGES).map(k=>[k,{files:[],selected:null,sheet:0,visibility:{},errors:[]}]));
+// Large libraries are loaded only when the user uploads a workbook; startup stays lightweight.
+const dependencyPromises=new Map();
+function loadDependency(name,urls){
+ if(window[name])return Promise.resolve();
+ if(dependencyPromises.has(name))return dependencyPromises.get(name);
+ const promise=(async()=>{
+  for(const url of urls){
+   try{
+    await new Promise((resolve,reject)=>{
+     const script=document.createElement('script');
+     script.src=url;script.async=true;
+     script.onload=resolve;script.onerror=()=>{script.remove();reject(Error('Unable to load '+url));};
+     document.head.appendChild(script);
+    });
+    if(window[name])return;
+   }catch(e){ /* Try the alternate CDN. */ }
+  }
+  throw Error('Unable to load '+name+'. Check your network connection and retry.');
+ })();
+ dependencyPromises.set(name,promise);
+ promise.catch(()=>{if(dependencyPromises.get(name)===promise)dependencyPromises.delete(name);});
+ return promise;
+}
+const ensureXLSX=()=>loadDependency('XLSX',[
+ 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',
+ 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js'
+]);
+const ensurePlotly=()=>loadDependency('Plotly',[
+ 'https://cdn.plot.ly/plotly-cartesian-2.35.2.min.js',
+ 'https://cdn.jsdelivr.net/npm/plotly.js-cartesian-dist-min@2.35.2/plotly-cartesian.min.js'
+]);
 let tab='ed',uid=0,drawVersion=0;
 const $=id=>document.getElementById(id);
 const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -64,7 +95,7 @@ function parseSheet(ws,fn,sheet,date1904,buffer){
 }
 async function readFile(f){
  if(!/\.(xls|xlsx)$/i.test(f.name))throw Error('Only .xls and .xlsx are supported.');
- const buffer=await f.arrayBuffer(),wb=XLSX.read(buffer,{type:'array',cellStyles:true,cellNF:true,cellText:true}),date1904=!!wb.Workbook?.WBProps?.date1904;
+ const buffer=await f.arrayBuffer(),wb=XLSX.read(buffer,{type:'array',cellNF:true,cellText:true}),date1904=!!wb.Workbook?.WBProps?.date1904;
  let records=[],errors=[];
  for(const s of wb.SheetNames){try{records.push(parseSheet(wb.Sheets[s],f.name,s,date1904,buffer));}catch(e){errors.push(f.name+' / '+s+': '+e.message);}}
  return {records,errors};
@@ -83,6 +114,9 @@ function chooseTab(t){tab=t;document.querySelectorAll('[data-stage]').forEach(x=
  $('files').onchange=async e=>{
   const picked=Array.from(e.target.files);e.target.value='';if(!picked.length)return;
   const s=current();if(s.files.length+picked.length>30){s.errors=['Keep at most 30 workbooks in each process tab.'];return render();}
+  $('errors').innerHTML='<div class="field-note" role="status">Preparing Excel and chart libraries...</div>';
+  try{await Promise.all([ensureXLSX(),ensurePlotly()]);}
+  catch(ex){s.errors=[ex.message];return render();}
   $('errors').textContent='Reading temperature profiles...';
   for(const f of picked){let id='file_'+(++uid);try{const p=await readFile(f);s.files.push({id,name:f.name,...p});}catch(ex){s.files.push({id,name:f.name,records:[],errors:[f.name+': '+ex.message]});}if(!s.selected)s.selected=id;}
   s.errors=[];s.sheet=0;render();
@@ -122,7 +156,10 @@ function renderMain(){
  <p class="field-note export-note">Excel has two sheets: the selected source worksheet, recolored, and all four charts. PNG contains the same four charts and uses the same colors.</p>
  <h3 class="section-title">Uploaded worksheet</h3><p class="field-note">Original sections, fields and values in source order. Blank cells remain blank. Scroll the readings table to view every row.</p><div id="source-sections"></div>`;
  $('download-xlsx').onclick=downloadExcel;$('download-png').onclick=downloadPNG;
- renderSource(r);
+ // Avoid blocking the initial chart paint with a potentially very long worksheet table.
+ const later=()=>{if(v===drawVersion&&$('source-sections'))renderSource(r);};
+ if('requestIdleCallback' in window)requestIdleCallback(later,{timeout:1800});
+ else setTimeout(later,80);
  if(!chs.length){['profile','spread','bands','peaks'].forEach(n=>$('plot-'+n).innerHTML='<p class="field-note">Select at least one channel.</p>');return;}
  const b=bands(r,chs);
  $('plot-bands').style.height=Math.max(420,180+25*b.labels.length)+'px';
@@ -182,8 +219,9 @@ function bands(r,chs){
 function heatmap(chs,b){
  const max=Math.max(1,...b.values.flat().filter(num)),data=[{x:chs,y:b.labels,z:b.values,type:'heatmap',zmin:0,zmax:max,
   colorscale:[[0,'#EDF5F5'],[.333,'#83BCB8'],[.667,'#167F83'],[1,'#123C52']],xgap:2,ygap:2,
-  colorbar:{title:'Minutes'},hovertemplate:'%{x}<br>%{y} °C<br>%{z:.2f} min<extra></extra>'}];
- b.labels.forEach((label,i)=>chs.forEach((ch,j)=>{const v=b.values[i][j];data.push({x:[ch],y:[label],text:[num(v)?v.toFixed(1):'N/A'],type:'scatter',mode:'text',showlegend:false,hoverinfo:'skip',textfont:{size:12,color:num(v)&&v>max*.5?'white':'#14283F'}});}));
+  colorbar:{title:'Minutes'},hovertemplate:'%{x}<br>%{y} °C<br>%{z:.2f} min<extra></extra>',
+  text:b.values.map(row=>row.map(v=>num(v)?v.toFixed(1):'N/A')),
+  texttemplate:'%{text}',textfont:{family:'Times New Roman',size:12,color:'#14283F'}}];
  const lay=plotLayout('Channel','Temperature band (°C)');lay.showlegend=false;
  lay.xaxis={type:'category',title:'Channel',automargin:true};lay.yaxis={type:'category',categoryorder:'array',categoryarray:b.labels,title:'Temperature band (°C)',automargin:true};
  return Plotly.newPlot('plot-bands',data,lay,config);
@@ -290,17 +328,6 @@ async function downloadExcel(){
   const blob=new Blob([await wb.xlsx.writeBuffer()],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});saveBlob(blob,fileName(r)+'_report.xlsx');
  }catch(e){alert('Excel export failed: '+e.message);}finally{btn.disabled=false;}
 }
-async function loadOriginalLogo(){
- // Reuse the exact embedded company logo already present in the original R source; do not redraw it.
- try{
-  const urls=['app.R','https://raw.githubusercontent.com/nazanin-ghaemizadeh/BAMCO-PAINT-SHOP/main/app.R'];
-  for(const url of urls){try{
-   let resp=await fetch(url,{cache:'force-cache'});if(!resp.ok)continue;
-   const source=await resp.text(),match=source.match(/company_logo_uri\s*<-\s*"(data:image\/png;base64,[^"]+)"/);
-   if(match){$('company-logo-image').src=match[1];return;}
-  }catch(e){}}
- }catch(e){}
-}
-function init(){document.querySelectorAll('[data-stage]').forEach(btn=>btn.onclick=()=>chooseTab(btn.dataset.stage));chooseTab(tab);loadOriginalLogo();}
+function init(){document.querySelectorAll('[data-stage]').forEach(btn=>btn.onclick=()=>chooseTab(btn.dataset.stage));chooseTab(tab);}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
