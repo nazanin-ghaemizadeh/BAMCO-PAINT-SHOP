@@ -1,0 +1,19 @@
+name: Publish Paint Shop
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    uses: posit-dev/r-shinylive/.github/workflows/deploy-app.yaml@actions-v1
