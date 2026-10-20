@@ -109,3 +109,126 @@ body[data-section="comparison"] .bamco-views {width:100%}
  .compare-plot{padding:0;min-height:330px}
  .comparison-point-grid{grid-template-columns:1fr 1fr;padding:10px}
 }
+
+
+/* 2026-10-20 — Transparent logo and individually illustrated process icons. */
+#bamco-gateway .brand-mark.has-company-logo {
+  width: 166px;
+  height: 80px;
+  flex: 0 0 166px;
+  padding: 0 !important;
+  margin: 0;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+  backdrop-filter: none !important;
+  overflow: visible;
+}
+#bamco-gateway .brand-mark.has-company-logo img,
+#bamco-gateway .gateway-company-logo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  background: transparent !important;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none !important;
+  object-fit: contain;
+  object-position: center;
+}
+#bamco-gateway .oven-grid .oven-choice {
+  --oven-hue: #92dfc2;
+  --oven-halo: rgba(80, 199, 161, .11);
+}
+#bamco-gateway .oven-grid .oven-choice[data-oven="ed"] {
+  --oven-hue: #9be5ca;
+  --oven-halo: rgba(79, 203, 154, .15);
+}
+#bamco-gateway .oven-grid .oven-choice[data-oven="primer"] {
+  --oven-hue: #f7c582;
+  --oven-halo: rgba(247, 171, 94, .15);
+}
+#bamco-gateway .oven-grid .oven-choice[data-oven="sealer"] {
+  --oven-hue: #a9b9f8;
+  --oven-halo: rgba(137, 159, 240, .15);
+}
+#bamco-gateway .oven-grid .oven-choice[data-oven="bc"] {
+  --oven-hue: #e2b0ec;
+  --oven-halo: rgba(209, 137, 221, .15);
+}
+#bamco-gateway .oven-graphic {
+  display: grid;
+  place-items: center;
+  width: 96px;
+  height: 96px;
+  margin: 18px 0 20px;
+  background: radial-gradient(circle at 32% 23%, var(--oven-halo), transparent 82%);
+  border: 1px solid color-mix(in srgb, var(--oven-hue) 38%, transparent);
+  border-radius: 24px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06);
+}
+#bamco-gateway .oven-graphic .oven-icon {
+  display: block;
+  width: 77px;
+  height: 77px;
+  flex: 0 0 77px;
+  color: var(--oven-hue);
+  overflow: visible;
+  filter: drop-shadow(0 3px 13px var(--oven-halo));
+}
+#bamco-gateway .oven-graphic .oven-icon-soft,
+.nav-oven .oven-icon .oven-icon-soft {
+  stroke-opacity: .58;
+}
+#bamco-gateway .oven-choice:hover .oven-graphic {
+  background: radial-gradient(circle at 43% 40%, var(--oven-halo), rgba(255, 255, 255, .045) 90%);
+  border-color: var(--oven-hue);
+}
+#bamco-gateway .oven-choice .oven-graphic .oven-icon {
+  transition: transform .2s ease;
+}
+#bamco-gateway .oven-choice:hover .oven-graphic .oven-icon {
+  transform: scale(1.055);
+}
+.nav-oven .nav-oven-symbol {
+  display: grid;
+  place-items: center;
+  width: 47px;
+  height: 47px;
+  flex: 0 0 47px;
+  border-radius: 12px;
+  background: rgba(210, 250, 232, .09);
+  border: 1px solid rgba(216, 250, 239, .16);
+}
+.nav-oven .nav-oven-symbol .oven-icon {
+  display: block;
+  width: 38px;
+  height: 38px;
+  color: #a6ead3;
+}
+.nav-oven:has(.oven-icon-primer) .nav-oven-symbol .oven-icon { color: #f7c582; }
+.nav-oven:has(.oven-icon-sealer) .nav-oven-symbol .oven-icon { color: #b4bff7; }
+.nav-oven:has(.oven-icon-bc) .nav-oven-symbol .oven-icon { color: #e5b7ef; }
+@media (max-width: 600px) {
+  #bamco-gateway .brand-mark.has-company-logo {
+    width: 139px;
+    height: 65px;
+    flex-basis: 139px;
+  }
+  #bamco-gateway .oven-graphic {
+    width: 76px;
+    height: 76px;
+    border-radius: 19px;
+  }
+  #bamco-gateway .oven-graphic .oven-icon {
+    width: 64px;
+    height: 64px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #bamco-gateway .oven-choice .oven-graphic .oven-icon { transition: none !important; }
+}
