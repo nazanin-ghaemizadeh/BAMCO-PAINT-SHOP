@@ -15,7 +15,8 @@
     {id:'upload',label:'Upload & File Management',icon:'⇧'},
     {id:'information',label:'Information Tables',icon:'▤'},
     {id:'charts',label:'Charts',icon:'▥'},
-    {id:'analysis',label:'Baking Window Analysis',icon:'◎'}
+    {id:'analysis',label:'Baking Window Analysis',icon:'◎'},
+    {id:'comparison',label:'File & Window Comparison',icon:'⇄'}
   ];
   let choice='ed',step=1,activeSection='upload',gateway;
   const core=()=>window.BAMCO_CORE;
@@ -23,40 +24,71 @@
   const fmt=(v,n=3)=>Number.isFinite(v)?v.toFixed(n):'N/A';
   const timeAllowed=t=>t>=15&&t<=35.5?(t<=22?200:200-(28/13.5)*(t-22)):null;
   const durationAllowed=T=>T>=165&&T<=200?Math.min(35.5,22+(13.5/28)*(200-T)):null;
+  const CHANNEL_COLORS=['#087d8c','#e19a24','#4364c5','#ce4e68','#865ac2','#0e946e','#bb627f','#7d8737'];
+  function channelColor(ch){const n=Number(String(ch).replace(/\D/g,''));return CHANNEL_COLORS[(Number.isFinite(n)&&n>0?n-1:0)%CHANNEL_COLORS.length];}
   function svgChart(points=[],small=false){
-    const w=790,h=small?270:370,L=58,R=22,top=24,B=small?38:50;
+    const w=790,h=small?310:460,L=65,R=23,top=26,B=small?58:95;
     const X=x=>L+(x-10)/30*(w-L-R),Y=y=>h-B-(y-155)/55*(h-top-B);
     const poly=WINDOW.vertices.map(p=>X(p[0])+','+Y(p[1])).join(' ');
     const lines=[];
     for(const x of [10,15,20,22,25,30,35.5,40]){
-      lines.push('<line x1="'+X(x)+'" y1="'+top+'" x2="'+X(x)+'" y2="'+(h-B)+'" stroke="#e1ebe8" stroke-dasharray="4 5"/>');
-      lines.push('<text x="'+X(x)+'" y="'+(h-B+21)+'" text-anchor="middle" font-size="12" fill="#627984">'+x+'</text>');
+      lines.push('<line x1="'+X(x)+'" y1="'+top+'" x2="'+X(x)+'" y2="'+(h-B)+'" stroke="#dfebe7" stroke-dasharray="4 5"/>');
+      lines.push('<text x="'+X(x)+'" y="'+(h-B+20)+'" text-anchor="middle" font-size="12" fill="#708983">'+x+'</text>');
     }
     for(const y of [160,165,170,180,190,200,210]){
-      lines.push('<line x1="'+L+'" y1="'+Y(y)+'" x2="'+(w-R)+'" y2="'+Y(y)+'" stroke="#e1ebe8" stroke-dasharray="4 5"/>');
-      lines.push('<text x="'+(L-11)+'" y="'+(Y(y)+4)+'" text-anchor="end" font-size="12" fill="#627984">'+y+'</text>');
+      lines.push('<line x1="'+L+'" y1="'+Y(y)+'" x2="'+(w-R)+'" y2="'+Y(y)+'" stroke="#dfebe7" stroke-dasharray="4 5"/>');
+      lines.push('<text x="'+(L-13)+'" y="'+(Y(y)+4)+'" text-anchor="end" font-size="12" fill="#708983">'+y+'</text>');
     }
-    let pts='';
-    WINDOW.vertices.forEach(([x,y])=>pts+='<circle cx="'+X(x)+'" cy="'+Y(y)+'" r="4" fill="#237e4b" stroke="white" stroke-width="1.5"/>');
-    points.forEach(p=>{
+    let dots='',labels='',legend='';
+    WINDOW.vertices.forEach(([x,y])=>dots+='<circle cx="'+X(x)+'" cy="'+Y(y)+'" r="4.5" fill="#237e4b" stroke="white" stroke-width="1.6"/>');
+    const occupied=[];
+    points.forEach((p,i)=>{
       if(!Number.isFinite(p.d)||!Number.isFinite(p.t))return;
-      const x=X(p.d),y=Y(p.t),c=p.status==='PASS'?'#158056':'#d24e4e';
-      pts+='<circle cx="'+x+'" cy="'+y+'" r="7" fill="'+c+'" stroke="white" stroke-width="2.5"/>';
-      pts+='<text x="'+(x+9)+'" y="'+(y-10)+'" font-size="13" font-weight="bold" fill="'+c+'">'+esc(p.ch)+'</text>';
+      const x=X(p.d),y=Y(p.t),c=channelColor(p.ch),wLabel=82,hLabel=23;
+      // Do not change the measured coordinate. Move only its annotation if nearby probes overlap.
+      const offsets=[[14,14],[-95,14],[14,-37],[-95,-37],[14,39],[-95,39],[14,-62],[-95,-62],[25,65],[-104,65]];
+      let selected=null,score=Infinity;
+      for(const [dx,dy] of offsets){
+        const bx=Math.max(L+3,Math.min(w-R-wLabel-3,x+dx));
+        const by=Math.max(top+4,Math.min(h-B-hLabel-4,y+dy));
+        let penalty=Math.abs(dx)*.13+Math.abs(dy)*.15;
+        for(const o of occupied)if(bx<o.x+wLabel+8&&bx+wLabel+8>o.x&&by<o.y+hLabel+8&&by+hLabel+8>o.y)penalty+=1500;
+        if(penalty<score){score=penalty;selected={x:bx,y:by};}
+      }
+      occupied.push(selected);
+      const cx=selected.x+wLabel/2,cy=selected.y+hLabel/2;
+      labels+='<line x1="'+x+'" y1="'+y+'" x2="'+cx+'" y2="'+cy+'" stroke="'+c+'" stroke-width="1.25" opacity=".7"/>'
+        +'<rect x="'+selected.x+'" y="'+selected.y+'" width="'+wLabel+'" height="'+hLabel+'" rx="7" fill="white" stroke="'+c+'" stroke-width="1.4"/>'
+        +'<text x="'+cx+'" y="'+(selected.y+15.6)+'" text-anchor="middle" font-size="12" font-weight="bold" fill="'+c+'">'+esc(p.ch)+'</text>';
+      dots+='<circle cx="'+x+'" cy="'+y+'" r="6.4" fill="'+c+'" stroke="white" stroke-width="2.1"/>'
+        +'<circle cx="'+x+'" cy="'+y+'" r="8.9" fill="none" stroke="'+c+'" stroke-width="1.1" opacity=".65"/>';
+      legend+='<g><circle cx="'+(L+16+i*124)+'" cy="'+(h-49)+'" r="5" fill="'+c+'"/><text x="'+(L+27+i*124)+'" y="'+(h-45)+'" font-size="12" fill="#344b52">'+esc(p.ch)+' · '+(p.status==='PASS'?'PASS':'FAIL')+'</text></g>';
     });
-    return '<svg class="window-svg" viewBox="0 0 '+w+' '+h+'" role="img" aria-label="Green ED baking window polygon: (15,165), (15,200), (22,200), (35.5,172), (35.5,165). Channel evaluation points appear as green or red markers." xmlns="http://www.w3.org/2000/svg">'
+    return '<svg class="window-svg" viewBox="0 0 '+w+' '+h+'" role="img" aria-label="ED window: distinct probe colors; labels are offset so real probe locations remain precise." xmlns="http://www.w3.org/2000/svg">'
       +'<rect width="'+w+'" height="'+h+'" rx="12" fill="#fff"/>'
       +lines.join('')+'<line x1="'+L+'" y1="'+top+'" x2="'+L+'" y2="'+(h-B)+'" stroke="#82969c"/>'
       +'<line x1="'+L+'" y1="'+(h-B)+'" x2="'+(w-R)+'" y2="'+(h-B)+'" stroke="#82969c"/>'
-      +'<polygon points="'+poly+'" fill="#73c68b" fill-opacity=".26" stroke="#267f47" stroke-width="3" stroke-linejoin="round"/>'
-      +pts+'<text x="'+(w/2)+'" y="'+(h-4)+'" fill="#344b52" font-size="14" text-anchor="middle">Duration above 165°C (min)</text>'
-      +'<text transform="translate(17 '+(h/2)+') rotate(-90)" text-anchor="middle" fill="#344b52" font-size="14">Peak Temperature (°C)</text>'
-      +'</svg>';
+      +'<polygon points="'+poly+'" fill="#74c990" fill-opacity=".26" stroke="#277f47" stroke-width="3.1" stroke-linejoin="round"/>'
+      +labels+dots
+      +'<text x="'+(w/2)+'" y="'+(h-B+43)+'" fill="#344b52" font-size="14" text-anchor="middle">Duration above 165°C (min)</text>'
+      +'<text transform="translate(19 '+((h-B+top)/2)+') rotate(-90)" text-anchor="middle" fill="#344b52" font-size="14">Peak Temperature (°C)</text>'
+      +legend+'</svg>';
   }
   function preview(){
     return '<div class="window-photo-card"><div class="reference-image-meta"><span class="photo-status"><span class="status-dot"></span> REFERENCE WINDOW</span><span class="photo-caption">ED Oven · 165°C / 15 min</span></div>'
       +'<button type="button" class="window-photo-trigger" data-photo-open aria-label="View full-size ED baking-window reference image"><img src="assets/ed-baking-window.svg" alt="ED Baking Window — five vertices, polygon and equations" class="window-photo" decoding="async"/><span class="image-zoom-hint">⤢ View full size</span></button>'
       +'<div class="reference-image-footer"><span>5 vertices · time–temperature evaluation</span><span>REFERENCE 01 / ED</span></div></div>';
+  }
+  function applyGatewayLogo(){
+    const original=document.getElementById('company-logo-image');
+    if(!original||!gateway)return;
+    const mark=gateway.querySelector('.brand-mark');
+    if(!mark)return;
+    const clone=original.cloneNode(true);clone.removeAttribute('id');
+    clone.className='gateway-company-logo';
+    clone.alt='BAM Automotive Company';
+    mark.replaceChildren(clone);
+    mark.classList.add('has-company-logo');
   }
   function renderGate(){
     if(!gateway)return;
@@ -69,6 +101,7 @@
       +'<h2 class="gate-subtitle">01 <span>Select your oven</span></h2>'
       +'<div class="oven-grid">'+ovens.map(o=>'<button class="oven-choice" data-oven="'+o.id+'"><span class="oven-number">'+o.symbol+'</span><span class="oven-graphic" aria-hidden="true"><span class="oven-waves">♨</span><span class="oven-track"></span></span><strong>'+o.name+'</strong><small>'+o.description+'</small><span class="oven-cta">Select oven →</span></button>').join('')+'</div>'
       +'<p class="gate-footer">BAMCO • Temperature Profile Analysis & Process Evaluation</p></div>';
+      applyGatewayLogo();
     } else {
       gateway.innerHTML='<div class="gate-container gate-window-container"><div class="gate-brand"><span class="brand-mark">B</span><span>BAM AUTOMOTIVE COMPANY <small>PAINT SHOP INTELLIGENCE</small></span></div>'
       +'<button class="gate-back" data-go-back>← All ovens</button><div class="gate-kicker">STEP 02 / BAKING WINDOW SELECTION</div>'
@@ -78,6 +111,7 @@
         :'<div class="window-selection no-window"><div class="window-description"><span class="pending-flag">WINDOW NOT CONFIGURED</span><h2>Temperature data exploration</h2><p>No validated baking-window coordinates have been supplied for '+oven.name+'. Uploads, tables and charts remain available. The evaluation panel will clearly show “Not configured” rather than an unverified PASS or FAIL.</p><button class="primary-action" data-enter>Continue without curing rules →</button></div></div>')
       +'<p class="gate-footer">Your uploaded workbooks are processed locally in your browser.</p></div>';
     }
+    applyGatewayLogo();
   }
   function enter(){
     document.body.classList.add('bamco-entered');
@@ -107,6 +141,7 @@
         }
       },120);
     }
+    if(s==='comparison')window.setTimeout(()=>window.BAMCOCompare?.render?.(),60);
   }
   function elapsedDuration(reads,ch,step){
     const valid=reads.every(x=>Number.isFinite(x.values[ch]));
@@ -196,7 +231,7 @@
     return '<div class="analysis-titlebar"><div><span class="eyebrow">ENGINEERING VALIDATION / ED OVEN</span><h2>Baking Window Evaluation</h2><p>Time above 165°C is calculated from timestamped readings using linear interpolation.</p></div>'+tag(overall)+'</div>'
       +'<div class="eval-stats"><div><small>Total probes</small><strong>'+results.length+'</strong></div><div><small>Passed</small><strong class="text-green">'+pass+'</strong></div><div><small>Failed</small><strong class="text-red">'+fail+'</strong></div><div><small>Invalid</small><strong>'+invalid+'</strong></div></div>'
       +'<div class="window-analysis-plot"><h3>ED Baking Window — Measured Channel Points</h3>'+svgChart(results.map(v=>({ch:v.ch,d:v.D,t:v.T,status:v.status})))
-      +'<p class="window-legend"><i class="dot green"></i> In window <i class="dot red"></i> Outside window <span>Each point = (time ≥ 165°C, peak temperature)</span></p></div>'
+      +'<p class="window-legend"><span>Each channel has a unique marker color. Label positions are offset only for readability.</span><span>Measured values always remain at their true coordinates.</span></p></div>'
       +'<div class="analysis-table-title"><h3>Channel Comparison Matrix</h3><p>Dependent limits change with the measured point. N/A indicates an out-of-domain calculation, not a pass.</p></div>'
       +summaryRows(results)
       +'<div class="probe-grid">'+cards+'</div>'
@@ -237,6 +272,7 @@
       const charts=document.createElement('section');charts.className='view-charts';
       const info=document.createElement('section');info.className='view-information';
       const analysis=document.createElement('section');analysis.className='view-analysis';
+      const comparison=document.createElement('section');comparison.className='view-comparison';
       let afterTitle=false;
       children.forEach(el=>{
         if(el.classList.contains('chart-heading')||el.classList.contains('metrics')||el.classList.contains('import-errors'))top.appendChild(el);
@@ -248,11 +284,12 @@
         info.innerHTML='<div class="no-analysis"><h2>No worksheet loaded yet</h2><p>Choose Upload & File Management to add a workbook.</p></div>';
       }
       analysis.innerHTML=renderAnalysis(r,core().getStage());
-      holder.append(top,charts,info,analysis);main.appendChild(holder);
+      holder.append(top,charts,info,analysis,comparison);main.appendChild(holder);
     }else{
       const analysis=main.querySelector('.view-analysis');
       if(analysis)analysis.innerHTML=renderAnalysis(r,core().getStage());
     }
+    window.BAMCOCompare?.mount?.();
     switchSection(activeSection);
   }
   function openReferenceImage(){
