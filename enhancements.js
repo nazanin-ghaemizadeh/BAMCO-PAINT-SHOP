@@ -161,7 +161,7 @@
       +'<tr><th>Probe location</th>'+data.map(v=>'<td>'+esc(v.label.replace(/^Ch\d+\s*[-–]\s*/,''))+'</td>').join('')+'</tr>'
       +row('Duration above 165°C','D',3,'min')+row('Peak temperature','T',1,'°C')
       +'<tr class="matrix-group"><th colspan="'+(data.length+1)+'">ALLOWED BAKING WINDOW</th></tr>'
-      +'<tr><th>Min allowed duration</th>'+data.map(()=><td>15.000 min</td>).join('')+'</tr>'
+      +'<tr><th>Min allowed duration</th>'+data.map(()=>'<td>15.000 min</td>').join('')+'</tr>'
       +row('Max duration at peak temperature','dMax',3,'min')
       +'<tr><th>Min allowed peak temperature</th>'+data.map(()=><td>165.0°C</td>).join('')+'</tr>'
       +row('Max temperature at actual duration','tMax',1,'°C')
