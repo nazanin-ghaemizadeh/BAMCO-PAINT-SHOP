@@ -22,7 +22,8 @@ jobs:
         run: |
           node --check app.js
           node --check enhancements.js
-          test -f index.html && test -f style.css && test -f enhancements.css
+          node --check comparison.js
+          test -f index.html && test -f style.css && test -f enhancements.css && test -f design.css && test -f comparison.css && test -f assets/ed-baking-window.svg
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
