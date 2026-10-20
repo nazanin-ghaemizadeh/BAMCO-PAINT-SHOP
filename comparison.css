@@ -1,0 +1,111 @@
+/* BAMCO Paint Shop — 2026 comparison workspace and interface refinement. */
+:root{--c-navy:#103842;--c-forest:#176e59;--c-mint:#e5f5ec;--c-border:#dae8e4;--c-text:#234648;--c-subtle:#6e8585}
+#bamco-gateway .brand-mark.has-company-logo{
+ width:164px;height:79px;flex:0 0 164px;border-radius:15px;
+ background:linear-gradient(145deg,#fff,#eaf4f1);box-shadow:0 12px 29px #061e263a,inset 0 1px 0 #fff;
+ padding:10px 13px;display:flex;align-items:center;justify-content:center;
+}
+#bamco-gateway .brand-mark.has-company-logo img{
+ width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain;display:block;
+}
+#bamco-gateway .gate-brand {gap:19px}
+#bamco-gateway .gate-brand>span:last-child {font-size:14px;line-height:1.4}
+#bamco-gateway .gate-brand small {font-size:11px;margin-top:6px}
+body:not([data-section="comparison"]) .view-comparison {display:none!important}
+body[data-section="comparison"] .view-intro,
+body[data-section="comparison"] .view-charts,
+body[data-section="comparison"] .view-information,
+body[data-section="comparison"] .view-analysis {display:none!important}
+body[data-section="comparison"] .view-comparison {display:block!important}
+body[data-section="comparison"] .stage-layout>.chart-panel {padding:25px 28px 34px}
+body[data-section="comparison"] .bamco-views {width:100%}
+.compare-hero {
+ position:relative;border-radius:22px;background:
+ radial-gradient(circle at 95% -20%,#8ee7bb24,transparent 48%),
+ linear-gradient(120deg,#123844,#1c5b54);
+ padding:30px 34px;margin:0 0 24px;color:white;overflow:hidden;
+}
+.compare-hero:after {content:"";position:absolute;right:-40px;top:-65px;width:240px;height:240px;border:1px solid #b4ebd337;border-radius:50%;box-shadow:0 0 0 40px #b4ebd311,0 0 0 84px #b4ebd307;pointer-events:none}
+.compare-kicker {font-size:11px;letter-spacing:1.4px;font-weight:bold;color:#b0e5cf;display:flex;align-items:center;gap:9px}
+.compare-live {width:8px;height:8px;border-radius:50%;display:inline-block;background:#55dfae;box-shadow:0 0 0 4px #55dfae1f}
+.compare-hero h2 {font-size:34px;letter-spacing:-.8px;margin:17px 0 10px;font-weight:750}
+.compare-hero p {max-width:770px;color:#c0ddda;font-size:14px;line-height:1.7;margin:0}
+.compare-counts {display:flex;flex-wrap:wrap;gap:9px;margin-top:20px}
+.compare-counts span {background:#ffffff12;color:#d8f3e9;border:1px solid #c6f0e531;border-radius:40px;padding:7px 13px;font-size:11px}
+.compare-layout {display:grid;grid-template-columns:minmax(215px,270px) minmax(0,1fr);gap:21px;align-items:start}
+.compare-controls {position:sticky;top:16px;padding:20px 17px;border:1px solid var(--c-border);border-radius:16px;background:#f9fcfa;box-shadow:0 8px 35px #274c3910}
+.compare-controls h3 {font-size:15px;line-height:1.4;margin:0;color:#204b49}
+.compare-control-header {display:flex;flex-wrap:wrap;gap:7px;justify-content:space-between;align-items:center;margin-bottom:13px}
+.compare-control-header>div {display:flex;gap:6px}
+.compare-control-header button {background:#e1f1e8;color:#24654d;border:1px solid #d3e8db;padding:6px 9px;font-size:10px;border-radius:7px;cursor:pointer}
+.compare-control-header button:hover {background:#cfe9d9}
+.compare-file-list {max-height:285px;overflow-y:auto;display:flex;flex-direction:column;gap:7px;padding-right:2px}
+.compare-file-choice {display:grid;grid-template-columns:18px 7px minmax(0,1fr);grid-template-rows:auto auto;column-gap:9px;align-items:center;background:#fff;border:1px solid #e1ece7;border-radius:11px;padding:12px 9px;cursor:pointer;transition:border-color .2s,background .2s}
+.compare-file-choice:has(input:checked){border-color:#91cab0;background:#f1faf5}
+.compare-file-choice:hover {border-color:#a8d7be}
+.compare-file-choice input {grid-column:1;grid-row:1/span 2;accent-color:#1d9067;cursor:pointer}
+.compare-color-strip {grid-column:2;grid-row:1/span 2;width:7px;height:29px;border-radius:8px}
+.compare-filename {grid-column:3;grid-row:1;color:#244a48;font-size:11px;font-weight:bold;overflow-wrap:anywhere;line-height:1.3}
+.compare-source-sub {grid-column:3;grid-row:2;color:#8ba09c;font-size:10px;margin-top:4px}
+.compare-small-title {font-size:13px;font-weight:bold;color:#285d51;margin:22px 0 11px}
+.compare-channel-list {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.compare-channel-choice {display:flex;justify-content:center;align-items:center;gap:5px;padding:9px 5px;border:1px solid #dfeae5;background:#fff;border-radius:9px;font-size:11px;cursor:pointer}
+.compare-channel-choice:has(input:checked) {background:#e9f5ee;border-color:#9bcfb4;color:#175640}
+.compare-channel-choice input {margin:0;accent-color:#1c9167}
+.compare-select {width:100%;padding:12px 30px 12px 12px;background:#fff;border:1px solid #d5e6de;border-radius:10px;font-size:12px;color:#22564c;outline-offset:2px}
+.compare-threshold {display:flex;gap:12px;align-items:center;justify-content:space-between;margin-top:13px;font-size:12px}
+.compare-threshold input {width:90px;background:#fff;border:1px solid #d6e6dc;border-radius:9px;padding:10px}
+.compare-guidance {background:#eaf5ef;border:1px solid #d4e9dc;border-radius:12px;margin-top:24px;padding:14px}
+.compare-guidance strong {font-size:12px;color:#1b6650}
+.compare-guidance p {color:#658279;line-height:1.65;font-size:11px;margin:8px 0 0}
+.compare-results {display:flex;flex-direction:column;gap:20px;min-width:0}
+.compare-panel {background:white;border:1px solid var(--c-border);border-radius:17px;overflow:hidden;box-shadow:0 10px 35px #1c49430a;min-width:0}
+.compare-panel-title {padding:18px 21px;border-bottom:1px solid #e6efeb;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.compare-panel-title h3 {margin:0 0 5px;font-size:21px;font-weight:bold;color:#21514b}
+.compare-panel-title p {font-size:11px;line-height:1.6;color:#7d9290;margin:0;max-width:620px}
+.compare-download-group {display:flex;gap:7px;flex-wrap:wrap}
+.compare-download {background:#e5f3ea;color:#266e55;border:1px solid #cfe4d7;border-radius:9px;padding:10px 12px;cursor:pointer;font-size:11px;font-weight:bold}
+.compare-download:hover {background:#d0e9da;border-color:#a3d2b5}
+.compare-plot {width:100%;min-height:400px;padding:8px}
+.compare-empty,.compare-empty-wrap {padding:45px 23px;min-height:180px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:15px;color:#708884;font-size:13px}
+.compare-empty-wrap {border:1px dashed #b9d6c7;background:#f8fcfa;border-radius:15px;min-height:430px}
+.compare-empty-wrap h3 {margin:0;font-size:26px;color:#2e6656}
+.compare-empty-wrap p {max-width:550px;line-height:1.8}
+.comparison-point-grid {display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;padding:17px;border-top:1px solid #edf3f0}
+.comparison-point {min-width:0;padding:12px 13px;border:1px solid #e2ece8;border-left:4px solid var(--point-color);border-radius:11px;background:#fafdfb}
+.comparison-point-head {display:flex;align-items:center;gap:6px}
+.comparison-point-head strong {font-size:13px;color:#254f48}
+.point-symbol {color:var(--point-color);font-weight:bold;font-size:17px}
+.compare-status {margin-left:auto;font-size:9px;border-radius:6px;padding:4px 6px;font-weight:bold}
+.compare-status.ok {background:#daf4e2;color:#236e43}
+.compare-status.issue {background:#ffe3e5;color:#b33d4b}
+.comparison-point p {font-size:10px;color:#66847c;margin:9px 0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.comparison-point small {font-size:11px;color:#234f4c;font-variant-numeric:tabular-nums}
+.window-analysis-plot .window-svg {max-height:600px;margin:auto}
+.window-analysis-plot .window-legend {margin-top:-10px;padding:0 8px 12px;justify-content:center;font-size:12px;color:#718780}
+.analysis-titlebar,.analysis-table-title {gap:8px}
+.probe-card {border-top:3px solid #48ac81}
+.probe-card.bad {border-top-color:#d65f64}
+.eval-tag {box-shadow:inset 0 1px 0 #ffffff86}
+.oven-choice:hover {border-color:#a4e8c5}
+.window-photo-card {border:1px solid #cce0d5;box-shadow:0 14px 45px #12483a13}
+.window-photo-card .window-photo {border:1px solid #edf3ed}
+.window-photo-trigger:hover {background:#fafffb}
+.view-information .source-grid {max-width:100%}
+@media(max-width:1240px){.compare-layout{grid-template-columns:225px minmax(0,1fr)}}
+@media(max-width:970px){.compare-layout{grid-template-columns:1fr}.compare-controls{position:static}.compare-file-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));max-height:300px}.compare-channel-list{grid-template-columns:repeat(6,minmax(0,1fr))}}
+@media(max-width:600px){
+ #bamco-gateway .brand-mark.has-company-logo{width:124px;height:62px;flex-basis:124px;padding:7px}
+ #bamco-gateway .gate-brand{gap:10px}
+ #bamco-gateway .gate-brand>span:last-child{font-size:10px;letter-spacing:.5px}
+ #bamco-gateway .gate-brand small{font-size:8px}
+ .compare-hero{padding:23px 19px;border-radius:16px}.compare-hero h2{font-size:27px}
+ body[data-section="comparison"] .stage-layout>.chart-panel{padding:12px}
+ .compare-controls{padding:16px 12px}
+ .compare-file-list{grid-template-columns:1fr}
+ .compare-channel-list{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .compare-panel-title{padding:13px}
+ .compare-panel-title h3{font-size:18px}
+ .compare-plot{padding:0;min-height:330px}
+ .comparison-point-grid{grid-template-columns:1fr 1fr;padding:10px}
+}
