@@ -163,7 +163,7 @@
       +'<tr class="matrix-group"><th colspan="'+(data.length+1)+'">ALLOWED BAKING WINDOW</th></tr>'
       +'<tr><th>Min allowed duration</th>'+data.map(()=>'<td>15.000 min</td>').join('')+'</tr>'
       +row('Max duration at peak temperature','dMax',3,'min')
-      +'<tr><th>Min allowed peak temperature</th>'+data.map(()=><td>165.0°C</td>).join('')+'</tr>'
+      +'<tr><th>Min allowed peak temperature</th>'+data.map(()=>'<td>165.0°C</td>').join('')+'</tr>'
       +row('Max temperature at actual duration','tMax',1,'°C')
       +'<tr class="matrix-group"><th colspan="'+(data.length+1)+'">DISTANCE TO LIMITS (SIGNED MARGINS)</th></tr>'
       +row('Minimum duration margin','mdMin',3,'min','margin')
