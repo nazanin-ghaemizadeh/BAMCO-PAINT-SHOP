@@ -174,7 +174,7 @@ function renderMain(){
  const later=()=>{if(v===drawVersion&&$('source-sections'))renderSource(r);};
  if('requestIdleCallback' in window)requestIdleCallback(later,{timeout:1800});
  else setTimeout(later,80);
- if(!chs.length){['profile','spread','bands','peaks'].forEach(n=>$('plot-'+n).innerHTML='<p class="field-note">Select at least one channel.</p>');return;}
+ if(!chs.length){['profile','spread','bands','peaks'].forEach(n=>$('plot-'+n).innerHTML='<p class="field-note">Select at least one channel.</p>');window.BAMCOEnhance?.refresh?.();return;}
  const b=bands(r,chs);
  $('plot-bands').style.height=Math.max(420,180+25*b.labels.length)+'px';
  $('plot-peaks').style.height=Math.max(440,210+50*others.length)+'px';
