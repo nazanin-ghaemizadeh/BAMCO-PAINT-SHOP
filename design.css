@@ -222,3 +222,10 @@ body.bamco-entered .app-shell {max-width:1920px;padding:22px 28px 18px}
 @media(prefers-reduced-motion:reduce){
  .oven-choice,.probe-card,.workspace-nav-link,.primary-action,.image-zoom-hint {transition:none!important;transform:none!important}
 }
+
+/* Global typography: Times New Roman throughout welcome, dashboard, controls,
+   technical tables, SVG captions, plot labels, and evaluation cards. */
+html, body, body *, body *::before, body *::after,
+button, input, select, textarea {
+  font-family: "Times New Roman", Times, serif !important;
+}
