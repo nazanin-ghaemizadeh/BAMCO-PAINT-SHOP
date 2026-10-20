@@ -60,7 +60,7 @@ body,button,input,select,.app-header,.upload-panel,.chart-panel,.workspace-nav {
 .oven-cta {font-family:inherit;color:#9aead1;font-size:12px}
 .gate-footer {font-family:inherit;opacity:.8}
 .gate-window-container .gate-brand {margin-bottom:32px!important}
-.gate-window-container .gate-back {border:1px solid #dbfff030;border-radius:40px;padding:8px 14px;color:#c7dfda;font:600 12px inherit;margin:0 0 20px}
+.gate-window-container .gate-back {border:1px solid #dbfff030;border-radius:40px;padding:8px 14px;color:#c7dfda;font:600 12px ui-sans-serif,Arial,sans-serif;margin:0 0 20px}
 .gate-window-container .gate-back:hover {background:#ffffff16;color:#fff}
 .gate-window-container h1 {font-size:clamp(36px,4vw,52px)!important;margin:0 0 9px!important}
 .gate-window-container .gate-lead {margin:0 0 23px!important;font-size:14px!important}
@@ -72,12 +72,12 @@ body,button,input,select,.app-header,.upload-panel,.chart-panel,.workspace-nav {
 .window-description {padding:17px 13px 15px;justify-content:center}
 .window-description h2 {font-family:inherit;font-size:clamp(24px,2.4vw,32px);font-weight:750;letter-spacing:-.8px;margin:20px 0 15px}
 .window-description p {font-family:inherit;font-size:13px;line-height:1.9;color:#718286}
-.approved-flag,.pending-flag {font:700 10px inherit;letter-spacing:1.2px}
+.approved-flag,.pending-flag {font:700 10px ui-sans-serif,Arial,sans-serif;letter-spacing:1.2px}
 .approved-flag {background:#e1f5eb;color:#227556;border:1px solid #c4e9d5}
 .window-spec {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:20px 0 25px;width:100%}
-.window-spec span {background:#f0f7f3;border:1px solid #deece4;padding:13px;border-radius:13px;font:600 11px inherit;min-width:0;color:#66827b}
+.window-spec span {background:#f0f7f3;border:1px solid #deece4;padding:13px;border-radius:13px;font:600 11px ui-sans-serif,Arial,sans-serif;min-width:0;color:#66827b}
 .window-spec b {font-size:16px;color:#1e564d}
-.primary-action {display:inline-flex;align-items:center;justify-content:center;gap:17px;border-radius:12px!important;background:linear-gradient(120deg,#165d51,#26846a)!important;border:0;box-shadow:0 10px 25px #277b6547;font:700 13px inherit;padding:15px 20px;min-height:48px;transition:transform .15s,box-shadow .15s}
+.primary-action {display:inline-flex;align-items:center;justify-content:center;gap:17px;border-radius:12px!important;background:linear-gradient(120deg,#165d51,#26846a)!important;border:0;box-shadow:0 10px 25px #277b6547;font:700 13px ui-sans-serif,Arial,sans-serif;padding:15px 20px;min-height:48px;transition:transform .15s,box-shadow .15s}
 .primary-action:hover {transform:translateY(-2px);background:linear-gradient(120deg,#1a705f,#359b7a)!important;box-shadow:0 16px 30px #277b6555}
 .window-photo-card {
  min-width:0;display:flex;flex-direction:column;background:#fff;
@@ -116,18 +116,18 @@ body.bamco-entered .app-shell {max-width:1920px;padding:22px 28px 18px}
  background:linear-gradient(126deg,#112b3b,#124451 55%,#1d645b);border:1px solid #ffffff20;
  padding:24px 34px;border-radius:22px;box-shadow:0 17px 42px #092f3d18;
 }
-.app-header .brand {color:#93d4c5;font:750 11px inherit;letter-spacing:1.6px}
+.app-header .brand {color:#93d4c5;font:750 11px ui-sans-serif,Arial,sans-serif;letter-spacing:1.6px}
 .app-header h1 {font-family:inherit;font-size:29px;font-weight:760;letter-spacing:-.8px;margin:6px 0 9px}
 .app-header p {font-family:inherit;color:#bbd0d1}
 .app-header .header-tag {font-family:inherit;font-size:10px;letter-spacing:1.3px;color:#b9d9d5;border-color:#ffffff37}
 .company-logo img {object-fit:contain}
 .stage-layout {grid-template-columns:256px minmax(0,1fr);gap:19px}
 .workspace-nav {min-height:570px;padding:18px 14px;border-radius:20px;background:linear-gradient(180deg,#fff,#fbfdfc);border:1px solid #deebe6;box-shadow:var(--ui-shadow)}
-.workspace-nav .nav-overline {font:750 10px inherit;color:#8a9e9c}
+.workspace-nav .nav-overline {font:750 10px ui-sans-serif,Arial,sans-serif;color:#8a9e9c}
 .workspace-nav .nav-oven {background:linear-gradient(130deg,#123b49,#24695c);padding:16px 11px;box-shadow:inset 0 1px 0 #ffffff33;border:1px solid #ffffff14}
-.workspace-nav .nav-oven strong {font:750 13px inherit}
-.workspace-nav .nav-oven small {font:500 10px/1.65 inherit;color:#c5e8db}
-.workspace-nav-link {border-radius:12px;min-height:52px;font:650 12px/1.5 inherit;transition:background .18s,color .18s,transform .18s}
+.workspace-nav .nav-oven strong {font:750 13px ui-sans-serif,Arial,sans-serif}
+.workspace-nav .nav-oven small {font:500 10px/1.65 ui-sans-serif,Arial,sans-serif;color:#c5e8db}
+.workspace-nav-link {border-radius:12px;min-height:52px;font:650 12px/1.5 ui-sans-serif,Arial,sans-serif;transition:background .18s,color .18s,transform .18s}
 .workspace-nav-link:hover {transform:translateX(2px);background:#f2f8f4;color:#195945}
 .workspace-nav-link.is-active {background:linear-gradient(100deg,#e0f1e7,#eff9f2);border-color:#cae7d8;box-shadow:inset 3px 0 #219569;color:#176347}
 .change-oven {font-family:inherit;color:#287964;font-size:11px}
@@ -150,7 +150,7 @@ body.bamco-entered .app-shell {max-width:1920px;padding:22px 28px 18px}
 #plot-profile {height:720px!important;min-height:720px!important}
 .chart-panel .plot-surface {background:#fff}
 .source-section {border-radius:13px;border-color:#e1ebe8}
-.source-section h4 {background:#174b53;padding:16px;font:700 13px inherit}
+.source-section h4 {background:#174b53;padding:16px;font:700 13px ui-sans-serif,Arial,sans-serif}
 .source-grid th {background:#e5f3ee;color:#224f47}
 .source-grid tr:nth-child(even) {background:#f6faf8}
 .source-grid td,.source-grid th {border-color:#e4eeea}
