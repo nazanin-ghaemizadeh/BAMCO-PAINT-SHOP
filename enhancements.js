@@ -76,7 +76,7 @@
   }
   function preview(){
     return '<div class="window-photo-card"><div class="reference-image-meta"><span class="photo-status"><span class="status-dot"></span> REFERENCE WINDOW</span><span class="photo-caption">ED Oven · 165°C / 15 min</span></div>'
-      +'<button type="button" class="window-photo-trigger" data-photo-open aria-label="View full-size ED baking-window reference image"><img src="assets/ed-baking-window.svg" alt="ED Baking Window — five vertices, polygon and equations" class="window-photo" decoding="async"/><span class="image-zoom-hint">⤢ View full size</span></button>'
+      +'<button type="button" class="window-photo-trigger" data-photo-open aria-label="View full-size ED baking-window reference image"><img src="assets/ed-baking-window.svg?v=20261020-5" alt="ED Baking Window — five vertices, polygon and equations" class="window-photo" decoding="async"/><span class="image-zoom-hint">⤢ View full size</span></button>'
       +'<div class="reference-image-footer"><span>5 vertices · time–temperature evaluation</span><span>REFERENCE 01 / ED</span></div></div>';
   }
   function applyGatewayLogo(){
@@ -296,7 +296,7 @@
     let dialog=document.getElementById('ed-window-lightbox');
     if(!dialog){
       dialog=document.createElement('dialog');dialog.id='ed-window-lightbox';dialog.className='ed-lightbox';
-      dialog.innerHTML='<div class="lightbox-top"><span>ED Oven — Baking Window Reference</span><button type="button" data-photo-close aria-label="Close image">×</button></div><div class="lightbox-image-frame"><img src="assets/ed-baking-window.svg" alt="Full size ED Baking Window with equations"></div>';
+      dialog.innerHTML='<div class="lightbox-top"><span>ED Oven — Baking Window Reference</span><button type="button" data-photo-close aria-label="Close image">×</button></div><div class="lightbox-image-frame"><img src="assets/ed-baking-window.svg?v=20261020-5" alt="Full size ED Baking Window with equations"></div>';
       document.body.appendChild(dialog);
       dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.close();});
     }
