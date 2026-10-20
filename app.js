@@ -156,12 +156,12 @@ function empty(f){return `<div class="empty-state"><div class="empty-mark">°C</
 function render(){renderControls();renderMain();}
 function renderMain(){
  const s=current(),f=file(),r=record(),v=++drawVersion;
- if(!r){$('chart-panel').innerHTML=empty(!!f);return;}
+ if(!r){$('chart-panel').innerHTML=empty(!!f);window.BAMCOEnhance?.refresh?.();return;}
  const chs=channels(r),others=s.files.filter(x=>x.records.length).map(x=>x.records.find(y=>y.sheetName===r.sheetName)||x.records[0]);
  $('chart-panel').innerHTML=`<div class="chart-heading"><div><p class="eyebrow">${STAGES[tab]} / TEMPERATURE PROFILE</p><h2>${esc(r.project)}</h2><p class="secondary">${clock(r.start)} - ${clock(r.end)} | ${esc(r.fileName)}</p></div><span class="device-label">${esc(r.device)}</span></div>
  <div class="metrics"><div class="metric"><span>Recorded duration</span><strong>${nice(r.duration)} min</strong></div><div class="metric"><span>Time samples</span><strong>${r.reads.length}</strong></div><div class="metric"><span>Visible channels</span><strong>${chs.length}</strong></div><div class="metric"><span>Median interval</span><strong>${nice(r.step)} s</strong></div></div>
  ${r.notes.length?'<div class="import-errors"><ul>'+r.notes.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></div>':''}
- <div class="analysis-card"><h3>Temperature profile</h3><div class="plot-surface" id="plot-profile" style="height:500px"></div><div class="channel-legend" id="legend-profile" aria-label="Channel colors for temperature profile"></div></div>
+ <div class="analysis-card"><h3>Temperature profile</h3><div class="plot-surface" id="plot-profile" style="height:650px"></div><div class="channel-legend" id="legend-profile" aria-label="Channel colors for temperature profile"></div></div>
  <div class="analysis-card"><h3>Channel temperature spread</h3><p class="field-note">Highest minus lowest temperature at the same reading, across selected channels. Air is included when selected.</p><div class="plot-surface" id="plot-spread" style="height:370px"></div></div>
  <div class="analysis-card"><h3>Time in temperature bands</h3><p class="field-note">Minutes in each band, estimated by linear interpolation. Missing readings and long gaps are excluded; darker cells mean more time.</p><div class="plot-surface" id="plot-bands" style="height:420px"></div><div class="field-note" id="band-coverage"></div></div>
  <div class="analysis-card"><h3>Peak temperatures by uploaded file</h3><p class="field-note">All active channels across uploaded files in this process. Uses the matching worksheet name where available, otherwise the first readable worksheet.</p><div class="plot-surface" id="plot-peaks" style="height:360px"></div><div class="channel-legend" id="legend-peaks" aria-label="Channel colors for peak temperatures"></div></div>
@@ -183,6 +183,7 @@ function renderMain(){
   if(v!==drawVersion)return;
   results.forEach((x,i)=>{if(x.status==='rejected'){const el=$('plot-'+['profile','spread','bands','peaks'][i]);if(el)el.textContent='Chart error: '+x.reason.message;}});
  });
+ window.BAMCOEnhance?.refresh?.();
 }
 function renderChannelLegends(chs){
  const markup='<div class="channel-legend-track">'+chs.map(ch=>
@@ -388,9 +389,30 @@ async function downloadExcel(){
   for(let i=0;i<4;i++){let c=charts.getCell('A'+row);c.value=names[i];c.font={name:'Times New Roman',bold:true,size:14,color:{argb:'FF14283F'}};
    const id=wb.addImage({base64:imgs[i],extension:'png'});charts.addImage(id,{tl:{col:0,row:row+1},ext:{width:1200,height:i===2?600:540}});row+=i===2?43:39;
   }
+  const evaluation=window.BAMCOEnhance?.evaluationForExport?.();
+  if(evaluation){
+    let erow=row+4;
+    const headerAt=erow+2;
+    charts.getCell(erow,1).value='ED Baking Window — Channel Evaluation';
+    charts.getCell(erow,1).font={name:'Times New Roman',size:16,bold:true,color:{argb:'FF14283F'}};
+    erow=headerAt;
+    for(const entry of [evaluation.headers,...evaluation.rows]){
+      for(let k=0;k<entry.length;k++){
+        const cell=charts.getCell(erow,k+1);const v=entry[k];cell.value=v===null?'N/A':v;
+        cell.font={name:'Times New Roman',size:11,bold:erow===headerAt,color:{argb:'FF20354B'}};
+        cell.fill={type:'pattern',pattern:'solid',fgColor:{argb:erow===headerAt?'FFE3F1E8':erow%2===0?'FFF4F9F7':'FFFFFFFF'}};
+        cell.alignment={vertical:'middle'};
+        if(typeof v==='number')cell.numFmt='0.000';
+      }
+      erow++;
+    }
+    charts.getColumn(1).width=42;
+    for(let col=2;col<=evaluation.headers.length;col++)charts.getColumn(col).width=22;
+  }
   const blob=new Blob([await wb.xlsx.writeBuffer()],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});saveBlob(blob,fileName(r)+'_report.xlsx');
  }catch(e){alert('Excel export failed: '+e.message);}finally{btn.disabled=false;}
 }
+window.BAMCO_CORE={getStage:()=>tab,getRecord:record,getFile:file,getState:current,chooseTab};
 function init(){document.querySelectorAll('[data-stage]').forEach(btn=>btn.onclick=()=>chooseTab(btn.dataset.stage));chooseTab(tab);}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
