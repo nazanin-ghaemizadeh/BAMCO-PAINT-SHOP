@@ -11,6 +11,40 @@
     {id:'sealer',name:'Sealer Oven',description:'Sealing and thermal treatment',symbol:'03'},
     {id:'bc',name:'Base Coat Oven',description:'Base coat temperature profiles',symbol:'04'}
   ];
+
+  // Distinct oven illustrations, drawn as transparent SVG vectors.
+  const OVEN_ART={
+    ed:'<path d="M13 57h70v17a8 8 0 0 1-8 8H21a8 8 0 0 1-8-8z" fill="currentColor" fill-opacity=".08"/>'
+      +'<path d="M13 57h70v17a8 8 0 0 1-8 8H21a8 8 0 0 1-8-8z"/>'
+      +'<path d="M20 66c6-4 11-4 17 0s11 4 17 0 11-4 17 0 10 4 13 1" class="oven-icon-soft"/>'
+      +'<path d="M29 51l6-13h27l6 13M25 53h48M37 51v-5h24v5"/>'
+      +'<path d="M54 10 39 28h12l-8 18 19-24H50z" fill="currentColor" fill-opacity=".17"/>'
+      +'<path d="M54 10 39 28h12l-8 18 19-24H50z"/>',
+    primer:'<path d="M12 28h29l9 8-9 8H22l-10-7z" fill="currentColor" fill-opacity=".12"/>'
+      +'<path d="M12 28h29l9 8-9 8H22l-10-7z"/>'
+      +'<path d="M26 44v24h13l5 10M35 44l-2 13h10"/>'
+      +'<path d="M14 28v-8h14v8"/>'
+      +'<path d="M74 19v58M83 19v58" class="oven-icon-soft"/>'
+      +'<circle cx="56" cy="30" r="2.5" fill="currentColor" stroke="none"/>'
+      +'<circle cx="64" cy="36" r="2.5" fill="currentColor" stroke="none"/>'
+      +'<circle cx="56" cy="43" r="2" fill="currentColor" stroke="none"/>'
+      +'<circle cx="66" cy="47" r="2" fill="currentColor" stroke="none"/>',
+    sealer:'<rect x="17" y="27" width="47" height="17" rx="5" fill="currentColor" fill-opacity=".12"/>'
+      +'<rect x="17" y="27" width="47" height="17" rx="5"/>'
+      +'<path d="M64 30h11l10 6-10 6H64M25 44v14h15l5 20H33l-10-18V44"/>'
+      +'<path d="M17 23v-4h11M13 36h-6M52 27V17h9"/>'
+      +'<path d="M15 81h67M13 69c12-8 20-8 31 0s21 8 37-1" class="oven-icon-soft"/>',
+    bc:'<path d="M19 29 47 16l29 13-29 14z" fill="currentColor" fill-opacity=".08"/>'
+      +'<path d="M19 29 47 16l29 13-29 14z"/>'
+      +'<path d="M19 43 47 56l29-13M19 55l28 13 29-13M19 67l28 13 29-13" class="oven-icon-soft"/>'
+      +'<path d="M19 43v24M76 43v24"/>'
+      +'<path d="M12 19c5 0 6-5 11-5M73 19c5 0 6-5 11-5"/>'
+      +'<circle cx="16" cy="16" r="2" fill="currentColor" stroke="none"/>'
+      +'<circle cx="78" cy="14" r="2" fill="currentColor" stroke="none"/>'
+  };
+  function ovenIcon(id){
+    return '<svg class="oven-icon oven-icon-'+(OVEN_ART[id]?id:'ed')+'" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linejoin="round" stroke-linecap="round">'+(OVEN_ART[id]||OVEN_ART.ed)+'</svg>';
+  }
   const sections = [
     {id:'upload',label:'Upload & File Management',icon:'⇧'},
     {id:'information',label:'Information Tables',icon:'▤'},
@@ -99,7 +133,7 @@
       +'<h1>Precision starts with every degree.</h1>'
       +'<p class="gate-lead">A smarter way to explore oven recordings, validate curing windows and make confident engineering decisions.</p>'
       +'<h2 class="gate-subtitle">01 <span>Select your oven</span></h2>'
-      +'<div class="oven-grid">'+ovens.map(o=>'<button class="oven-choice" data-oven="'+o.id+'"><span class="oven-number">'+o.symbol+'</span><span class="oven-graphic" aria-hidden="true"><span class="oven-waves">♨</span><span class="oven-track"></span></span><strong>'+o.name+'</strong><small>'+o.description+'</small><span class="oven-cta">Select oven →</span></button>').join('')+'</div>'
+      +'<div class="oven-grid">'+ovens.map(o=>'<button class="oven-choice" data-oven="'+o.id+'"><span class="oven-number">'+o.symbol+'</span><span class="oven-graphic" aria-hidden="true">'+ovenIcon(o.id)+'</span><strong>'+o.name+'</strong><small>'+o.description+'</small><span class="oven-cta">Select oven →</span></button>').join('')+'</div>'
       +'<p class="gate-footer">BAMCO • Temperature Profile Analysis & Process Evaluation</p></div>';
       applyGatewayLogo();
     } else {
@@ -124,7 +158,7 @@
   }
   function navHTML(){
     return '<aside class="workspace-nav" aria-label="Workspace navigation"><div class="nav-overline">ACTIVE WORKSPACE</div>'
-      +'<div class="nav-oven"><span class="nav-oven-symbol">♨</span><div><strong>'+esc(ovens.find(x=>x.id===core().getStage()).name)+'</strong><small>'+(core().getStage()==='ed'?'ED — 165°C / 15 min':'No validated window')+'</small></div></div>'
+      +'<div class="nav-oven"><span class="nav-oven-symbol">'+ovenIcon(core().getStage())+'</span><div><strong>'+esc(ovens.find(x=>x.id===core().getStage()).name)+'</strong><small>'+(core().getStage()==='ed'?'ED — 165°C / 15 min':'No validated window')+'</small></div></div>'
       +'<div class="nav-overline nav-section-label">WORKSPACE</div>'
       +sections.map(s=>'<button type="button" class="workspace-nav-link '+(activeSection===s.id?'is-active':'')+'" data-section="'+s.id+'"><span class="nav-icon">'+s.icon+'</span><span>'+s.label+'</span></button>').join('')
       +'<div class="nav-bottom"><button type="button" class="change-oven" data-change-oven>↻ &nbsp; Change oven / window</button><p>BAMCO • Paint Shop Analytics</p></div></aside>';
