@@ -1,7 +1,15 @@
 /* Single-page A4 landscape export of baking-analysis cards. No remote dependencies. */
 'use strict';
 (function(){
-  const PAGE_W=841.8898,PAGE_H=595.2756,SCALE=4;
+  const PAGE_W=841.8898,PAGE_H=595.2756,SCALE=4,CONTENT_TOP=86;
+  function details(options={}){
+    const ovenName=String(options.ovenName||'Oven');
+    const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Tehran',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(options.exportedAt||new Date());
+    const datePart=type=>parts.find(part=>part.type===type).value;
+    const exportDate=options.exportDate||datePart('year')+'-'+datePart('month')+'-'+datePart('day');
+    return {ovenName,exportDate};
+  }
+  const pdfString=value=>'<FEFF'+Array.from({length:String(value).length},(_,i)=>String(value).charCodeAt(i).toString(16).padStart(4,'0')).join('')+'>';
   const finite=Number.isFinite;
   const fmt=(v,n=1)=>finite(v)?v.toFixed(n):'N/A';
   const time=v=>{
@@ -12,7 +20,7 @@
   const timeMargin=v=>finite(v)?(v>0?'+':'')+time(v):'N/A';
   const tempMargin=v=>finite(v)?(v>0?'+':'')+fmt(v)+' °C':'N/A';
   function layout(count){
-    const availableW=PAGE_W-48,availableH=PAGE_H-92,gap=12;
+    const availableW=PAGE_W-48,availableH=PAGE_H-CONTENT_TOP-24,gap=12;
     let best=null;
     for(let columns=1;columns<=count;columns++){
       const rows=Math.ceil(count/columns);
@@ -21,7 +29,7 @@
     }
     return best;
   }
-  function draw(ctx,results){
+  function draw(ctx,results,info){
     ctx.fillStyle='#fff';ctx.fillRect(0,0,PAGE_W,PAGE_H);
     const font=(size,bold=false)=>{ctx.font=(bold?'bold ':'')+size+'px "Times New Roman", Times, serif';};
     const text=(s,x,y,size=10,color='#25443b',bold=false,align='left')=>{
@@ -52,9 +60,11 @@
       lines.forEach((line,i)=>text(line,x,y+i*size*1.2,size,color));
     };
     text('Summary',24,43,27,'#25443b',true);
+    text(info.ovenName,24,64,12,'#536d60',true);
+    text('Date: '+info.exportDate,PAGE_W-24,43,11,'#536d60',false,'right');
     const grid=layout(results.length),cw=240*grid.scale,ch=280*grid.scale;
     const gridHeight=grid.rows*ch+(grid.rows-1)*grid.gap;
-    const startY=68+(PAGE_H-92-gridHeight)/2;
+    const startY=CONTENT_TOP+(PAGE_H-CONTENT_TOP-24-gridHeight)/2;
     results.forEach((v,i)=>{
       const row=Math.floor(i/grid.columns),col=i%grid.columns;
       const rowCount=Math.min(grid.columns,results.length-row*grid.columns);
@@ -93,7 +103,7 @@
     });
   }
   // Wrap a high-resolution page image in a minimal, standards-compliant PDF.
-  function pdfBytes(jpeg,width,height){
+  function pdfBytes(jpeg,width,height,info){
     const encoder=new TextEncoder(),parts=[],offsets=[0];let length=0;
     const append=value=>{const bytes=typeof value==='string'?encoder.encode(value):value;parts.push(bytes);length+=bytes.length;};
     const object=(id,body)=>{offsets[id]=length;append(id+' 0 obj\n'+body+'\nendobj\n');};
@@ -106,27 +116,30 @@
     append(jpeg);append('\nendstream\nendobj\n');
     const commands='q\n'+PAGE_W+' 0 0 '+PAGE_H+' 0 0 cm\n/PageImage Do\nQ\n';
     object(5,'<< /Length '+encoder.encode(commands).length+' >>\nstream\n'+commands+'endstream');
-    object(6,'<< /Title (Summary) /Subject (Baking analysis cards) /Creator (BAMCO Paint Shop) >>');
+    object(6,'<< /Title '+pdfString('Summary - '+info.ovenName+' - '+info.exportDate)+' /Subject (Baking analysis cards) /Creator (BAMCO Paint Shop) >>');
     const xref=length;append('xref\n0 7\n0000000000 65535 f \n');
     for(let i=1;i<=6;i++)append(String(offsets[i]).padStart(10,'0')+' 00000 n \n');
     append('trailer\n<< /Size 7 /Root 1 0 R /Info 6 0 R >>\nstartxref\n'+xref+'\n%%EOF\n');
     const output=new Uint8Array(length);let position=0;
     parts.forEach(bytes=>{output.set(bytes,position);position+=bytes.length;});return output;
   }
-  async function build(results){
+  async function build(results,options={}){
     if(!Array.isArray(results)||!results.length)throw Error('No channel cards are available to export.');
+    const info=details(options);
     if(document.fonts?.ready)await document.fonts.ready;
     const canvas=document.createElement('canvas');
     canvas.width=Math.ceil(PAGE_W*SCALE);canvas.height=Math.ceil(PAGE_H*SCALE);
     const ctx=canvas.getContext('2d');if(!ctx)throw Error('The PDF canvas is unavailable.');
-    ctx.scale(canvas.width/PAGE_W,canvas.height/PAGE_H);draw(ctx,results);
+    ctx.scale(canvas.width/PAGE_W,canvas.height/PAGE_H);draw(ctx,results,info);
     const data=atob(canvas.toDataURL('image/jpeg',.96).split(',')[1]);
     const jpeg=Uint8Array.from(data,char=>char.charCodeAt(0));
-    return pdfBytes(jpeg,canvas.width,canvas.height);
+    return pdfBytes(jpeg,canvas.width,canvas.height,info);
   }
-  async function download(results){
-    const bytes=await build(results),url=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'}));
-    const a=document.createElement('a');a.href=url;a.download='Summary.pdf';document.body.appendChild(a);
+  async function download(results,options={}){
+    const info=details(options);
+    const bytes=await build(results,info),url=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'}));
+    const ovenFile=info.ovenName.replace(/[<>:"/\\|?*\x00-\x1F]/g,'_').trim().replace(/\s+/g,'_');
+    const a=document.createElement('a');a.href=url;a.download='Summary_'+ovenFile+'_'+info.exportDate+'.pdf';document.body.appendChild(a);
     a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
   }
   window.BAMCOSummaryPDF={build,download};
