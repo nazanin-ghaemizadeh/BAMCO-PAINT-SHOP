@@ -59,6 +59,21 @@ function excelTime(v,date1904){
    let m=s.match(/^(\d\d?):(\d\d):(\d\d)$/);if(m)return Date.UTC(2000,0,1,+m[1],+m[2],+m[3]);
  }return NaN;
 }
+// Preserve the calendar date written in the workbook, without timezone conversion.
+function excelRecordingDate(value,date1904){
+ const iso=(y,m,d)=>String(y).padStart(4,'0')+'-'+String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+ if(value instanceof Date)return Number.isFinite(value.getTime())?value.toISOString().slice(0,10):null;
+ if(num(value)&&value>10000&&value<100000){
+  const d=XLSX.SSF.parse_date_code(value,{date1904:!!date1904});
+  return d?iso(d.y,d.m,d.d):null;
+ }
+ if(typeof value!=='string')return null;
+ const text=value.trim(),match=text.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+ if(match)return iso(+match[1],+match[2],+match[3]);
+ if(/^\d{1,2}:\d{2}(?::\d{2})?$/.test(text))return null;
+ const parsed=new Date(excelTime(value,date1904));
+ return Number.isFinite(parsed.getTime())?iso(parsed.getFullYear(),parsed.getMonth()+1,parsed.getDate()):null;
+}
 // Limit visible worksheet numerics to three decimal places; never round the underlying Excel data.
 function worksheetNumber(value){
  if(!Number.isFinite(value))return String(value);
@@ -104,7 +119,7 @@ function parseSheet(ws,fn,sheet,date1904,buffer){
  let notes=[];
  active.forEach(ch=>{if(reads.some(r=>!num(r.values[ch])))notes.push(ch+' contains missing readings; shown as gaps.');});
  if(reads.some((r,i)=>i>0&&r.ts-reads[i-1].ts>step*1500+1))notes.push('Long sampling gaps are displayed as breaks in the curves.');
- return {fileName:fn,sheetName:sheet,ws,rows,head,reads,step,channels:active,allChannels:chs,labels,notes,project:meta('Name')||fn.replace(/\.[^.]+$/,''),device:meta('Type'),start:reads[0].ts,end:reads.at(-1).ts,duration:reads.at(-1).elapsed,merges:ws['!merges']||[],buffer};
+ return {fileName:fn,sheetName:sheet,ws,rows,head,reads,step,channels:active,allChannels:chs,labels,notes,project:meta('Name')||fn.replace(/\.[^.]+$/,''),device:meta('Type'),recordingDate:excelRecordingDate(rows[reads[0].row][time]?.v,date1904),start:reads[0].ts,end:reads.at(-1).ts,duration:reads.at(-1).elapsed,merges:ws['!merges']||[],buffer};
 }
 async function readFile(f){
  if(!/\.(xls|xlsx)$/i.test(f.name))throw Error('Only .xls and .xlsx are supported.');

@@ -299,7 +299,7 @@
     try{
       if(!window.BAMCOSummaryPDF)throw Error('PDF export is unavailable. Reload the page and try again.');
       const ovenName=ovens.find(oven=>oven.id===core().getStage())?.name||core().getStage();
-      await window.BAMCOSummaryPDF.download(results,{ovenName});
+      await window.BAMCOSummaryPDF.download(results,{ovenName,recordingDate:r.recordingDate});
     }catch(error){alert('Summary PDF export failed: '+error.message);}
     finally{button.disabled=false;button.removeAttribute('aria-busy');button.textContent=label;}
   }
