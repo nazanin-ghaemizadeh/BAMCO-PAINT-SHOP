@@ -386,9 +386,21 @@ function renderCompactSummary(r,sec,rowIndexes,hidden,section){
 // Raw worksheet source and exported Excel remain unchanged.
 function renderReadings(r,sec,rowIndexes,hidden,section){
  const headers=r.rows[r.head]||[];
- const selected=headers.map((cell,j)=>({j,label:display(cell).trim()}))
+ const named=headers.map((cell,j)=>({j,label:display(cell).trim()}))
   .filter(x=>x.label&&!hidden.has(r.head+','+x.j));
- if(!selected.some(x=>/^Ch\d+\b/i.test(x.label)))return false;
+ const firstSensor=named.find(x=>/^Ch\d+\b/i.test(x.label))?.j;
+ if(firstSensor===undefined)return false;
+ const seenSensors=new Set();
+ const selected=named.filter(x=>{
+  const ch=x.label.match(/^Ch(\d+)\b/i);
+  if(ch){
+   if(seenSensors.has(ch[1]))return false;
+   seenSensors.add(ch[1]);return true;
+  }
+  // Source files may contain a second, auxiliary column per channel.
+  // Keep pre-sensor identifiers and the optional trailing comment column.
+  return x.j<firstSensor||/^(?:Comment|Remarks?|Notes?)$/i.test(x.label);
+ });
  const grid=document.createElement('div');grid.className='source-grid source-readings';
  const table=document.createElement('table');table.className='table source-readings-table';
  const cols=document.createElement('colgroup');
