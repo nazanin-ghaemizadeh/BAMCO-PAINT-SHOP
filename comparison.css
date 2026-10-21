@@ -414,37 +414,53 @@ body[data-section="comparison"] .bamco-views {width:100%}
   object-fit: contain;
 }
 
-/* Shared empty state / compact cross-file hover comparison (Oct 2026). */
+/* Shared compact comparison tooltips: two recording rows, flowing into columns. */
 .compare-plot {position:relative;}
 .bamco-compare-tooltip {
-  position:absolute;z-index:25;pointer-events:none;
-  min-width:185px;max-width:min(320px,calc(100% - 16px));
-  max-height:80%;overflow:hidden;padding:10px;
+  position:absolute;z-index:25;pointer-events:auto;
+  width:max-content;min-width:190px;max-width:calc(100% - 16px);
+  max-height:min(82%,450px);overflow:hidden;padding:9px;
   background:#fff;border:1px solid #a9c8bc;border-radius:12px;
   box-shadow:0 12px 32px rgba(16,58,51,.2);
-  color:#28544b;font:12px/1.45 "Times New Roman",Times,serif;
-  text-align:left;
+  color:#28544b;font:12px/1.4 "Times New Roman",Times,serif;text-align:left;
 }
 .bamco-compare-tooltip[hidden]{display:none!important}
 .tooltip-value {
   font-size:17px;font-weight:bold;color:#1d5b4c;
-  text-align:center;padding:3px 7px 9px;border-bottom:1px solid #dfece6;
+  text-align:center;padding:3px 7px 8px;margin-bottom:4px;border-bottom:1px solid #dfece6;
   font-variant-numeric:tabular-nums;
 }
-.tooltip-file{margin-top:8px;padding:7px 8px;border-radius:8px;background:#f3faf6}
-.tooltip-file strong {display:block;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#204f46;margin-bottom:5px}
-.tooltip-line {display:flex;justify-content:space-between;align-items:center;gap:12px;padding:3px 0;white-space:nowrap;font-variant-numeric:tabular-nums}
-.tooltip-channel {display:inline-flex;gap:5px;align-items:center;font-weight:bold}
-.tooltip-channel::before {content:"";width:7px;height:7px;flex:0 0 7px;border-radius:50%;background:var(--tooltip-dot,#267d72)}
-.comparison-file-groups {display:flex;flex-direction:column;gap:13px;padding:17px;border-top:1px solid #edf3f0}
-.comparison-file-group {min-width:0;padding:14px;border:1px solid #dcece3;border-radius:13px;background:#fafdfb}
-.comparison-file-name {display:flex;align-items:center;gap:10px;margin:0 0 12px;color:#235a4b;font-size:15px;font-weight:bold;overflow-wrap:anywhere}
-.comparison-file-name .compare-file-style {flex:0 0 36px}
-.comparison-file-cards {display:flex;gap:9px;overflow-x:auto;scrollbar-width:thin;padding:1px 1px 7px}
-.comparison-file-cards .comparison-point {flex:1 0 135px;min-width:135px}
-.comparison-file-cards .comparison-point small {display:block;margin-top:11px}
+.tooltip-groups {
+  display:grid;
+  grid-template-rows:repeat(2,max-content);
+  grid-auto-flow:column;
+  grid-auto-columns:185px;
+  align-items:start;
+  gap:7px;
+  width:max-content;
+  max-width:100%;
+  max-height:calc(min(82vh,430px) - 38px);
+  overflow-x:auto;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  scrollbar-width:thin;
+  padding-bottom:4px;
+}
+.tooltip-file{min-width:0;margin:0;padding:7px 8px;border-radius:8px;background:#f3faf6}
+.tooltip-file strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#204f46;margin-bottom:5px}
+.tooltip-line{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:3px 0;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tooltip-channel{display:inline-flex;gap:5px;align-items:center;font-weight:bold}
+.tooltip-swatch{width:22px;height:17px;flex:0 0 22px;display:inline-block;overflow:visible}
+.comparison-file-groups{display:flex;flex-direction:column;gap:13px;padding:17px;border-top:1px solid #edf3f0}
+.comparison-file-group{min-width:0;padding:14px;border:1px solid #dcece3;border-radius:13px;background:#fafdfb}
+.comparison-file-name{display:flex;align-items:center;gap:10px;margin:0 0 12px;color:#235a4b;font-size:15px;font-weight:bold;overflow-wrap:anywhere}
+.comparison-file-name .compare-file-style{flex:0 0 36px}
+.comparison-file-cards{display:flex;gap:9px;overflow-x:auto;scrollbar-width:thin;padding:1px 1px 7px}
+.comparison-file-cards .comparison-point{flex:1 0 135px;min-width:135px}
+.comparison-file-cards .comparison-point small{display:block;margin-top:11px}
 @media(max-width:600px){
   .comparison-file-groups{padding:9px;gap:9px}
   .comparison-file-group{padding:11px}
   .bamco-compare-tooltip{min-width:160px;font-size:11px}
+  .tooltip-groups{grid-auto-columns:160px}
 }
