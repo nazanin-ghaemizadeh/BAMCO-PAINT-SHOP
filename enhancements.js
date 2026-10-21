@@ -142,7 +142,7 @@
       +(choice==='ed'
         ?'<div class="window-selection"><div class="window-description"><span class="approved-flag">CONFIGURED WINDOW</span><h2>ED — 165°C / 15 min</h2><p>Five-point curing polygon. Evaluation compares each probe’s interpolated time above 165°C with its peak temperature.</p><div class="window-spec"><span>Min duration <b>15 min</b></span><span>Max duration <b>35.5 min</b></span><span>Peak range <b>165–200°C</b></span></div><button class="primary-action" data-enter>Start ED analysis <span aria-hidden="true">→</span></button></div>'+preview()+'</div>'
         :'<div class="window-selection no-window"><div class="window-description"><span class="pending-flag">WINDOW NOT CONFIGURED</span><h2>Temperature data exploration</h2><p>No validated baking-window coordinates have been supplied for '+oven.name+'. Uploads, tables and charts remain available. The evaluation panel will clearly show “Not configured” rather than an unverified PASS or FAIL.</p><button class="primary-action" data-enter>Continue without curing rules →</button></div></div>')
-      +'<p class="gate-footer">Your uploaded workbooks are processed locally in your browser.</p></div>';
+      +'</div>';
     }
     applyGatewayLogo();
   }
