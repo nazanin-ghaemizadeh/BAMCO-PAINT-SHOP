@@ -2,30 +2,33 @@
 'use strict';
 (function(){
   const getCore=()=>window.BAMCO_CORE;
-  const C=['#0c7588','#c97e20','#4969c6','#c34f74','#8b5cb5','#298767','#9a6b32','#3f7c6c','#993f62','#54729e','#947630','#4f7dba'];
-  const SYMBOLS=['circle','square','diamond','cross','triangle-up','star','triangle-down'];
+  const CHANNEL_COLORS=['#087d8c','#e19a24','#4364c5','#ce4e68','#865ac2','#0e946e','#bb627f','#7d8737'];
+  const FILE_DASHES=['solid','dash','dot','dashdot','longdash','longdashdot'];
+  const FILE_DASH_PATTERNS=['none','10 6','2 6','10 4 2 4','16 6','16 4 4 4'];
+  const FILE_SYMBOLS=['circle','square','diamond','cross','triangle-up','star','triangle-down'];
   const MODES=[
     {id:'profile',label:'Temperature profiles — overlay curves'},
-    {id:'spread',label:'Temperature spread — compare files'},
-    {id:'peaks',label:'Peak temperatures — grouped columns'},
-    {id:'duration',label:'Time above threshold — grouped columns'}
+    {id:'spread',label:'Temperature spread — compare files'}
   ];
-  const state={stage:null,ids:[],channels:[],mode:'profile',threshold:165,initialized:false,renderVersion:0};
+  const state={stage:null,ids:[],channels:[],mode:'profile',initialized:false,renderVersion:0};
   const esc=v=>String(v??'').replace(/[&<>"']/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[s]));
   const fmt=(x,p=2)=>Number.isFinite(x)?Number(x).toFixed(p):'N/A';
-  const fileColor=i=>C[i%C.length];
+  const channelColor=ch=>{const n=parseInt(String(ch).replace(/\D/g,''),10);return CHANNEL_COLORS[((Number.isFinite(n)?n:1)-1+CHANNEL_COLORS.length)%CHANNEL_COLORS.length];};
+  const fileDash=i=>FILE_DASHES[i%FILE_DASHES.length];
+  const fileSymbol=i=>FILE_SYMBOLS[i%FILE_SYMBOLS.length];
+  const fileStyleSvg=i=>'<svg class="compare-file-style" viewBox="0 0 36 12" aria-hidden="true"><path d="M2 6 H34" fill="none" stroke="#307460" stroke-width="2.5" stroke-dasharray="'+FILE_DASH_PATTERNS[i%FILE_DASH_PATTERNS.length]+'"/></svg>';
   function records(){
     const core=getCore();
     if(!core)return [];
     const x=core.getState();
     const current=core.getRecord();
     return x.files.filter(f=>f.records?.length)
-      .map((f,i)=>({id:f.id,name:f.name,color:fileColor(i),
+      .map((f,i)=>({id:f.id,name:f.name,fileIndex:i,
           r:f.records.find(q=>q.sheetName===current?.sheetName)||f.records[0]}));
   }
   function sync(rec){
     const stage=getCore()?.getStage();
-    if(stage!==state.stage){state.stage=stage;state.initialized=false;state.ids=[];state.channels=[];state.threshold=165;state.mode='profile';}
+    if(stage!==state.stage){state.stage=stage;state.initialized=false;state.ids=[];state.channels=[];state.mode='profile';}
     const allIds=rec.map(x=>x.id);
     if(!state.initialized){
       state.ids=allIds.slice(0,Math.min(allIds.length,3));state.initialized=true;
@@ -39,23 +42,6 @@
   }
   function active(rec){return rec.filter(x=>state.ids.includes(x.id));}
   function channelList(rec){return [...new Set(rec.flatMap(x=>x.r.channels))].sort((a,b)=>Number(a.slice(2))-Number(b.slice(2)));}
-  function duration(r,ch,threshold){
-    let sum=0,accepted=0,missing=0,wrongTime=false;
-    for(let i=1;i<r.reads.length;i++){
-      const a=r.reads[i-1],b=r.reads[i],A=a.values[ch],B=b.values[ch],delta=(b.ts-a.ts)/60000;
-      if(!Number.isFinite(A)||!Number.isFinite(B)){missing++;continue;}
-      if(delta<=0||delta>r.step/60*1.5+0.00001){wrongTime=true;continue;}
-      accepted++;
-      if(A>=threshold&&B>=threshold)sum+=delta;
-      else if(A<threshold&&B>=threshold&&B!==A)sum+=delta*(B-threshold)/(B-A);
-      else if(A>=threshold&&B<threshold&&A!==B)sum+=delta*(A-threshold)/(A-B);
-    }
-    return {value:sum,valid:accepted>0&&!wrongTime&&!missing};
-  }
-  function rankStatus(D,T){
-    if(!Number.isFinite(D)||!Number.isFinite(T))return 'INVALID DATA';
-    return D>=15-1e-9&&D<=35.5+1e-9&&T>=165-1e-9&&T<=200+1e-9&&28*D+13.5*T<=3316+1e-8?'PASS':'FAIL';
-  }
   function header(files){
     return '<div class="compare-hero"><div class="compare-kicker"><span class="compare-live"></span> MULTI-FILE ENGINEERING WORKSPACE</div>'
      +'<h2>Comparison Studio</h2><p>Choose exactly which recordings and channels to compare. Switch chart types instantly, or review ED curing compliance on the same reference window.</p>'
@@ -78,10 +64,6 @@
           if(!node.checked)state.channels=state.channels.filter(x=>x!==ch);
           render();
         }else if(node.id==='cmp-mode'){state.mode=node.value;render();}
-        else if(node.id==='cmp-threshold'){
-          const n=Number(node.value);
-          if(Number.isFinite(n)&&n>=0&&n<=350)state.threshold=n;
-          render();
         }
       });
       main.addEventListener('click',e=>{
@@ -98,13 +80,12 @@
   function controls(files,selected,channels){
     return '<div class="compare-controls">'
       +'<div class="compare-control-header"><h3>01 · Choose recordings</h3><div><button type="button" data-cmp-action="all">Select all</button><button type="button" data-cmp-action="clear">Clear</button></div></div>'
-      +'<div class="compare-file-list">'+files.map(f=>'<label class="compare-file-choice"><input type="checkbox" data-cmp-file="'+esc(f.id)+'" '+(state.ids.includes(f.id)?'checked':'')+'/><span class="compare-color-strip" style="background:'+f.color+'"></span><span class="compare-filename" title="'+esc(f.name)+'">'+esc(f.name)+'</span><span class="compare-source-sub">'+esc(f.r.sheetName)+'</span></label>').join('')+'</div>'
+      +'<div class="compare-file-list">'+files.map(f=>'<label class="compare-file-choice"><input type="checkbox" data-cmp-file="'+esc(f.id)+'" '+(state.ids.includes(f.id)?'checked':'')+'/>'+fileStyleSvg(f.fileIndex)+'<span class="compare-filename" title="'+esc(f.name)+'">'+esc(f.name)+'</span></label>').join('')+'</div>'
       +'<div class="compare-small-title">02 · Channels</div>'
       +'<div class="compare-channel-list">'+channels.map(ch=>'<label class="compare-channel-choice"><input data-cmp-channel="'+ch+'" type="checkbox" '+(state.channels.includes(ch)?'checked':'')+'/><span>'+ch+'</span></label>').join('')+'</div>'
       +'<div class="compare-small-title">03 · Chart type</div>'
       +'<select class="compare-select" id="cmp-mode" aria-label="Chart to compare">'+MODES.map(m=>'<option value="'+m.id+'" '+(state.mode===m.id?'selected':'')+'>'+m.label+'</option>').join('')+'</select>'
-      +(state.mode==='duration'?'<label class="compare-threshold">Threshold (°C)<input type="number" id="cmp-threshold" min="0" max="350" step="1" value="'+state.threshold+'"/></label>':'')
-      +'<div class="compare-guidance"><strong>How it works</strong><p>Each file receives a different color. Select one or more channels; their line styles or symbols distinguish them within each file. No simulated measurements are introduced.</p></div></div>';
+      +'<div class="compare-guidance"><strong>How it works</strong><p>Color identifies the channel (Ch1, Ch2, etc.). Line style identifies the uploaded file. The spread chart is an aggregate of your selected channels, differentiated by file line style.</p></div></div>';
   }
   function chartLayout(title,yTitle,bar=false){
     return {title:{text:title,font:{family:'Times New Roman',size:17,color:'#214d4c'},x:0.02},
@@ -137,8 +118,8 @@
         groups.forEach((group,j)=>data.push({type:'scatter',mode:group.length===1?'markers':'lines',
           x:group.map(p=>p.elapsed),y:group.map(p=>p.values[ch]),
           name:file.name+' · '+ch,legendgroup:file.id+ch,showlegend:j===0,
-          line:{color:file.color,width:2.7,dash:['solid','dash','dot','dashdot'][ci%4]},
-          marker:{size:6,color:file.color},
+          line:{color:channelColor(ch),width:2.5,dash:fileDash(file.fileIndex)},
+          marker:{size:5,color:channelColor(ch)},
           hovertemplate:esc(file.name)+' · '+ch+'<br>%{x:.2f} min<br>%{y:.2f} °C<extra></extra>'}));
       }));
     }else if(mode==='spread'){
@@ -150,24 +131,13 @@
           const gap=i>0&&read.ts-file.r.reads[i-1].ts>file.r.step*1500+1;
           y.push(!gap&&channels.length>=2&&vals.every(Number.isFinite)?Math.max(...vals)-Math.min(...vals):null);
         }
-        data.push({type:'scatter',mode:'lines+markers',x,y,name:file.name,
-          line:{color:file.color,width:3},marker:{color:file.color,size:4},connectgaps:false,
+        data.push({type:'scatter',mode:'lines',x,y,name:file.name,
+          line:{color:'#246d6d',width:2.8,dash:fileDash(file.fileIndex)},connectgaps:false,
           hovertemplate:esc(file.name)+'<br>%{x:.2f} min<br>Spread: %{y:.2f} °C<extra></extra>'});
-      });
-    }else{
-      channels.forEach((ch,ci)=>{
-        const ys=items.map(f=>{
-          if(!f.r.channels.includes(ch))return null;
-          if(mode==='peaks')return Math.max(...f.r.reads.map(q=>q.values[ch]).filter(Number.isFinite));
-          const d=duration(f.r,ch,state.threshold);return d.valid?d.value:null;
-        });
-        data.push({type:'bar',name:ch,x:items.map(f=>f.name),y:ys,
-          marker:{color:['#0c7588','#c97e20','#4969c6','#c34f74','#8b5cb5','#298767'][ci%6]},
-          hovertemplate:'%{x}<br>'+ch+': %{y:.3f} '+(mode==='peaks'?'°C':'min')+'<extra></extra>'});
       });
     }
     const title=MODES.find(x=>x.id===mode)?.label||'Comparison';
-    const layout=chartLayout(title,mode==='duration'?'Duration (min)':mode==='spread'?'Temperature spread (°C)':'Temperature (°C)',mode==='peaks'||mode==='duration');
+    const layout=chartLayout(title,mode==='spread'?'Temperature spread (°C)':'Temperature (°C)');
     if(mode==='spread'&&channels.length<2)element.innerHTML='<div class="compare-empty">Select at least two channels to compare temperature spread.</div>';
     else if(!data.length)element.innerHTML='<div class="compare-empty">No valid numeric data exists for the selected channel(s).</div>';
     else Plotly.newPlot(element,data,layout,{responsive:true,displaylogo:false,modeBarButtonsToRemove:['lasso2d','select2d']}).catch(e=>element.textContent='Comparison chart error: '+e.message);
@@ -177,7 +147,7 @@
     items.forEach((f,fi)=>channels.forEach((ch,ci)=>{
       if(!f.r.channels.includes(ch))return;
       const result=window.BAMCOEnhance.evaluate(f.r).find(x=>x.ch===ch);
-      if(result)all.push({...result,fileId:f.id,fileName:f.name,fileColor:f.color,chIndex:ci});
+      if(result)all.push({...result,fileId:f.id,fileName:f.name,fileIndex:f.fileIndex,chIndex:ci});
     }));
     return all;
   }
@@ -198,7 +168,7 @@
       records.push({type:'scatter',mode:'markers',name:f.name,showlegend:true,
         x:arr.map(v=>v.D),y:arr.map(v=>v.T),
         customdata:arr.map(v=>[v.ch,v.status,f.name]),
-        marker:{size:14,color:f.color,line:{width:2,color:'#fff'},symbol:arr.map(v=>SYMBOLS[channels.indexOf(v.ch)%SYMBOLS.length])},
+        marker:{size:7,color:arr.map(v=>channelColor(v.ch)),line:{width:0.8,color:'#fff'},symbol:fileSymbol(f.fileIndex)},
         hovertemplate:'%{customdata[2]} · %{customdata[0]}<br>Time ≥165°C: %{x:.3f} min<br>Peak: %{y:.1f}°C<br>Status: %{customdata[1]}<extra></extra>'});
     });
     const l=chartLayout('ED compliance · selected files','Peak temperature (°C)');
@@ -207,8 +177,8 @@
     l.legend={orientation:'h',y:-.28,x:0,font:{size:11}};
     Plotly.newPlot(element,records,l,{responsive:true,displaylogo:false,modeBarButtonsToRemove:['lasso2d','select2d']}).catch(e=>element.textContent=e.message);
     legend.innerHTML='<div class="comparison-point-grid">'+data.map(v=>
-      '<div class="comparison-point" style="--point-color:'+v.fileColor+'">'
-      +'<div class="comparison-point-head"><span class="point-symbol">'+SYMBOLS[channels.indexOf(v.ch)%SYMBOLS.length].replace('triangle-up','▲').replace('triangle-down','▼').replace('circle','●').replace('square','■').replace('diamond','◆').replace('cross','✚').replace('star','★')+'</span><strong>'+esc(v.ch)+'</strong><span class="compare-status '+(v.status==='PASS'?'ok':'issue')+'">'+esc(v.status)+'</span></div>'
+      '<div class="comparison-point" style="--point-color:'+channelColor(v.ch)+'">'
+      +'<div class="comparison-point-head"><span class="point-symbol">'+fileSymbol(v.fileIndex).replace('triangle-up','▲').replace('triangle-down','▼').replace('circle','●').replace('square','■').replace('diamond','◆').replace('cross','✚').replace('star','★')+'</span><strong>'+esc(v.ch)+'</strong><span class="compare-status '+(v.status==='PASS'?'ok':'issue')+'">'+esc(v.status)+'</span></div>'
       +'<p title="'+esc(v.fileName)+'">'+esc(v.fileName)+'</p>'
       +'<small>'+fmt(v.D,3)+' min · '+fmt(v.T,1)+'°C</small>'
       +'</div>').join('')+'</div>';
@@ -237,7 +207,7 @@
     el.innerHTML=header(files)
       +(files.length?'<div class="compare-layout">'+controls(files,selected,chs)
         +'<div class="compare-results"><div class="compare-panel"><div class="compare-panel-title"><div><h3>Chart comparison</h3><p>Overlay or compare metrics for precisely the chosen files and channels.</p></div><button type="button" class="compare-download" data-cmp-action="download-chart">↓ Download PNG</button></div><div id="cmp-chart" class="compare-plot"></div></div>'
-        +'<div class="compare-panel"><div class="compare-panel-title"><div><h3>ED baking-window comparison</h3><p>Distinct file colors and channel symbols. Markers use true coordinates; individual labels appear below.</p></div><div class="compare-download-group"><button type="button" class="compare-download" data-cmp-action="download-window">↓ Window PNG</button><button type="button" class="compare-download" data-cmp-action="download-csv">↓ CSV report</button></div></div><div id="cmp-window" class="compare-plot"></div><div id="cmp-window-matrix"></div></div>'
+        +'<div class="compare-panel"><div class="compare-panel-title"><div><h3>ED baking-window comparison</h3><p>Marker color identifies the channel; marker shape identifies the file. Values use their exact coordinates.</p></div><div class="compare-download-group"><button type="button" class="compare-download" data-cmp-action="download-window">↓ Window PNG</button><button type="button" class="compare-download" data-cmp-action="download-csv">↓ CSV report</button></div></div><div id="cmp-window" class="compare-plot"></div><div id="cmp-window-matrix"></div></div>'
         +'</div></div>'
         :'<div class="compare-empty-wrap"><h3>No recordings uploaded yet</h3><p>Go to Upload & File Management, upload two or more Excel recordings for this oven, then return to Comparison Studio.</p><button type="button" data-section="upload" class="primary-action">Go to uploads →</button></div>');
     if(!files.length)return;
