@@ -188,12 +188,13 @@
     if(s==='comparison')window.BAMCOCompare?.render?.();
   }
   function elapsedDuration(reads,ch,step,threshold){
-    const valid=reads.every(x=>Number.isFinite(x.values[ch]));
-    if(!valid)return {duration:null,error:'Missing/non-numeric readings'};
+    // Evaluate the available numeric samples; missing readings are not a baking rule.
+    const samples=reads.filter(x=>Number.isFinite(x.ts)&&Number.isFinite(x.values[ch]));
+    if(samples.length<2)return {duration:null,error:'Insufficient numeric samples'};
     let duration=0;
-    for(let i=1;i<reads.length;i++){
-      const a=reads[i-1],b=reads[i],dt=(b.ts-a.ts)/60000;
-      if(!(dt>0)||dt>step/60*1.5+0.0001)return {duration:null,error:'Irregular or missing timestamps'};
+    for(let i=1;i<samples.length;i++){
+      const a=samples[i-1],b=samples[i],dt=(b.ts-a.ts)/60000;
+      if(!(dt>0))continue;
       const A=a.values[ch],B=b.values[ch];
       if(A>=threshold&&B>=threshold)duration+=dt;
       else if(A<threshold&&B>=threshold&&A!==B)duration+=dt*(B-threshold)/(B-A);
@@ -211,7 +212,7 @@
       const D=durationResult.duration;
       let violations=[],status='PASS';
       if(!Number.isFinite(D)||!Number.isFinite(T)||r.reads.length<2){
-        status='INVALID DATA';violations=['R06 — '+(durationResult.error||'Incomplete temperature readings')];
+        status='NO DATA';
       }else{
         for(const [id,description,formula,violated] of config.rules){if(violated(D,T))violations.push(id+' — '+description);}
         if(violations.length)status='FAIL';
@@ -267,8 +268,8 @@
       return '<div class="no-analysis"><h2>Ready to evaluate '+esc(config.name)+'.</h2>'+preview(stage)+'<button type="button" class="primary-action" data-section="upload">Upload a workbook →</button></div>';
     }
     const results=evaluate(r,stage);
-    const pass=results.filter(v=>v.status==='PASS').length,fail=results.filter(v=>v.status==='FAIL').length,invalid=results.filter(v=>v.status==='INVALID DATA').length;
-    const overall=invalid?'INVALID DATA':fail?'FAIL':results.length?'PASS':'NO DATA';
+    const pass=results.filter(v=>v.status==='PASS').length,fail=results.filter(v=>v.status==='FAIL').length,invalid=results.filter(v=>v.status==='NO DATA').length;
+    const overall=invalid?'NO DATA':fail?'FAIL':results.length?'PASS':'NO DATA';
     let cards=results.map(v=>'<article class="probe-card '+(v.status==='PASS'?'good':'bad')+'"><div class="probe-head"><h3>'+esc(v.ch)+'</h3>'+tag(v.status)+'</div>'
       +'<p class="probe-location">'+esc(v.label)+'</p>'
       +'<div class="probe-numbers"><span><small>Time ≥'+config.threshold+'°C</small><b>'+mmss(v.D)+' <em>mm:ss</em></b></span><span><small>Peak temperature</small><b>'+fmt(v.T,1)+' <em>°C</em></b></span></div>'
@@ -276,15 +277,15 @@
       +'<span>Max time margin <b>'+signedTime(v.mdMax)+'</b></span>'
       +'<span>Min temp margin <b>'+signed(v.mtMin,1,'°C')+'</b></span>'
       +'<span>Max temp margin <b>'+signed(v.mtMax,1,'°C')+'</b></span></div>'
-      +'<div class="probe-reason">'+(v.violations.length?esc(v.violations.join('; ')):'All baking window rules satisfied')+'</div></article>').join('');
+      +'<div class="probe-reason">'+(v.violations.length?esc(v.violations.join('; ')):v.status==='NO DATA'?'No numeric samples to evaluate':'All baking window rules satisfied')+'</div></article>').join('');
     return '<div class="analysis-titlebar"><div><h2>Baking Window Evaluation</h2></div><div class="chart-actions"><button type="button" class="btn" data-download-summary>Summary PDF</button>'+tag(overall)+'</div></div>'
-      +'<div class="eval-stats"><div><small>Total probes</small><strong>'+results.length+'</strong></div><div><small>Passed</small><strong class="text-green">'+pass+'</strong></div><div><small>Failed</small><strong class="text-red">'+fail+'</strong></div><div><small>Invalid</small><strong>'+invalid+'</strong></div></div>'
+      +'<div class="eval-stats"><div><small>Total probes</small><strong>'+results.length+'</strong></div><div><small>Passed</small><strong class="text-green">'+pass+'</strong></div><div><small>Failed</small><strong class="text-red">'+fail+'</strong></div><div><small>No data</small><strong>'+invalid+'</strong></div></div>'
       +'<div class="window-analysis-plot"><h3>'+esc(config.name)+' — Measured Channel Points</h3>'+svgChart(results.map(v=>({ch:v.ch,d:v.D,t:v.T,status:v.status})),false,config)
       +'</div>'
       +'<div class="analysis-table-title"><h3>Channel Comparison Matrix</h3></div>'
       +summaryRows(results,config)
       +'<div class="probe-grid">'+cards+'</div>'
-      +'<div class="rule-explanation"><strong>Rule logic</strong>'+config.rules.map(([id,description,formula])=>'<span>'+esc(id+': '+formula)+'</span>').join('')+'<span>R06: Invalid or missing data</span></div>';
+      +'<div class="rule-explanation"><strong>Rule logic</strong>'+config.rules.map(([id,description,formula])=>'<span>'+esc(id+': '+formula)+'</span>').join('')+'</div>';
 
   }
   // Use the date in the uploaded filename shown in Upload & Files.

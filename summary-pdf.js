@@ -69,7 +69,7 @@
       const rowCount=Math.min(grid.columns,results.length-row*grid.columns);
       const left=(PAGE_W-(rowCount*cw+(rowCount-1)*grid.gap))/2;
       ctx.save();ctx.translate(left+col*(cw+grid.gap),startY+row*(ch+grid.gap));ctx.scale(grid.scale,grid.scale);
-      const good=v.status==='PASS',invalid=v.status==='INVALID DATA';
+      const good=v.status==='PASS',invalid=v.status==='NO DATA';
       const accent=good?'#257557':invalid?'#946d2e':'#c43945';
       const pale=good?'#edf8f1':invalid?'#fff7e8':'#fff0f2';
       box(0,0,240,280,12,'#fff',good?'#bbdfca':invalid?'#ebd5aa':'#efbdc3');
@@ -97,7 +97,7 @@
         ctx.strokeStyle='#e5ede7';ctx.lineWidth=.5;ctx.beginPath();ctx.moveTo(14,y+8);ctx.lineTo(226,y+8);ctx.stroke();
       });
       box(14,223,212,43,7,pale);
-      wrapped(v.violations?.length?v.violations.join('; '):'All baking window rules satisfied',23,237,194,28,9,accent);
+      wrapped(v.violations?.length?v.violations.join('; '):v.status==='NO DATA'?'No numeric samples to evaluate':'All baking window rules satisfied',23,237,194,28,9,accent);
       ctx.restore();
     });
   }

@@ -399,3 +399,33 @@ body {font-size:16px;}
 .comparison-point p,.comparison-point small {font-size:14px;}
 .compare-empty,.compare-empty-wrap {font-size:16px;}
 .eval-matrix .matrix-group th {font-size:13px;}
+
+/* Make the company identity prominent and give the welcome cards useful scale. */
+.app-header .brand,#bamco-gateway .gate-header-slot .app-header .brand {
+ font-size:clamp(22px,2.2vw,30px);font-weight:700;letter-spacing:.3px;line-height:1.15;color:#f0f8f5;
+}
+.app-header h1,#bamco-gateway .gate-header-slot .app-header h1 {
+ font-size:22px;font-weight:500;letter-spacing:0;margin:6px 0 0;line-height:1.15;
+}
+@media(min-width:901px) and (min-height:751px) {
+ #bamco-gateway:has(.daily-entry) .gate-container {align-content:start;}
+ #bamco-gateway:has(.daily-entry) .gate-intro {margin:clamp(32px,5dvh,52px) 0;}
+ #bamco-gateway:has(.daily-entry) .oven-grid .oven-choice {
+  height:clamp(280px,36dvh,370px);padding:24px;
+ }
+ #bamco-gateway:has(.daily-entry) .oven-grid .oven-graphic {
+  width:104px;height:104px;flex-basis:104px;margin-bottom:20px;border-radius:24px;
+ }
+ #bamco-gateway:has(.daily-entry) .oven-grid .oven-choice strong {font-size:30px;margin-bottom:10px;}
+ #bamco-gateway:has(.daily-entry) .oven-grid .oven-choice small {font-size:18px;line-height:1.4;}
+ #bamco-gateway:has(.daily-entry) .oven-grid .oven-cta {font-size:17px;padding-top:18px;}
+ #bamco-gateway .daily-entry {margin-top:18px;padding:20px 24px;}
+}
+@media(min-width:901px) and (min-height:1000px) {
+ #bamco-gateway:has(.daily-entry) .gate-intro {margin:clamp(48px,6dvh,80px) 0;}
+ #bamco-gateway:has(.daily-entry) .oven-grid .oven-graphic {width:120px;height:120px;flex-basis:120px;}
+}
+@media(max-width:600px) {
+ .app-header .brand,#bamco-gateway .gate-header-slot .app-header .brand {font-size:21px;}
+ .app-header h1,#bamco-gateway .gate-header-slot .app-header h1 {font-size:18px;}
+}
