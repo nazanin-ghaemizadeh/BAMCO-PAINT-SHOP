@@ -130,7 +130,7 @@
         const marker=tooltipSwatch(m.fileIndex||0,channelColor(label),kind);
         g.rows.set(label,'<div class="tooltip-line"><span class="tooltip-channel">'+marker+esc(label)+'</span><span>'+value+'</span></div>');
       }
-      const heading=kind==='window'?mmss(pts[0].x):fmt(pts[0].y,2)+'°C';
+      const heading=mmss(pts[0].x);
       tip.innerHTML='<div class="tooltip-value">'+esc(heading)+'</div><div class="tooltip-groups">'
         +[...groups.values()].map(g=>'<div class="tooltip-file"><strong title="'+esc(g.name)+'">'+esc(g.name)+'</strong>'+[...g.rows.values()].join('')+'</div>').join('')+'</div>';
       tip.hidden=false;
