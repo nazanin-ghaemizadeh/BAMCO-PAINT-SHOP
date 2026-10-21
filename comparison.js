@@ -141,7 +141,9 @@
       tip.style.left=Math.max(6,Math.min(x+14,rect.width-w-6))+'px';
       tip.style.top=Math.max(6,Math.min(y+12,rect.height-h-6))+'px';
     });
-    plot.on('plotly_unhover',()=>{tip.hidden=true;});
+    // Keep the panel available for scrolling when many recordings exceed two rows.
+    plot.on('plotly_unhover',()=>{if(!tip.matches(':hover'))tip.hidden=true;});
+    tip.addEventListener('mouseleave',()=>{tip.hidden=true;});
     plot.addEventListener('mouseleave',()=>{tip.hidden=true;});
   }
   function plotChart(items,channels){
