@@ -292,7 +292,9 @@
     if(!document.body.classList.contains('bamco-entered'))return;
     const layout=document.querySelector('.stage-layout');
     if(!layout)return;
-    let nav=layout.querySelector('.workspace-nav');
+    // Update the navigation host, not a nested <nav>. This avoids creating
+    // another navigation tree on every uploaded-file or tab refresh.
+    let nav=layout.querySelector(':scope > .workspace-nav-slot');
     if(!nav){nav=document.createElement('div');nav.className='workspace-nav-slot';layout.insertBefore(nav,layout.firstChild);}
     nav.innerHTML=navHTML();
     const main=document.getElementById('chart-panel'),r=core().getRecord();
