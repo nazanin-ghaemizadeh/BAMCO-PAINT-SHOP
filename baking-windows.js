@@ -25,7 +25,7 @@
   // Shared by Primer and Base Coat as specified by the user.
   const gamma={
     name:'Gamma Thinner Baking Window',manufacturer:'Gamma Thinner',shortManufacturer:'Gamma Thinner',
-    image:'assets/gamma-baking-window.png?v=20261021-1',
+    image:'assets/gamma-baking-window.png?v=20261021-2',
     threshold:140,minDuration:15,maxDuration:40,minTemp:140,maxTemp:155,
     vertices:[[15,155],[30,155],[40,140],[20,140]],
     xRange:[10,45],yRange:[135,160],xTicks:[10,15,20,25,30,35,40,45],yTicks:[135,140,145,150,155,160],
@@ -43,5 +43,6 @@
     ]
   };
   const windows={ed,primer:gamma,bc:gamma};
-  window.BAMCOBakingWindows={get:stage=>windows[stage]||null};
+  window.BAMCOBakingWindows={get:stage=>windows[stage]||null,
+    references:()=>[{id:'ed',name:ed.manufacturer},{id:'primer',name:gamma.manufacturer}]};
 })();

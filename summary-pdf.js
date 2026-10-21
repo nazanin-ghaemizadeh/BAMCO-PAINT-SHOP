@@ -5,7 +5,7 @@
   function details(options={}){
     const ovenName=String(options.ovenName||'Oven');
     const recordingDate=options.recordingDate||null;
-    return {ovenName,recordingDate};
+    return {ovenName,recordingDate,manufacturer:String(options.manufacturer||'')};
   }
   const pdfString=value=>'<FEFF'+Array.from({length:String(value).length},(_,i)=>String(value).charCodeAt(i).toString(16).padStart(4,'0')).join('')+'>';
   const finite=Number.isFinite;
@@ -59,6 +59,7 @@
     };
     text('Summary',24,43,27,'#25443b',true);
     text(info.ovenName,24,64,12,'#536d60',true);
+    if(info.manufacturer)text(info.manufacturer,PAGE_W-24,64,10,'#536d60',false,'right');
     text('Date: '+(info.recordingDate||'Not available'),PAGE_W-24,43,11,'#536d60',false,'right');
     const grid=layout(results.length),cw=240*grid.scale,ch=280*grid.scale;
     const gridHeight=grid.rows*ch+(grid.rows-1)*grid.gap;
@@ -100,28 +101,32 @@
       ctx.restore();
     });
   }
-  // Wrap a high-resolution page image in a minimal, standards-compliant PDF.
-  function pdfBytes(jpeg,width,height,info){
+  // One image per landscape A4 page; every oven retains its own summary page.
+  function pdfBytes(pages,title){
     const encoder=new TextEncoder(),parts=[],offsets=[0];let length=0;
     const append=value=>{const bytes=typeof value==='string'?encoder.encode(value):value;parts.push(bytes);length+=bytes.length;};
     const object=(id,body)=>{offsets[id]=length;append(id+' 0 obj\n'+body+'\nendobj\n');};
     append('%PDF-1.4\n');
     object(1,'<< /Type /Catalog /Pages 2 0 R >>');
-    object(2,'<< /Type /Pages /Kids [3 0 R] /Count 1 >>');
-    object(3,'<< /Type /Page /Parent 2 0 R /MediaBox [0 0 '+PAGE_W+' '+PAGE_H+'] /Resources << /XObject << /PageImage 4 0 R >> >> /Contents 5 0 R >>');
-    offsets[4]=length;
-    append('4 0 obj\n<< /Type /XObject /Subtype /Image /Width '+width+' /Height '+height+' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length '+jpeg.length+' >>\nstream\n');
-    append(jpeg);append('\nendstream\nendobj\n');
-    const commands='q\n'+PAGE_W+' 0 0 '+PAGE_H+' 0 0 cm\n/PageImage Do\nQ\n';
-    object(5,'<< /Length '+encoder.encode(commands).length+' >>\nstream\n'+commands+'endstream');
-    object(6,'<< /Title '+pdfString('Summary - '+info.ovenName+' - '+(info.recordingDate||'Undated'))+' /Subject (Baking analysis cards) /Creator (BAMCO Paint Shop) >>');
-    const xref=length;append('xref\n0 7\n0000000000 65535 f \n');
-    for(let i=1;i<=6;i++)append(String(offsets[i]).padStart(10,'0')+' 00000 n \n');
-    append('trailer\n<< /Size 7 /Root 1 0 R /Info 6 0 R >>\nstartxref\n'+xref+'\n%%EOF\n');
+    object(2,'<< /Type /Pages /Kids ['+pages.map((_,i)=>(3+i*3)+' 0 R').join(' ')+'] /Count '+pages.length+' >>');
+    pages.forEach(({jpeg,width,height},i)=>{
+      const pageId=3+i*3,imageId=pageId+1,contentId=pageId+2;
+      object(pageId,'<< /Type /Page /Parent 2 0 R /MediaBox [0 0 '+PAGE_W+' '+PAGE_H+'] /Resources << /XObject << /PageImage '+imageId+' 0 R >> >> /Contents '+contentId+' 0 R >>');
+      offsets[imageId]=length;
+      append(imageId+' 0 obj\n<< /Type /XObject /Subtype /Image /Width '+width+' /Height '+height+' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length '+jpeg.length+' >>\nstream\n');
+      append(jpeg);append('\nendstream\nendobj\n');
+      const commands='q\n'+PAGE_W+' 0 0 '+PAGE_H+' 0 0 cm\n/PageImage Do\nQ\n';
+      object(contentId,'<< /Length '+encoder.encode(commands).length+' >>\nstream\n'+commands+'endstream');
+    });
+    const infoId=3+pages.length*3,size=infoId+1;
+    object(infoId,'<< /Title '+pdfString(title)+' /Subject (Baking analysis cards) /Creator (BAMCO Paint Shop) >>');
+    const xref=length;append('xref\n0 '+size+'\n0000000000 65535 f \n');
+    for(let i=1;i<size;i++)append(String(offsets[i]).padStart(10,'0')+' 00000 n \n');
+    append('trailer\n<< /Size '+size+' /Root 1 0 R /Info '+infoId+' 0 R >>\nstartxref\n'+xref+'\n%%EOF\n');
     const output=new Uint8Array(length);let position=0;
     parts.forEach(bytes=>{output.set(bytes,position);position+=bytes.length;});return output;
   }
-  async function build(results,options={}){
+  async function pageImage(results,options={}){
     if(!Array.isArray(results)||!results.length)throw Error('No channel cards are available to export.');
     const info=details(options);
     if(document.fonts?.ready)await document.fonts.ready;
@@ -131,14 +136,31 @@
     ctx.scale(canvas.width/PAGE_W,canvas.height/PAGE_H);draw(ctx,results,info);
     const data=atob(canvas.toDataURL('image/jpeg',.96).split(',')[1]);
     const jpeg=Uint8Array.from(data,char=>char.charCodeAt(0));
-    return pdfBytes(jpeg,canvas.width,canvas.height,info);
+    return {jpeg,width:canvas.width,height:canvas.height,info};
   }
-  async function download(results,options={}){
-    const info=details(options);
-    const bytes=await build(results,info),url=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'}));
-    const ovenFile=info.ovenName.replace(/[<>:"/\\|?*\x00-\x1F]/g,'_').trim().replace(/\s+/g,'_');
-    const a=document.createElement('a');a.href=url;a.download='Summary_'+ovenFile+'_'+(info.recordingDate||'Undated')+'.pdf';document.body.appendChild(a);
+  async function build(results,options={}){
+    const page=await pageImage(results,options),info=page.info;
+    return pdfBytes([page],'Summary - '+info.ovenName+' - '+(info.recordingDate||'Undated'));
+  }
+  async function buildReport(entries,recordingDate){
+    if(!Array.isArray(entries)||entries.length!==4)throw Error('Select one recording for each of the four ovens.');
+    if(!recordingDate)throw Error('Enter the report date.');
+    const pages=[];
+    for(const entry of entries)pages.push(await pageImage(entry.results,{...entry.options,recordingDate}));
+    return pdfBytes(pages,'Daily Summary - '+recordingDate);
+  }
+  function save(bytes,filename){
+    const url=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'}));
+    const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);
     a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
   }
-  window.BAMCOSummaryPDF={build,download};
+  async function download(results,options={}){
+    const info=details(options),bytes=await build(results,info);
+    const ovenFile=info.ovenName.replace(/[<>:"/\\|?*\x00-\x1F]/g,'_').trim().replace(/\s+/g,'_');
+    save(bytes,'Summary_'+ovenFile+'_'+(info.recordingDate||'Undated')+'.pdf');
+  }
+  async function downloadReport(entries,recordingDate){
+    save(await buildReport(entries,recordingDate),'Daily_Summary_'+recordingDate+'.pdf');
+  }
+  window.BAMCOSummaryPDF={build,download,buildReport,downloadReport};
 })();

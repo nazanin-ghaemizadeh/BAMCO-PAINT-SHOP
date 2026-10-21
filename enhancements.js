@@ -126,6 +126,7 @@
       gateway.innerHTML='<div class="gate-container"><div class="gate-header-slot"></div>'
       +'<div class="gate-intro"><h1>Precision starts with <span>every degree.</span></h1></div>'
       +'<div class="oven-grid">'+ovens.map(o=>'<button class="oven-choice" data-oven="'+o.id+'"><span class="oven-number">'+o.symbol+'</span><span class="oven-graphic" aria-hidden="true">'+ovenIcon(o.id)+'</span><strong>'+o.name+'</strong><small>'+o.description+'</small><span class="oven-cta">Select oven →</span></button>').join('')+'</div>'
+      +'<div class="daily-entry"><div><h2>Daily report</h2><p>Four oven summaries in one PDF.</p></div><button type="button" class="primary-action" data-open-daily>Create daily report →</button></div>'
       +'</div>';
     } else {
       gateway.innerHTML='<div class="gate-container gate-window-container">'
@@ -391,6 +392,7 @@
     document.addEventListener('click',function(e){
       const b=e.target.closest('button');if(!b)return;
       if(b.dataset.oven){choice=b.dataset.oven;step=2;renderGate();scrollToPageTop();requestAnimationFrame(scrollToPageTop);}
+      else if(b.hasAttribute('data-open-daily'))window.BAMCODailyReport.open(gateway,renderGate);
       else if(b.hasAttribute('data-go-back')){step=1;renderGate();scrollToPageTop();requestAnimationFrame(scrollToPageTop);}
       else if(b.hasAttribute('data-enter'))enter();
       else if(b.hasAttribute('data-change-oven'))openGate();

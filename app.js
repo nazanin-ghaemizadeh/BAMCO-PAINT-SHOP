@@ -623,7 +623,8 @@ async function downloadExcel(){
   const blob=new Blob([await wb.xlsx.writeBuffer()],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});saveBlob(blob,fileName(r)+'_report.xlsx');
  }catch(e){alert('Excel export failed: '+e.message);}finally{btn.disabled=false;}
 }
-window.BAMCO_CORE={getStage:()=>tab,getRecord:record,getFile:file,getState:current,chooseTab,renderPlots};
+window.BAMCO_CORE={getStage:()=>tab,getRecord:record,getFile:file,getState:current,chooseTab,renderPlots,
+ readWorkbook:async input=>{await ensureXLSX();return readFile(input);}};
 function init(){document.querySelectorAll('[data-stage]').forEach(btn=>btn.onclick=()=>chooseTab(btn.dataset.stage));chooseTab(tab);}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
