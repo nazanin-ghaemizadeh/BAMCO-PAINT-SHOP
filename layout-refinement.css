@@ -93,11 +93,12 @@
 @media (min-width:901px) and (max-height:700px) {
   #bamco-gateway .oven-grid .oven-choice {padding:21px;}
   #bamco-gateway .oven-grid .oven-graphic {width:64px;height:64px;flex-basis:64px;margin-bottom:16px;}
-  #bamco-gateway .gate-window-container .window-description {padding:21px;}
-  #bamco-gateway .gate-window-container .window-description h2 {margin-top:18px;font-size:22px;}
-  #bamco-gateway .gate-window-container .window-spec {margin:18px 0 0;}
-  #bamco-gateway .gate-window-container .window-spec span {padding:12px 0;gap:5px;}
+  #bamco-gateway .gate-window-container .window-description {padding:18px;}
+  #bamco-gateway .gate-window-container .window-description h2 {margin:14px 0 6px;font-size:22px;}
+  #bamco-gateway .gate-window-container .window-spec {margin:16px 0 0;}
+  #bamco-gateway .gate-window-container .window-spec span {padding:10px 0;gap:5px;}
   #bamco-gateway .gate-window-container .window-spec b {font-size:21px;}
+  #bamco-gateway .window-actions {padding-top:18px;}
 }
 @media (min-width:901px) and (max-width:1100px) {
   #bamco-gateway .oven-grid {gap:13px;}
