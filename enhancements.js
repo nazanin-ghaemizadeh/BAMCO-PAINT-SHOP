@@ -8,9 +8,7 @@
   edWindowPreload.decoding='async';
   edWindowPreload.src=ED_WINDOW_ASSET;
   if(typeof edWindowPreload.decode==='function')edWindowPreload.decode().catch(()=>{});
-  const WINDOW = {name:'ED Baking Window — 165°C / 15 min', threshold:165, minDuration:15,
-    maxDuration:35.5, minTemp:165, maxTemp:200,
-    vertices:[[15,165],[15,200],[22,200],[35.5,172],[35.5,165]]};
+  const getWindow=(stage=core()?.getStage()||choice)=>window.BAMCOBakingWindows.get(stage);
   const ovens = [
     {id:'ed',name:'ED Oven',description:'Electrodeposition coating',symbol:'01'},
     {id:'primer',name:'Primer Oven',description:'Primer curing process',symbol:'02'},
@@ -69,25 +67,24 @@
     return (v<0&&secs?'-':'')+String(Math.floor(secs/60)).padStart(2,'0')+':'+String(secs%60).padStart(2,'0');
   };
   const signedTime=v=>Number.isFinite(v)?(v>0?'+':'')+mmss(v):'N/A';
-  const timeAllowed=t=>t>=15&&t<=35.5?(t<=22?200:200-(28/13.5)*(t-22)):null;
-  const durationAllowed=T=>T>=165&&T<=200?Math.min(35.5,22+(13.5/28)*(200-T)):null;
   const CHANNEL_COLORS=['#087d8c','#e19a24','#4364c5','#ce4e68','#865ac2','#0e946e','#bb627f','#7d8737'];
   function channelColor(ch){const n=Number(String(ch).replace(/\D/g,''));return CHANNEL_COLORS[(Number.isFinite(n)&&n>0?n-1:0)%CHANNEL_COLORS.length];}
-  function svgChart(points=[],small=false){
+  function svgChart(points=[],small=false,config=getWindow()){
+    if(!config)return '';
     const w=790,h=small?340:485,L=65,R=23,top=26,B=small?82:126;
-    const X=x=>L+(x-10)/30*(w-L-R),Y=y=>h-B-(y-155)/55*(h-top-B);
-    const poly=WINDOW.vertices.map(p=>X(p[0])+','+Y(p[1])).join(' ');
+    const X=x=>L+(x-config.xRange[0])/(config.xRange[1]-config.xRange[0])*(w-L-R),Y=y=>h-B-(y-config.yRange[0])/(config.yRange[1]-config.yRange[0])*(h-top-B);
+    const poly=config.vertices.map(p=>X(p[0])+','+Y(p[1])).join(' ');
     const lines=[];
-    for(const x of [10,15,20,22,25,30,35.5,40]){
+    for(const x of config.xTicks){
       lines.push('<line x1="'+X(x)+'" y1="'+top+'" x2="'+X(x)+'" y2="'+(h-B)+'" stroke="#dfebe7" stroke-dasharray="4 5"/>');
       lines.push('<text x="'+X(x)+'" y="'+(h-B+20)+'" text-anchor="middle" font-size="12" fill="#708983">'+mmss(x)+'</text>');
     }
-    for(const y of [160,165,170,180,190,200,210]){
+    for(const y of config.yTicks){
       lines.push('<line x1="'+L+'" y1="'+Y(y)+'" x2="'+(w-R)+'" y2="'+Y(y)+'" stroke="#dfebe7" stroke-dasharray="4 5"/>');
       lines.push('<text x="'+(L-13)+'" y="'+(Y(y)+4)+'" text-anchor="end" font-size="12" fill="#708983">'+y+'</text>');
     }
     let dots='',legend='';
-    WINDOW.vertices.forEach(([x,y])=>dots+='<circle cx="'+X(x)+'" cy="'+Y(y)+'" r="4.5" fill="#237e4b" stroke="white" stroke-width="1.6"/>');
+    config.vertices.forEach(([x,y])=>dots+='<circle cx="'+X(x)+'" cy="'+Y(y)+'" r="4.5" fill="#237e4b" stroke="white" stroke-width="1.6"/>');
     points.forEach((p,i)=>{
       if(!Number.isFinite(p.d)||!Number.isFinite(p.t))return;
       const x=X(p.d),y=Y(p.t),c=channelColor(p.ch);
@@ -99,18 +96,19 @@
       legend+='<circle cx="'+lx+'" cy="'+(ly-4)+'" r="5" fill="'+c+'"/>'
         +'<text x="'+(lx+13)+'" y="'+ly+'" font-size="12" fill="#344b52">'+esc(p.ch)+' · '+esc(p.status)+'</text>';
     });
-    return '<svg class="window-svg" viewBox="0 0 '+w+' '+h+'" role="img" aria-label="ED baking window with small color-coded points. Channel status is shown in the legend beneath the horizontal axis." xmlns="http://www.w3.org/2000/svg">'
+    return '<svg class="window-svg" viewBox="0 0 '+w+' '+h+'" role="img" aria-label="'+esc(config.name)+' with measured channel points" xmlns="http://www.w3.org/2000/svg">'
       +'<rect width="'+w+'" height="'+h+'" rx="12" fill="#fff"/>'
       +lines.join('')+'<line x1="'+L+'" y1="'+top+'" x2="'+L+'" y2="'+(h-B)+'" stroke="#82969c"/>'
       +'<line x1="'+L+'" y1="'+(h-B)+'" x2="'+(w-R)+'" y2="'+(h-B)+'" stroke="#82969c"/>'
       +'<polygon points="'+poly+'" fill="#74c990" fill-opacity=".26" stroke="#277f47" stroke-width="3.1" stroke-linejoin="round"/>'
       +dots
-      +'<text x="'+(w/2)+'" y="'+(h-B+46)+'" fill="#344b52" font-size="14" text-anchor="middle">Duration above 165°C (mm:ss)</text>'
+      +'<text x="'+(w/2)+'" y="'+(h-B+46)+'" fill="#344b52" font-size="14" text-anchor="middle">Duration at or above '+config.threshold+'°C (mm:ss)</text>'
       +'<text transform="translate(19 '+((h-B+top)/2)+') rotate(-90)" text-anchor="middle" fill="#344b52" font-size="14">Peak Temperature (°C)</text>'
       +legend+'</svg>';
   }
-  function preview(){
-    return '<div class="window-photo-card ed-reference-image"><img src="'+ED_WINDOW_ASSET+'" alt="ED Baking Window — Kansai Paint Iranian Co" class="window-photo" width="1448" height="1086" decoding="async" loading="eager"></div>';
+  function preview(stage=choice){
+    const config=getWindow(stage);if(!config)return '';
+    return '<div class="window-photo-card ed-reference-image"><img src="'+config.image+'" alt="'+esc(config.name+' — '+config.manufacturer)+'" class="window-photo" width="1448" height="1086" decoding="async" loading="eager"></div>';
   }
   function applyGatewayHeader(){
     const slot=gateway?.querySelector('.gate-header-slot');
@@ -123,7 +121,7 @@
   }
   function renderGate(){
     if(!gateway)return;
-    const oven=ovens.find(x=>x.id===choice);
+    const oven=ovens.find(x=>x.id===choice),config=getWindow(choice);
     if(step===1){
       gateway.innerHTML='<div class="gate-container"><div class="gate-header-slot"></div>'
       +'<div class="gate-intro"><h1>Precision starts with <span>every degree.</span></h1></div>'
@@ -132,8 +130,8 @@
     } else {
       gateway.innerHTML='<div class="gate-container gate-window-container">'
       +'<div class="window-topbar"><div><span class="window-eyebrow">THERMAL WORKSPACE</span><h1>'+oven.name+'</h1></div><button class="window-change-oven" data-go-back>← Change oven</button></div>'
-      +(choice==='ed'
-        ?'<div class="window-selection"><section class="window-description"><span class="approved-flag">VALIDATED REFERENCE</span><h2>ED baking window</h2><p class="window-supplier">Kansai Paint Iranian Co</p><div class="window-spec"><span>Minimum duration <b>15:00</b></span><span>Maximum duration <b>35:30</b></span><span>Peak temperature <b>165–200°C</b></span></div><div class="window-actions"><button class="primary-action" data-enter>Start ED analysis <span aria-hidden="true">→</span></button></div></section>'+preview()+'</div>'
+      +(config
+        ?'<div class="window-selection"><section class="window-description"><span class="approved-flag">VALIDATED REFERENCE</span><h2>'+esc(oven.name)+' baking window</h2><p class="window-supplier">'+esc(config.manufacturer)+'</p><div class="window-spec"><span>Minimum duration <b>'+mmss(config.minDuration)+'</b></span><span>Maximum duration <b>'+mmss(config.maxDuration)+'</b></span><span>Peak temperature <b>'+config.minTemp+'–'+config.maxTemp+'°C</b></span></div><div class="window-actions"><button class="primary-action" data-enter>Start '+esc(oven.name.replace(' Oven',''))+' analysis <span aria-hidden="true">→</span></button></div></section>'+preview()+'</div>'
         :'<div class="window-selection no-window"><section class="window-description"><span class="pending-flag">REFERENCE PENDING</span><h2>Explore your recordings</h2><p>No validated baking window has been configured for '+oven.name+'. You can upload recordings and explore temperature tables and charts.</p><p class="window-pending-note">Baking-window evaluation will show “Not configured”.</p><div class="window-actions"><button class="primary-action" data-enter>Continue to workspace <span aria-hidden="true">→</span></button></div></section></div>')
       +'</div>';
     }
@@ -170,7 +168,7 @@
     const oven=ovens.find(x=>x.id===core().getStage());
     const labels={upload:'Upload & Files',information:'Information',charts:'Charts',analysis:'Baking Analysis',comparison:'Comparison'};
     return '<nav class="workspace-nav" aria-label="Workspace navigation">'
-      +'<div class="nav-oven"><span class="nav-oven-symbol">'+ovenIcon(core().getStage())+'</span><div><strong>'+esc(oven.name)+'</strong><small>'+(core().getStage()==='ed'?'Kansai Paint':'Temperature analytics')+'</small></div></div>'
+      +'<div class="nav-oven"><span class="nav-oven-symbol">'+ovenIcon(core().getStage())+'</span><div><strong>'+esc(oven.name)+'</strong><small>'+(getWindow()?.shortManufacturer||'Temperature analytics')+'</small></div></div>'
       +'<div class="nav-links">'+sections.map(s=>'<button type="button" class="workspace-nav-link '+(activeSection===s.id?'is-active':'')+'" data-section="'+s.id+'" aria-label="'+esc(s.label)+'" title="'+esc(s.label)+'"'+(activeSection===s.id?' aria-current="page"':'')+'><span class="nav-icon" aria-hidden="true">'+s.icon+'</span><span>'+labels[s.id]+'</span></button>').join('')+'</div>'
       +'<button type="button" class="change-oven" data-change-oven>↻ Change oven / window</button></nav>';
   }
@@ -188,62 +186,61 @@
     // An empty intermediate frame shrinks the page and clamps its scroll position.
     if(s==='comparison')window.BAMCOCompare?.render?.();
   }
-  function elapsedDuration(reads,ch,step){
+  function elapsedDuration(reads,ch,step,threshold){
     const valid=reads.every(x=>Number.isFinite(x.values[ch]));
     if(!valid)return {duration:null,error:'Missing/non-numeric readings'};
     let duration=0;
     for(let i=1;i<reads.length;i++){
       const a=reads[i-1],b=reads[i],dt=(b.ts-a.ts)/60000;
       if(!(dt>0)||dt>step/60*1.5+0.0001)return {duration:null,error:'Irregular or missing timestamps'};
-      const A=a.values[ch],B=b.values[ch],threshold=WINDOW.threshold;
+      const A=a.values[ch],B=b.values[ch];
       if(A>=threshold&&B>=threshold)duration+=dt;
       else if(A<threshold&&B>=threshold&&A!==B)duration+=dt*(B-threshold)/(B-A);
       else if(A>=threshold&&B<threshold&&A!==B)duration+=dt*(A-threshold)/(A-B);
     }
     return {duration,error:null};
   }
-  function evaluate(r){
-    if(!r||!r.channels)return [];
+  function evaluate(r,stage=core()?.getStage()||choice){
+    const config=getWindow(stage);
+    if(!config||!r||!r.channels)return [];
     return r.channels.map(ch=>{
       const temps=r.reads.map(q=>q.values[ch]).filter(Number.isFinite);
       const T=temps.length?Math.max(...temps):null;
-      const durationResult=elapsedDuration(r.reads,ch,r.step);
+      const durationResult=elapsedDuration(r.reads,ch,r.step,config.threshold);
       const D=durationResult.duration;
       let violations=[],status='PASS';
       if(!Number.isFinite(D)||!Number.isFinite(T)||r.reads.length<2){
         status='INVALID DATA';violations=['R06 — '+(durationResult.error||'Incomplete temperature readings')];
       }else{
-        if(D<15-1e-9)violations.push('R01 — Insufficient Duration');
-        if(D>35.5+1e-9)violations.push('R02 — Excessive Duration');
-        if(T<165-1e-9)violations.push('R03 — Insufficient Temperature');
-        if(T>200+1e-9)violations.push('R04 — Excessive Absolute Temperature');
-        if(28*D+13.5*T>3316+1e-8)violations.push('R05 — Outside Sloped Boundary');
+        for(const [id,description,formula,violated] of config.rules){if(violated(D,T))violations.push(id+' — '+description);}
         if(violations.length)status='FAIL';
       }
-      const dMax=Number.isFinite(T)?durationAllowed(T):null;
-      const tMax=Number.isFinite(D)?timeAllowed(D):null;
-      return {ch, label:r.labels[ch]||ch, D,T,status,violations,dMax,tMax,
-        mdMin:Number.isFinite(D)?D-15:null,
+      const dMin=Number.isFinite(T)?config.durationMin(T):null;
+      const dMax=Number.isFinite(T)?config.durationMax(T):null;
+      const tMin=Number.isFinite(D)?config.temperatureMin(D):null;
+      const tMax=Number.isFinite(D)?config.temperatureMax(D):null;
+      return {ch, label:r.labels[ch]||ch, D,T,status,violations,dMin,dMax,tMin,tMax,threshold:config.threshold,
+        mdMin:Number.isFinite(D)&&dMin!==null?D-dMin:null,
         mdMax:Number.isFinite(D)&&dMax!==null?dMax-D:null,
-        mtMin:Number.isFinite(T)?T-165:null,
+        mtMin:Number.isFinite(T)&&tMin!==null?T-tMin:null,
         mtMax:Number.isFinite(T)&&tMax!==null?tMax-T:null,
-        mdAbs:Number.isFinite(D)?35.5-D:null,
-        mtAbs:Number.isFinite(T)?200-T:null};
+        mdAbs:Number.isFinite(D)?config.maxDuration-D:null,
+        mtAbs:Number.isFinite(T)?config.maxTemp-T:null};
     });
   }
   function tag(status){
     return '<span class="eval-tag '+(status==='PASS'?'pass':status==='FAIL'?'fail':'pending')+'">'+esc(status)+'</span>';
   }
   function signed(v,n=3,unit=''){return v===null?'N/A':(v>0?'+':'')+fmt(v,n)+(unit?' '+unit:'');}
-  function summaryRows(data){
+  function summaryRows(data,config){
     const row=(label,key,digits=3,unit='',kind='')=>'<tr><th>'+label+'</th>'+data.map(v=>'<td class="'+((kind==='margin'||kind==='time-margin')&&v[key]<0?'negative':'')+'">'+(kind==='time'?mmss(v[key]):kind==='time-margin'?signedTime(v[key]):kind==='margin'?signed(v[key],digits,unit):v[key]===null?'N/A':fmt(v[key],digits)+(unit?' '+unit:''))+'</td>').join('')+'</tr>';
     return '<div class="matrix-scroll"><table class="eval-matrix"><thead><tr><th>Evaluation parameter</th>'+data.map(v=>'<th>'+esc(v.ch)+'</th>').join('')+'</tr></thead><tbody>'
       +'<tr><th>Probe location</th>'+data.map(v=>'<td>'+esc(v.label.replace(/^Ch\d+\s*[-–]\s*/,''))+'</td>').join('')+'</tr>'
-      +row('Duration above 165°C','D',3,'','time')+row('Peak temperature','T',1,'°C')
+      +row('Duration at or above '+config.threshold+'°C','D',3,'','time')+row('Peak temperature','T',1,'°C')
       +'<tr class="matrix-group"><th colspan="'+(data.length+1)+'">ALLOWED BAKING WINDOW</th></tr>'
-      +'<tr><th>Min allowed duration</th>'+data.map(()=>'<td>15:00</td>').join('')+'</tr>'
+      +row('Min duration at peak temperature','dMin',3,'','time')
       +row('Max duration at peak temperature','dMax',3,'','time')
-      +'<tr><th>Min allowed peak temperature</th>'+data.map(()=>'<td>165.0°C</td>').join('')+'</tr>'
+      +row('Min temperature at actual duration','tMin',1,'°C')
       +row('Max temperature at actual duration','tMax',1,'°C')
       +'<tr class="matrix-group"><th colspan="'+(data.length+1)+'">DISTANCE TO LIMITS (SIGNED MARGINS)</th></tr>'
       +row('Minimum duration margin','mdMin',3,'','time-margin')
@@ -261,18 +258,19 @@
       +'<button type="button" data-section="upload" class="primary-action">Go to uploads →</button></div>';
   }
   function renderAnalysis(r,stage){
-    if(stage!=='ed'){
+    const config=getWindow(stage);
+    if(!config){
       return '<div class="no-analysis"><span class="pending-flag">NOT CONFIGURED</span><h2>No validated baking window for this oven</h2><p>The ED reference is never applied to another process. Configure the manufacturer-approved polygon before enabling pass/fail decisions here.</p></div>';
     }
     if(!r){
-      return '<div class="no-analysis"><h2>Ready to evaluate ED curing.</h2>'+preview()+'<button type="button" class="primary-action" data-section="upload">Upload a workbook →</button></div>';
+      return '<div class="no-analysis"><h2>Ready to evaluate '+esc(config.name)+'.</h2>'+preview(stage)+'<button type="button" class="primary-action" data-section="upload">Upload a workbook →</button></div>';
     }
-    const results=evaluate(r);
+    const results=evaluate(r,stage);
     const pass=results.filter(v=>v.status==='PASS').length,fail=results.filter(v=>v.status==='FAIL').length,invalid=results.filter(v=>v.status==='INVALID DATA').length;
     const overall=invalid?'INVALID DATA':fail?'FAIL':results.length?'PASS':'NO DATA';
     let cards=results.map(v=>'<article class="probe-card '+(v.status==='PASS'?'good':'bad')+'"><div class="probe-head"><h3>'+esc(v.ch)+'</h3>'+tag(v.status)+'</div>'
       +'<p class="probe-location">'+esc(v.label)+'</p>'
-      +'<div class="probe-numbers"><span><small>Time ≥165°C</small><b>'+mmss(v.D)+' <em>mm:ss</em></b></span><span><small>Peak temperature</small><b>'+fmt(v.T,1)+' <em>°C</em></b></span></div>'
+      +'<div class="probe-numbers"><span><small>Time ≥'+config.threshold+'°C</small><b>'+mmss(v.D)+' <em>mm:ss</em></b></span><span><small>Peak temperature</small><b>'+fmt(v.T,1)+' <em>°C</em></b></span></div>'
       +'<div class="probe-margins"><span>Min time margin <b class="'+(v.mdMin<0?'negative':'')+'">'+signedTime(v.mdMin)+'</b></span>'
       +'<span>Max time margin <b>'+signedTime(v.mdMax)+'</b></span>'
       +'<span>Min temp margin <b>'+signed(v.mtMin,1,'°C')+'</b></span>'
@@ -280,12 +278,13 @@
       +'<div class="probe-reason">'+(v.violations.length?esc(v.violations.join('; ')):'All baking window rules satisfied')+'</div></article>').join('');
     return '<div class="analysis-titlebar"><div><h2>Baking Window Evaluation</h2></div><div class="chart-actions"><button type="button" class="btn" data-download-summary>Summary PDF</button>'+tag(overall)+'</div></div>'
       +'<div class="eval-stats"><div><small>Total probes</small><strong>'+results.length+'</strong></div><div><small>Passed</small><strong class="text-green">'+pass+'</strong></div><div><small>Failed</small><strong class="text-red">'+fail+'</strong></div><div><small>Invalid</small><strong>'+invalid+'</strong></div></div>'
-      +'<div class="window-analysis-plot"><h3>ED Baking Window — Measured Channel Points</h3>'+svgChart(results.map(v=>({ch:v.ch,d:v.D,t:v.T,status:v.status})))
+      +'<div class="window-analysis-plot"><h3>'+esc(config.name)+' — Measured Channel Points</h3>'+svgChart(results.map(v=>({ch:v.ch,d:v.D,t:v.T,status:v.status})),false,config)
       +'</div>'
       +'<div class="analysis-table-title"><h3>Channel Comparison Matrix</h3></div>'
-      +summaryRows(results)
+      +summaryRows(results,config)
       +'<div class="probe-grid">'+cards+'</div>'
-      +'<div class="rule-explanation"><strong>Rule logic</strong><span>R01: D &lt; 15 min</span><span>R02: D &gt; 35.5 min</span><span>R03: Peak &lt; 165°C</span><span>R04: Peak &gt; 200°C</span><span>R05: 28D + 13.5T &gt; 3316</span><span>R06: Invalid or missing data</span></div>';
+      +'<div class="rule-explanation"><strong>Rule logic</strong>'+config.rules.map(([id,description,formula])=>'<span>'+esc(id+': '+formula)+'</span>').join('')+'<span>R06: Invalid or missing data</span></div>';
+
   }
   // Use the date in the uploaded filename shown in Upload & Files.
   // Keep Persian calendar dates as written; do not substitute a worksheet date.
@@ -313,7 +312,7 @@
   }
   async function downloadSummary(button){
     const r=core()?.getRecord();
-    if(core()?.getStage()!=='ed'||!r)return;
+    if(!getWindow()||!r)return;
     const results=evaluate(r);
     const label=button.textContent;
     button.disabled=true;button.setAttribute('aria-busy','true');button.textContent='Creating PDF...';
@@ -326,14 +325,14 @@
     finally{button.disabled=false;button.removeAttribute('aria-busy');button.textContent=label;}
   }
   function evaluationForExport(){
-    const r=core()?.getRecord();if(core()?.getStage()!=='ed'||!r)return null;
+    const r=core()?.getRecord(),config=getWindow();if(!config||!r)return null;
     const data=evaluate(r);
-    return {window:WINDOW.name,headers:['Parameter',...data.map(x=>x.ch)],rows:[
-      ['Time above 165C (min)',...data.map(x=>x.D)],
+    return {window:config.name,headers:['Parameter',...data.map(x=>x.ch)],rows:[
+      ['Time at or above '+config.threshold+'C (min)',...data.map(x=>x.D)],
       ['Peak temperature (C)',...data.map(x=>x.T)],
-      ['Min duration (min)',...data.map(()=>15)],
+      ['Min duration at peak (min)',...data.map(x=>x.dMin)],
       ['Max duration at peak (min)',...data.map(x=>x.dMax)],
-      ['Min peak temperature (C)',...data.map(()=>165)],
+      ['Min peak temperature at duration (C)',...data.map(x=>x.tMin)],
       ['Max temperature at duration (C)',...data.map(x=>x.tMax)],
       ['Min duration margin (min)',...data.map(x=>x.mdMin)],
       ['Max duration margin (min)',...data.map(x=>x.mdMax)],

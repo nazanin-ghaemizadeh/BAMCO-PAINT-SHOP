@@ -205,13 +205,13 @@
   function windowPlot(items,channels){
     const element=document.getElementById('cmp-window'),legend=document.getElementById('cmp-window-matrix');
     if(!element)return;
-    const stage=getCore()?.getStage();
-    if(stage!=='ed'){element.innerHTML='<div class="compare-empty">A validated baking window has not been configured for this oven. Chart comparison remains available.</div>';legend.innerHTML='';return;}
+    const stage=getCore()?.getStage(),config=window.BAMCOBakingWindows.get(stage);
+    if(!config){element.innerHTML='<div class="compare-empty">A validated baking window has not been configured for this oven. Chart comparison remains available.</div>';legend.innerHTML='';return;}
     const data=windowResults(items,channels);
-    if(!data.length){element.innerHTML='<div class="compare-empty">Select uploaded files and channels to compare ED baking-window compliance.</div>';legend.innerHTML='';return;}
+    if(!data.length){element.innerHTML='<div class="compare-empty">Select uploaded files and channels to compare baking-window compliance.</div>';legend.innerHTML='';return;}
     if(!window.Plotly){element.innerHTML='<div class="compare-empty">Plotting library unavailable.</div>';return;}
-    const polygon={type:'scatter',mode:'lines',x:[15,15,22,35.5,35.5,15],y:[165,200,200,172,165,165],
-      fill:'toself',fillcolor:'rgba(98,194,129,.20)',line:{color:'#25925c',width:3},name:'ED accepted window',hoverinfo:'skip',showlegend:true};
+    const polygon={type:'scatter',mode:'lines',x:[...config.vertices,config.vertices[0]].map(p=>p[0]),y:[...config.vertices,config.vertices[0]].map(p=>p[1]),
+      fill:'toself',fillcolor:'rgba(98,194,129,.20)',line:{color:'#25925c',width:3},name:config.name,hoverinfo:'skip',showlegend:true};
     const records=[polygon];
     items.forEach(f=>{
       const arr=data.filter(v=>v.fileId===f.id);
@@ -221,13 +221,13 @@
         customdata:arr.map(v=>[v.ch,v.status,f.name,mmss(v.D)]),meta:{fileId:f.id,fileName:f.name,fileIndex:f.fileIndex},hoverinfo:'none',
         marker:{size:8,color:arr.map(v=>channelColor(v.ch)),line:{width:0.6,color:'#fff'},symbol:fileSymbol(f.fileIndex)}});
     });
-    const l=chartLayout('ED compliance · selected files','Peak temperature (°C)');
-    l.xaxis.title='Duration above 165°C (mm:ss)';
-    l.xaxis.range=[9,43];
+    const l=chartLayout(config.name+' · selected files','Peak temperature (°C)');
+    l.xaxis.title='Duration at or above '+config.threshold+'°C (mm:ss)';
+    l.xaxis.range=config.xRange;
     l.xaxis.tickmode='array';
-    l.xaxis.tickvals=[10,15,20,22,25,30,35.5,40];
+    l.xaxis.tickvals=config.xTicks;
     l.xaxis.ticktext=l.xaxis.tickvals.map(mmss);
-    l.yaxis.range=[150,211];l.height=510;
+    l.yaxis.range=config.yRange;l.height=510;
     l.legend={orientation:'h',y:-.28,x:0,font:{size:11}};
     Plotly.newPlot(element,records,l,{responsive:true,displaylogo:false,modeBarButtonsToRemove:['lasso2d','select2d']})
       .then(plot=>comparisonTooltip(plot,'window'))
@@ -258,7 +258,7 @@
     const files=records();sync(files);const selected=active(files),chs=channelList(files);
     el.innerHTML=files.length?'<div class="compare-layout">'+controls(files,selected,chs)
         +'<div class="compare-results"><div class="compare-panel"><div class="compare-panel-title"><div><h3>Chart comparison</h3></div><button type="button" class="compare-download" data-cmp-action="download-chart">↓ Download PNG</button></div><div id="cmp-chart" class="compare-plot"></div></div>'
-        +'<div class="compare-panel"><div class="compare-panel-title"><div><h3>ED baking-window comparison</h3></div><button type="button" class="compare-download" data-cmp-action="download-window">↓ Window PNG</button></div><div id="cmp-window" class="compare-plot"></div><div id="cmp-window-matrix"></div></div>'
+        +'<div class="compare-panel"><div class="compare-panel-title"><div><h3>Baking-window comparison</h3></div><button type="button" class="compare-download" data-cmp-action="download-window">↓ Window PNG</button></div><div id="cmp-window" class="compare-plot"></div><div id="cmp-window-matrix"></div></div>'
         +'</div></div>'
         :(window.BAMCOEnhance?.emptyState?.()||'<div class="compare-empty-wrap"><h3>No recordings uploaded yet</h3><button type="button" data-section="upload" class="primary-action">Go to uploads →</button></div>');
     if(!files.length)return;

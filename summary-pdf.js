@@ -79,7 +79,7 @@
       text(v.status,226-badgeWidth/2,27,9,accent,true,'center');
       wrapped(v.label||v.ch,14,46,212,23,10,'#708078');
       box(14,70,102,49,7,'#f1f7f4');box(122,70,104,49,7,'#f1f7f4');
-      text('Time ≥165°C',23,85,9,'#6b8075');
+      text('Time ≥'+(v.threshold??165)+'°C',23,85,9,'#6b8075');
       text(time(v.D),23,106,17,'#25443b',true);
       text('mm:ss',105,106,7,'#6b8075',false,'right');
       text('Peak temperature',131,85,9,'#6b8075');

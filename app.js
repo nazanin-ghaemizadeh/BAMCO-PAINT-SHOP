@@ -604,7 +604,7 @@ async function downloadExcel(){
   if(evaluation){
     let erow=row+4;
     const headerAt=erow+2;
-    charts.getCell(erow,1).value='ED Baking Window — Channel Evaluation';
+    charts.getCell(erow,1).value=evaluation.window+' — Channel Evaluation';
     charts.getCell(erow,1).font={name:'Times New Roman',size:16,bold:true,color:{argb:'FF14283F'}};
     erow=headerAt;
     for(const entry of [evaluation.headers,...evaluation.rows]){
