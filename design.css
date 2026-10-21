@@ -215,7 +215,6 @@ body.bamco-entered .app-shell {max-width:1920px;padding:22px 28px 18px}
  #plot-profile {height:510px!important;min-height:510px!important}
  .eval-stats {grid-template-columns:repeat(2,minmax(0,1fr))}
  .probe-grid {grid-template-columns:1fr}
- .window-legend span {width:100%}
  .lightbox-top {padding:10px 12px}
 }
 @media(prefers-reduced-motion:reduce){
