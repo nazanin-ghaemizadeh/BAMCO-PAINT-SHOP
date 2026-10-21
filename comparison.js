@@ -149,8 +149,7 @@
           x:group.map(p=>p.elapsed),y:group.map(p=>p.values[ch]),
           name:file.name+' · '+ch,legendgroup:file.id+ch,showlegend:j===0,meta:{fileId:file.id,fileName:file.name,channel:ch},hoverinfo:'none',
           line:{color:channelColor(ch),width:2.5,dash:fileDash(file.fileIndex)},
-          marker:{size:5,color:channelColor(ch)},
-          hovertemplate:'<extra></extra>'}));
+          marker:{size:5,color:channelColor(ch)}}));
       }));
     }else if(mode==='spread'){
       items.forEach(file=>{
@@ -162,8 +161,7 @@
           y.push(!gap&&channels.length>=2&&vals.every(Number.isFinite)?Math.max(...vals)-Math.min(...vals):null);
         }
         data.push({type:'scatter',mode:'lines',x,y,name:file.name,meta:{fileId:file.id,fileName:file.name,channel:'Spread'},hoverinfo:'none',
-          line:{color:'#246d6d',width:2.8,dash:fileDash(file.fileIndex)},connectgaps:false,
-          hovertemplate:'<extra></extra>'});
+          line:{color:'#246d6d',width:2.8,dash:fileDash(file.fileIndex)},connectgaps:false});
       });
     }
     const title=MODES.find(x=>x.id===mode)?.label||'Comparison';
@@ -202,8 +200,7 @@
       records.push({type:'scatter',mode:'markers',name:f.name,showlegend:true,
         x:arr.map(v=>v.D),y:arr.map(v=>v.T),
         customdata:arr.map(v=>[v.ch,v.status,f.name,mmss(v.D)]),meta:{fileId:f.id,fileName:f.name},hoverinfo:'none',
-        marker:{size:8,color:arr.map(v=>channelColor(v.ch)),line:{width:0.6,color:'#fff'},symbol:fileSymbol(f.fileIndex)},
-        hovertemplate:'<extra></extra>'});
+        marker:{size:8,color:arr.map(v=>channelColor(v.ch)),line:{width:0.6,color:'#fff'},symbol:fileSymbol(f.fileIndex)}});
     });
     const l=chartLayout('ED compliance · selected files','Peak temperature (°C)');
     l.xaxis.title='Duration above 165°C (mm:ss)';
