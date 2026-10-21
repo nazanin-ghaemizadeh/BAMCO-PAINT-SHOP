@@ -393,3 +393,64 @@ body[data-section="comparison"] .bamco-views {width:100%}
   .source-grid .source-compact-summary {min-width: 735px;}
   .source-readings table {min-width: 860px;}
 }
+
+
+/* 2026-10-21: render charts directly in the final tab; never flash Plotly's
+   initial/intermediate canvases over the finished chart. */
+.view-charts.charts-drawing .plot-surface {
+  visibility: hidden !important;
+}
+.view-charts.charts-drawing .analysis-card:has(.plot-surface) {
+  position: relative;
+}
+.view-charts.charts-drawing .analysis-card:has(.plot-surface)::after {
+  content: "Preparing chart…";
+  position: absolute;
+  left: 50%;
+  top: 51%;
+  transform: translate(-50%, -50%);
+  color: #5c7e72;
+  font: 600 15px "Times New Roman", Times, serif;
+  background: #f4faf6;
+  border: 1px solid #d2e8db;
+  border-radius: 12px;
+  padding: 12px 20px;
+  box-shadow: 0 8px 30px #234b4114;
+  pointer-events: none;
+}
+
+/* Readings: center headings and values in the same tracks; separate every
+   sensor/column with a subtle vertical rule, matching Channel Summary. */
+.source-readings table > tbody > tr > th,
+.source-readings table > tbody > tr > td {
+  text-align: center !important;
+  vertical-align: middle !important;
+  padding-left: 9px;
+  padding-right: 9px;
+  border-left: 1px solid #c4d9cf !important;
+}
+.source-readings table > tbody > tr > :first-child {
+  border-left: none !important;
+}
+.source-readings table > tbody > tr > :last-child {
+  border-right: 1px solid #c4d9cf;
+}
+.source-readings table > tbody > tr > th {
+  background: #e3f1ea;
+  text-align: center !important;
+}
+.source-readings table > tbody > tr > td {
+  text-align: center !important;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Reserve the window image footprint before its bytes finish downloading;
+   keep the oven-selection page pinned rather than scroll-anchoring midway. */
+#bamco-gateway { overflow-anchor: none; }
+#bamco-gateway .gate-window-container .ed-reference-image .window-photo {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1448 / 1086;
+  object-fit: contain;
+}
