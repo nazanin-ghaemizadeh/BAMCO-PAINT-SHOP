@@ -346,54 +346,60 @@ body[data-section="comparison"] .bamco-views {width:100%}
 .source-compact-summary thead tr>th:last-child {
   border-right: 1px solid #c9ddd3;
 }
-/* Keep both header cells and readings data on exactly the same column tracks. */
+/* Readings: headers and values share one column grid. Only primary sensor
+   columns are emitted by app.js; separators match Channel Summary. */
 .source-readings {
   overflow: auto;
   max-height: 550px;
 }
 .source-readings table {
   width: 100%;
-  min-width: 880px;
+  min-width: 820px;
   table-layout: fixed;
   border-collapse: collapse;
+  font-size: 12px;
   font-variant-numeric: tabular-nums;
 }
-.source-readings table tr > th,
-.source-readings table tr > td {
+.source-readings table thead th,
+.source-readings table tbody td {
   box-sizing: border-box;
-  width: auto;
-  padding: 11px 9px;
+  padding: 12px 9px;
   text-align: center;
   vertical-align: middle;
   white-space: nowrap;
+  border-left: 1px solid #c4d9cf;
   font-variant-numeric: tabular-nums;
 }
-.source-readings table tr > :nth-child(1) {
-  width: 75px;
+.source-readings table thead th:first-child,
+.source-readings table tbody td:first-child {
+  border-left: none;
 }
-.source-readings table tr > :nth-child(2) {
-  width: 155px;
+.source-readings table thead th:last-child,
+.source-readings table tbody td:last-child {
+  border-right: 1px solid #c4d9cf;
 }
-.source-readings table tr > :last-child {
-  border-right: none;
-}
-.source-readings table th {
-  background: #e2f0e9;
+.source-readings table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #e3f1ea;
   border-bottom: 2px solid #bcd9cb;
   color: #1a4d43;
   font-weight: 700;
 }
-.source-readings table td {
+.source-readings table tbody td {
   color: #274944;
 }
-.source-readings table tr:hover td {
+.source-readings table tbody tr:nth-child(even) {
+  background: #f2f8f5;
+}
+.source-readings table tbody tr:hover {
   background: #edf7ef;
 }
 @media (max-width: 760px) {
   .source-grid .source-compact-summary {min-width: 735px;}
-  .source-readings table {min-width: 860px;}
+  .source-readings table {min-width: 780px;}
 }
-
 
 /* 2026-10-21: render charts directly in the final tab; never flash Plotly's
    initial/intermediate canvases over the finished chart. */
@@ -417,31 +423,6 @@ body[data-section="comparison"] .bamco-views {width:100%}
   padding: 12px 20px;
   box-shadow: 0 8px 30px #234b4114;
   pointer-events: none;
-}
-
-/* Readings: center headings and values in the same tracks; separate every
-   sensor/column with a subtle vertical rule, matching Channel Summary. */
-.source-readings table > tbody > tr > th,
-.source-readings table > tbody > tr > td {
-  text-align: center !important;
-  vertical-align: middle !important;
-  padding-left: 9px;
-  padding-right: 9px;
-  border-left: 1px solid #c4d9cf !important;
-}
-.source-readings table > tbody > tr > :first-child {
-  border-left: none !important;
-}
-.source-readings table > tbody > tr > :last-child {
-  border-right: 1px solid #c4d9cf;
-}
-.source-readings table > tbody > tr > th {
-  background: #e3f1ea;
-  text-align: center !important;
-}
-.source-readings table > tbody > tr > td {
-  text-align: center !important;
-  font-variant-numeric: tabular-nums;
 }
 
 /* Reserve the window image footprint before its bytes finish downloading;
