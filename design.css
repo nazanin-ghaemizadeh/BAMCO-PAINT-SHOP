@@ -121,16 +121,15 @@ body.bamco-entered .app-shell {max-width:1920px;padding:22px 28px 18px}
 .app-header p {font-family:inherit;color:#bbd0d1}
 .app-header .header-tag {font-family:inherit;font-size:10px;letter-spacing:1.3px;color:#b9d9d5;border-color:#ffffff37}
 .company-logo img {object-fit:contain}
-.stage-layout {grid-template-columns:256px minmax(0,1fr);gap:19px}
-.workspace-nav {min-height:570px;padding:18px 14px;border-radius:20px;background:linear-gradient(180deg,#fff,#fbfdfc);border:1px solid #deebe6;box-shadow:var(--ui-shadow)}
-.workspace-nav .nav-overline {font:750 10px ui-sans-serif,Arial,sans-serif;color:#8a9e9c}
-.workspace-nav .nav-oven {background:linear-gradient(130deg,#123b49,#24695c);padding:16px 11px;box-shadow:inset 0 1px 0 #ffffff33;border:1px solid #ffffff14}
-.workspace-nav .nav-oven strong {font:750 13px ui-sans-serif,Arial,sans-serif}
-.workspace-nav .nav-oven small {font:500 10px/1.65 ui-sans-serif,Arial,sans-serif;color:#c5e8db}
-.workspace-nav-link {border-radius:12px;min-height:52px;font:650 12px/1.5 ui-sans-serif,Arial,sans-serif;transition:background .18s,color .18s,transform .18s}
-.workspace-nav-link:hover {transform:translateX(2px);background:#f2f8f4;color:#195945}
-.workspace-nav-link.is-active {background:linear-gradient(100deg,#e0f1e7,#eff9f2);border-color:#cae7d8;box-shadow:inset 3px 0 #219569;color:#176347}
-.change-oven {font-family:inherit;color:#287964;font-size:11px}
+.stage-layout {gap:17px}
+.workspace-nav {min-height:70px;padding:11px 16px;border-radius:17px;background:linear-gradient(180deg,#fff,#fbfdfc);border:1px solid #deebe6;box-shadow:var(--ui-shadow)}
+.workspace-nav .nav-oven {background:linear-gradient(130deg,#123b49,#24695c);padding:9px 11px;box-shadow:inset 0 1px 0 #ffffff33;border:1px solid #ffffff14}
+.workspace-nav .nav-oven strong {font-size:14px;font-weight:750}
+.workspace-nav .nav-oven small {font-size:11px;font-weight:500;line-height:1.5;color:#c5e8db}
+.workspace-nav-link {border-radius:10px;min-height:42px;font-size:12px;font-weight:650;transition:background .18s,color .18s}
+.workspace-nav-link:hover {background:#f2f8f4;color:#195945}
+.workspace-nav-link.is-active {background:linear-gradient(100deg,#e0f1e7,#eff9f2);border-color:#cae7d8;box-shadow:inset 0 -3px #219569;color:#176347}
+.change-oven {font-size:12px;color:#287964}
 .stage-layout>.chart-panel,.stage-layout>.upload-panel {
  border:1px solid #deebe6;border-radius:21px;background:white;box-shadow:var(--ui-shadow);
 }
@@ -176,7 +175,7 @@ body.bamco-entered .app-shell {max-width:1920px;padding:22px 28px 18px}
 .probe-head h3 {font-family:inherit;font-weight:760}
 .app-footer {font-family:inherit;color:#78908b}
 @media(max-width:1190px){
- .stage-layout {grid-template-columns:226px minmax(0,1fr)}
+ .stage-layout {grid-template-columns:minmax(0,1fr)}
  .stage-layout>.chart-panel {padding:23px 19px}
  .window-selection {grid-template-columns:minmax(250px,.9fr) minmax(0,1.1fr)}
 }
@@ -207,7 +206,7 @@ body.bamco-entered .app-shell {max-width:1920px;padding:22px 28px 18px}
  body.bamco-entered .app-shell {padding:11px}
  .app-header {padding:18px;border-radius:17px}
  .app-header h1 {font-size:25px}
- .workspace-nav {min-height:0;border-radius:16px;padding:11px}
+ .workspace-nav {min-height:0;border-radius:16px;padding:10px;gap:8px}
  .workspace-nav-link {min-height:46px}
  .stage-layout>.chart-panel {padding:17px 12px}
  .stage-layout>.upload-panel {padding:20px 14px}
