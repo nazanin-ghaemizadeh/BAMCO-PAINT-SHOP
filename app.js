@@ -114,12 +114,12 @@ async function readFile(f){
  return {records,errors};
 }
 function stageHTML(){return `<div class="stage-layout"><aside class="upload-panel">
- <p class="eyebrow">01 / DATA SOURCE</p><h3>${STAGES[tab]} recordings</h3>
- <p class="secondary">Upload Elcometer Excel exports for this process.</p>
+ <h3>${STAGES[tab]} recordings</h3>
+ 
  <div class="upload-control"><label class="control-label" for="files">Excel files</label>
  <div class="input-group"><span class="input-group-btn"><label class="btn" for="files">Browse files</label></span><input class="form-control" id="filename" type="text" readonly value="No files selected"></div>
  <input class="hidden-file" type="file" id="files" multiple accept=".xls,.xlsx"></div>
- <p class="field-note">Upload one or more files. Additional uploads join the list in this tab. Use × to remove a file.</p>
+ 
  <div id="file-list"></div>
  <div id="worksheet-picker"></div><div id="source-label"></div><div id="errors"></div>
  </aside><main class="chart-panel" id="chart-panel"></main></div>`;}
@@ -161,13 +161,13 @@ function renderMain(){
  $('chart-panel').innerHTML=`<div class="chart-heading"><div><p class="eyebrow">${STAGES[tab]} / TEMPERATURE PROFILE</p><h2>${esc(r.project)}</h2><p class="secondary">${clock(r.start)} - ${clock(r.end)} | ${esc(r.fileName)}</p></div><span class="device-label">${esc(r.device)}</span></div>
  <div class="metrics"><div class="metric"><span>Recorded duration</span><strong>${nice(r.duration)} min</strong></div><div class="metric"><span>Time samples</span><strong>${r.reads.length}</strong></div><div class="metric"><span>Visible channels</span><strong>${chs.length}</strong></div><div class="metric"><span>Median interval</span><strong>${nice(r.step)} s</strong></div></div>
  ${r.notes.length?'<div class="import-errors"><ul>'+r.notes.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></div>':''}
- <div class="chart-topbar"><div class="chart-topbar-title"><p class="eyebrow">CHARTS / EXPORT</p><h3>Temperature analysis</h3></div><div class="chart-actions"><button class="btn" id="download-xlsx" disabled>Download Excel</button><button class="btn" id="download-png" disabled>Download all charts (PNG)</button></div></div>
- <section class="chart-channel-controls" aria-label="Visible channels for all four charts"><div class="chart-channel-heading"><p class="eyebrow">02 / PROFILE CONTROLS</p><h3>Visible channels</h3><p class="field-note">Selection applies to all four charts.</p></div><div id="channel-picker" class="chart-channel-options"></div></section>
+ <div class="chart-topbar"><div class="chart-topbar-title"><h3>Temperature analysis</h3></div><div class="chart-actions"><button class="btn" id="download-xlsx" disabled>Download Excel</button><button class="btn" id="download-png" disabled>Download all charts (PNG)</button></div></div>
+ <section class="chart-channel-controls" aria-label="Visible channels for all four charts"><div class="chart-channel-heading"><h3>Visible channels</h3></div><div id="channel-picker" class="chart-channel-options"></div></section>
  <div class="analysis-card"><div class="chart-card-heading"><h3>Temperature profile</h3><button type="button" class="btn chart-png-btn" data-download-chart="profile" disabled>Download PNG</button></div><div class="plot-surface" id="plot-profile" style="height:650px"></div><div class="channel-legend" id="legend-profile" aria-label="Channel colors for temperature profile"></div></div>
- <div class="analysis-card"><div class="chart-card-heading"><h3>Channel temperature spread</h3><button type="button" class="btn chart-png-btn" data-download-chart="spread" disabled>Download PNG</button></div><p class="field-note">Highest minus lowest temperature at the same reading, across selected channels. Air is included when selected.</p><div class="plot-surface" id="plot-spread" style="height:370px"></div></div>
- <div class="analysis-card"><div class="chart-card-heading"><h3>Time in temperature bands</h3><button type="button" class="btn chart-png-btn" data-download-chart="bands" disabled>Download PNG</button></div><p class="field-note">Minutes in each band, estimated by linear interpolation. Missing readings and long gaps are excluded; darker cells mean more time.</p><div class="plot-surface" id="plot-bands" style="height:420px"></div><div class="field-note" id="band-coverage"></div></div>
- <div class="analysis-card"><div class="chart-card-heading"><h3>Peak temperatures by uploaded file</h3><button type="button" class="btn chart-png-btn" data-download-chart="peaks" disabled>Download PNG</button></div><p class="field-note">All active channels across uploaded files in this process. Uses the matching worksheet name where available, otherwise the first readable worksheet.</p><div class="plot-surface" id="plot-peaks" style="height:360px"></div><div class="channel-legend" id="legend-peaks" aria-label="Channel colors for peak temperatures"></div></div>
- <h3 class="section-title">Uploaded worksheet</h3><p class="field-note">Worksheet sections are preserved. In Readings, the primary temperature column is shown for each sensor; the original Excel export remains unchanged.</p><div id="source-sections"></div>`;
+ <div class="analysis-card"><div class="chart-card-heading"><h3>Channel temperature spread</h3><button type="button" class="btn chart-png-btn" data-download-chart="spread" disabled>Download PNG</button></div><div class="plot-surface" id="plot-spread" style="height:370px"></div></div>
+ <div class="analysis-card"><div class="chart-card-heading"><h3>Time in temperature bands</h3><button type="button" class="btn chart-png-btn" data-download-chart="bands" disabled>Download PNG</button></div><div class="plot-surface" id="plot-bands" style="height:420px"></div></div>
+ <div class="analysis-card"><div class="chart-card-heading"><h3>Peak temperatures by uploaded file</h3><button type="button" class="btn chart-png-btn" data-download-chart="peaks" disabled>Download PNG</button></div><div class="plot-surface" id="plot-peaks" style="height:360px"></div><div class="channel-legend" id="legend-peaks" aria-label="Channel colors for peak temperatures"></div></div>
+ <h3 class="section-title">Uploaded worksheet</h3><div id="source-sections"></div>`;
  $('download-xlsx').onclick=downloadExcel;$('download-png').onclick=downloadPNG;
  const key=s.selected+':'+s.sheet;
  $('channel-picker').innerHTML=r.channels.map(ch=>'<label class="chart-channel-choice"><input type="checkbox" data-channel="'+ch+'" '+(chs.includes(ch)?'checked':'')+'><span class="chart-channel-dot" style="background:'+color(ch)+'"></span><span>'+esc(r.labels[ch])+'</span></label>').join('');
@@ -232,7 +232,6 @@ function renderPlots(){
  const b=bands(r,chs);
  $('plot-bands').style.height=Math.max(420,180+25*b.labels.length)+'px';
  $('plot-peaks').style.height=Math.max(440,210+50*others.length)+'px';
- $('band-coverage').textContent='Covered time: '+chs.map((ch,i)=>ch+' '+b.coverage[i].toFixed(2)+' min').join(' · ');
  // Plot only in their visible final containers; hide intermediate redraws.
  requestAnimationFrame(()=>{
   if(v!==drawVersion||document.body.dataset.section!=='charts'){
