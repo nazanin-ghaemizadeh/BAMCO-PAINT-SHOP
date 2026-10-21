@@ -150,13 +150,21 @@
     window.scrollTo({top:0,left:0,behavior:'instant'});
   }
   function enter(){
-    document.body.classList.add('bamco-entered');
-    core().chooseTab(choice);
+    const body=document.body;
+    // Prepare the entire selected oven workspace behind the welcome screen.
+    // Do not expose the legacy upload layout while it is being rebuilt.
     activeSection='upload';
-    switchSection('upload');
-    // Jump to the upload screen's top now and once after layout has settled.
-    scrollToPageTop();
-    requestAnimationFrame(scrollToPageTop);
+    body.dataset.section='upload';
+    body.classList.add('bamco-building');
+    try {
+      core().chooseTab(choice);
+      body.classList.add('bamco-entered');
+      refresh(); // Mount the left navigation and final layout before revealing.
+      switchSection('upload');
+      scrollToPageTop();
+    } finally {
+      body.classList.remove('bamco-building');
+    }
   }
   function openGate(){
     step=1;document.body.classList.remove('bamco-entered');renderGate();
