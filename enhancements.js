@@ -260,11 +260,11 @@
       +'<span>Min temp margin <b>'+signed(v.mtMin,1,'°C')+'</b></span>'
       +'<span>Max temp margin <b>'+signed(v.mtMax,1,'°C')+'</b></span></div>'
       +'<div class="probe-reason">'+(v.violations.length?esc(v.violations.join('; ')):'All baking window rules satisfied')+'</div></article>').join('');
-    return '<div class="analysis-titlebar"><div><span class="eyebrow">ENGINEERING VALIDATION / ED OVEN</span><h2>Baking Window Evaluation</h2><p>Time above 165°C is calculated from timestamped readings using linear interpolation.</p></div>'+tag(overall)+'</div>'
+    return '<div class="analysis-titlebar"><div><h2>Baking Window Evaluation</h2></div>'+tag(overall)+'</div>'
       +'<div class="eval-stats"><div><small>Total probes</small><strong>'+results.length+'</strong></div><div><small>Passed</small><strong class="text-green">'+pass+'</strong></div><div><small>Failed</small><strong class="text-red">'+fail+'</strong></div><div><small>Invalid</small><strong>'+invalid+'</strong></div></div>'
       +'<div class="window-analysis-plot"><h3>ED Baking Window — Measured Channel Points</h3>'+svgChart(results.map(v=>({ch:v.ch,d:v.D,t:v.T,status:v.status})))
       +'</div>'
-      +'<div class="analysis-table-title"><h3>Channel Comparison Matrix</h3><p>Dependent limits change with the measured point. N/A indicates an out-of-domain calculation, not a pass.</p></div>'
+      +'<div class="analysis-table-title"><h3>Channel Comparison Matrix</h3></div>'
       +summaryRows(results)
       +'<div class="probe-grid">'+cards+'</div>'
       +'<div class="rule-explanation"><strong>Rule logic</strong><span>R01: D &lt; 15 min</span><span>R02: D &gt; 35.5 min</span><span>R03: Peak &lt; 165°C</span><span>R04: Peak &gt; 200°C</span><span>R05: 28D + 13.5T &gt; 3316</span><span>R06: Invalid or missing data</span></div>';
