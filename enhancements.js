@@ -56,6 +56,13 @@
   const core=()=>window.BAMCO_CORE;
   const esc=x=>String(x??'').replace(/[&<>"']/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
   const fmt=(v,n=3)=>Number.isFinite(v)?v.toFixed(n):'N/A';
+  // Display durations as mm:ss, retaining numeric minutes in calculations and exports.
+  const mmss=v=>{
+    if(!Number.isFinite(v))return 'N/A';
+    const secs=Math.round(Math.abs(v)*60);
+    return (v<0&&secs?'-':'')+String(Math.floor(secs/60)).padStart(2,'0')+':'+String(secs%60).padStart(2,'0');
+  };
+  const signedTime=v=>Number.isFinite(v)?(v>0?'+':'')+mmss(v):'N/A';
   const timeAllowed=t=>t>=15&&t<=35.5?(t<=22?200:200-(28/13.5)*(t-22)):null;
   const durationAllowed=T=>T>=165&&T<=200?Math.min(35.5,22+(13.5/28)*(200-T)):null;
   const CHANNEL_COLORS=['#087d8c','#e19a24','#4364c5','#ce4e68','#865ac2','#0e946e','#bb627f','#7d8737'];
@@ -67,7 +74,7 @@
     const lines=[];
     for(const x of [10,15,20,22,25,30,35.5,40]){
       lines.push('<line x1="'+X(x)+'" y1="'+top+'" x2="'+X(x)+'" y2="'+(h-B)+'" stroke="#dfebe7" stroke-dasharray="4 5"/>');
-      lines.push('<text x="'+X(x)+'" y="'+(h-B+20)+'" text-anchor="middle" font-size="12" fill="#708983">'+x+'</text>');
+      lines.push('<text x="'+X(x)+'" y="'+(h-B+20)+'" text-anchor="middle" font-size="12" fill="#708983">'+mmss(x)+'</text>');
     }
     for(const y of [160,165,170,180,190,200,210]){
       lines.push('<line x1="'+L+'" y1="'+Y(y)+'" x2="'+(w-R)+'" y2="'+Y(y)+'" stroke="#dfebe7" stroke-dasharray="4 5"/>');
@@ -79,8 +86,8 @@
       if(!Number.isFinite(p.d)||!Number.isFinite(p.t))return;
       const x=X(p.d),y=Y(p.t),c=channelColor(p.ch);
       // One precise, small colored circle per channel; no attached label or halo.
-      dots+='<circle cx="'+x+'" cy="'+y+'" r="2.6" fill="'+c+'" stroke="white" stroke-width="0.5"/>'
-        +'<title>'+esc(p.ch)+' — '+fmt(p.d,3)+' min, '+fmt(p.t,1)+'°C — '+esc(p.status)+'</title>';
+      dots+='<circle cx="'+x+'" cy="'+y+'" r="4" fill="'+c+'" stroke="white" stroke-width="0.7"/>'
+        +'<title>'+esc(p.ch)+' — '+mmss(p.d)+', '+fmt(p.t,1)+'°C — '+esc(p.status)+'</title>';
       const column=i%5,row=Math.floor(i/5);
       const lx=L+20+column*133,ly=h-34+row*18;
       legend+='<circle cx="'+lx+'" cy="'+(ly-4)+'" r="5" fill="'+c+'"/>'
@@ -92,7 +99,7 @@
       +'<line x1="'+L+'" y1="'+(h-B)+'" x2="'+(w-R)+'" y2="'+(h-B)+'" stroke="#82969c"/>'
       +'<polygon points="'+poly+'" fill="#74c990" fill-opacity=".26" stroke="#277f47" stroke-width="3.1" stroke-linejoin="round"/>'
       +dots
-      +'<text x="'+(w/2)+'" y="'+(h-B+46)+'" fill="#344b52" font-size="14" text-anchor="middle">Duration above 165°C (min)</text>'
+      +'<text x="'+(w/2)+'" y="'+(h-B+46)+'" fill="#344b52" font-size="14" text-anchor="middle">Duration above 165°C (mm:ss)</text>'
       +'<text transform="translate(19 '+((h-B+top)/2)+') rotate(-90)" text-anchor="middle" fill="#344b52" font-size="14">Peak Temperature (°C)</text>'
       +legend+'</svg>';
   }
@@ -126,7 +133,7 @@
       +'<button class="gate-back" data-go-back>← All ovens</button><div class="gate-kicker">STEP 02 / BAKING WINDOW SELECTION</div>'
       +'<h1>'+oven.name+'</h1><p class="gate-lead">Choose a validated reference before analysing your temperature recordings.</p>'
       +(choice==='ed'
-        ?'<div class="window-selection"><div class="window-description"><span class="approved-flag">CONFIGURED WINDOW</span><h2>ED — Kansai Paint Iranian Co</h2><div class="window-spec"><span>Min duration <b>15 min</b></span><span>Max duration <b>35.5 min</b></span><span>Peak range <b>165–200°C</b></span></div><button class="primary-action" data-enter>Start ED analysis <span aria-hidden="true">→</span></button></div>'+preview()+'</div>'
+        ?'<div class="window-selection"><div class="window-description"><span class="approved-flag">CONFIGURED WINDOW</span><h2>ED — Kansai Paint Iranian Co</h2><div class="window-spec"><span>Min duration <b>15:00</b></span><span>Max duration <b>35:30</b></span><span>Peak range <b>165–200°C</b></span></div><button class="primary-action" data-enter>Start ED analysis <span aria-hidden="true">→</span></button></div>'+preview()+'</div>'
         :'<div class="window-selection no-window"><div class="window-description"><span class="pending-flag">WINDOW NOT CONFIGURED</span><h2>Temperature data exploration</h2><p>No validated baking-window coordinates have been supplied for '+oven.name+'. Uploads, tables and charts remain available. The evaluation panel will clearly show “Not configured” rather than an unverified PASS or FAIL.</p><button class="primary-action" data-enter>Continue without curing rules →</button></div></div>')
       +'</div>';
     }
@@ -223,18 +230,18 @@
   }
   function signed(v,n=3,unit=''){return v===null?'N/A':(v>0?'+':'')+fmt(v,n)+(unit?' '+unit:'');}
   function summaryRows(data){
-    const row=(label,key,digits=3,unit='',kind='')=>'<tr><th>'+label+'</th>'+data.map(v=>'<td class="'+(kind==='margin'&&v[key]<0?'negative':'')+'">'+(kind==='margin'?signed(v[key],digits,unit):v[key]===null?'N/A':fmt(v[key],digits)+(unit?' '+unit:''))+'</td>').join('')+'</tr>';
+    const row=(label,key,digits=3,unit='',kind='')=>'<tr><th>'+label+'</th>'+data.map(v=>'<td class="'+((kind==='margin'||kind==='time-margin')&&v[key]<0?'negative':'')+'">'+(kind==='time'?mmss(v[key]):kind==='time-margin'?signedTime(v[key]):kind==='margin'?signed(v[key],digits,unit):v[key]===null?'N/A':fmt(v[key],digits)+(unit?' '+unit:''))+'</td>').join('')+'</tr>';
     return '<div class="matrix-scroll"><table class="eval-matrix"><thead><tr><th>Evaluation parameter</th>'+data.map(v=>'<th>'+esc(v.ch)+'</th>').join('')+'</tr></thead><tbody>'
       +'<tr><th>Probe location</th>'+data.map(v=>'<td>'+esc(v.label.replace(/^Ch\d+\s*[-–]\s*/,''))+'</td>').join('')+'</tr>'
-      +row('Duration above 165°C','D',3,'min')+row('Peak temperature','T',1,'°C')
+      +row('Duration above 165°C','D',3,'','time')+row('Peak temperature','T',1,'°C')
       +'<tr class="matrix-group"><th colspan="'+(data.length+1)+'">ALLOWED BAKING WINDOW</th></tr>'
-      +'<tr><th>Min allowed duration</th>'+data.map(()=>'<td>15.000 min</td>').join('')+'</tr>'
-      +row('Max duration at peak temperature','dMax',3,'min')
+      +'<tr><th>Min allowed duration</th>'+data.map(()=>'<td>15:00</td>').join('')+'</tr>'
+      +row('Max duration at peak temperature','dMax',3,'','time')
       +'<tr><th>Min allowed peak temperature</th>'+data.map(()=>'<td>165.0°C</td>').join('')+'</tr>'
       +row('Max temperature at actual duration','tMax',1,'°C')
       +'<tr class="matrix-group"><th colspan="'+(data.length+1)+'">DISTANCE TO LIMITS (SIGNED MARGINS)</th></tr>'
-      +row('Minimum duration margin','mdMin',3,'min','margin')
-      +row('Maximum duration margin','mdMax',3,'min','margin')
+      +row('Minimum duration margin','mdMin',3,'','time-margin')
+      +row('Maximum duration margin','mdMax',3,'','time-margin')
       +row('Minimum peak temperature margin','mtMin',1,'°C','margin')
       +row('Maximum temperature margin','mtMax',1,'°C','margin')
       +'<tr class="matrix-group"><th colspan="'+(data.length+1)+'">RULE EVALUATION</th></tr>'
@@ -254,9 +261,9 @@
     const overall=invalid?'INVALID DATA':fail?'FAIL':results.length?'PASS':'NO DATA';
     let cards=results.map(v=>'<article class="probe-card '+(v.status==='PASS'?'good':'bad')+'"><div class="probe-head"><h3>'+esc(v.ch)+'</h3>'+tag(v.status)+'</div>'
       +'<p class="probe-location">'+esc(v.label)+'</p>'
-      +'<div class="probe-numbers"><span><small>Time ≥165°C</small><b>'+fmt(v.D)+' <em>min</em></b></span><span><small>Peak temperature</small><b>'+fmt(v.T,1)+' <em>°C</em></b></span></div>'
-      +'<div class="probe-margins"><span>Min time margin <b class="'+(v.mdMin<0?'negative':'')+'">'+signed(v.mdMin,3,'min')+'</b></span>'
-      +'<span>Max time margin <b>'+signed(v.mdMax,3,'min')+'</b></span>'
+      +'<div class="probe-numbers"><span><small>Time ≥165°C</small><b>'+mmss(v.D)+' <em>mm:ss</em></b></span><span><small>Peak temperature</small><b>'+fmt(v.T,1)+' <em>°C</em></b></span></div>'
+      +'<div class="probe-margins"><span>Min time margin <b class="'+(v.mdMin<0?'negative':'')+'">'+signedTime(v.mdMin)+'</b></span>'
+      +'<span>Max time margin <b>'+signedTime(v.mdMax)+'</b></span>'
       +'<span>Min temp margin <b>'+signed(v.mtMin,1,'°C')+'</b></span>'
       +'<span>Max temp margin <b>'+signed(v.mtMax,1,'°C')+'</b></span></div>'
       +'<div class="probe-reason">'+(v.violations.length?esc(v.violations.join('; ')):'All baking window rules satisfied')+'</div></article>').join('');
