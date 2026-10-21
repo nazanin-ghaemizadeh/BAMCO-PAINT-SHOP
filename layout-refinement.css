@@ -222,3 +222,14 @@ body.bamco-entered:not([data-section="upload"]) .stage-layout > .chart-panel {
 @media (max-width:520px) {
   #bamco-gateway .gate-container:not(.gate-window-container) .gate-brand {padding:15px;}
 }
+
+/* Reuse the actual analysis masthead on the welcome screen. */
+#bamco-gateway .gate-header-slot > .app-header {margin-bottom:0;}
+#bamco-gateway .gate-header-slot .app-header h1 {
+  max-width:none;font-size:29px;font-weight:760;letter-spacing:-.8px;
+  line-height:normal;margin:6px 0 9px;
+}
+@media (min-width:901px) and (min-height:570px) {
+  #bamco-gateway:has(.gate-header-slot) {padding:22px 28px 18px;}
+  #bamco-gateway .gate-container:has(.gate-header-slot) {max-width:1920px;}
+}

@@ -112,26 +112,23 @@
   function preview(){
     return '<div class="window-photo-card ed-reference-image"><img src="'+ED_WINDOW_ASSET+'" alt="ED Baking Window — Kansai Paint Iranian Co" class="window-photo" width="1448" height="1086" decoding="async" loading="eager"></div>';
   }
-  function applyGatewayLogo(){
-    const original=document.getElementById('company-logo-image');
-    if(!original||!gateway)return;
-    const mark=gateway.querySelector('.brand-mark');
-    if(!mark)return;
-    const clone=original.cloneNode(true);clone.removeAttribute('id');
-    clone.className='gateway-company-logo';
-    clone.alt='BAM Automotive Company';
-    mark.replaceChildren(clone);
-    mark.classList.add('has-company-logo');
+  function applyGatewayHeader(){
+    const slot=gateway?.querySelector('.gate-header-slot');
+    const source=document.querySelector('.app-shell > .app-header');
+    if(!slot||!source)return;
+    const header=source.cloneNode(true);
+    header.removeAttribute('id');
+    header.querySelectorAll('[id]').forEach(node=>node.removeAttribute('id'));
+    slot.replaceChildren(header);
   }
   function renderGate(){
     if(!gateway)return;
     const oven=ovens.find(x=>x.id===choice);
     if(step===1){
-      gateway.innerHTML='<div class="gate-container"><div class="gate-brand"><span class="brand-mark">B</span><span>BAM AUTOMOTIVE COMPANY <small>PAINT SHOP INTELLIGENCE</small></span></div>'
+      gateway.innerHTML='<div class="gate-container"><div class="gate-header-slot"></div>'
       +'<div class="gate-intro"><h1>Precision starts with <span>every degree.</span></h1></div>'
       +'<div class="oven-grid">'+ovens.map(o=>'<button class="oven-choice" data-oven="'+o.id+'"><span class="oven-number">'+o.symbol+'</span><span class="oven-graphic" aria-hidden="true">'+ovenIcon(o.id)+'</span><strong>'+o.name+'</strong><small>'+o.description+'</small><span class="oven-cta">Select oven →</span></button>').join('')+'</div>'
       +'</div>';
-      applyGatewayLogo();
     } else {
       gateway.innerHTML='<div class="gate-container gate-window-container">'
       +'<div class="window-topbar"><div><span class="window-eyebrow">THERMAL WORKSPACE</span><h1>'+oven.name+'</h1></div><button class="window-change-oven" data-go-back>← Change oven</button></div>'
@@ -140,7 +137,7 @@
         :'<div class="window-selection no-window"><section class="window-description"><span class="pending-flag">REFERENCE PENDING</span><h2>Explore your recordings</h2><p>No validated baking window has been configured for '+oven.name+'. You can upload recordings and explore temperature tables and charts.</p><p class="window-pending-note">Baking-window evaluation will show “Not configured”.</p><div class="window-actions"><button class="primary-action" data-enter>Continue to workspace <span aria-hidden="true">→</span></button></div></section></div>')
       +'</div>';
     }
-    applyGatewayLogo();
+    applyGatewayHeader();
   }
   function scrollToPageTop(){
     // The welcome page can be taller than the upload view. Reset the retained
