@@ -81,7 +81,7 @@
       +'<div class="compare-control-header"><h3>01 · Choose recordings</h3><div><button type="button" data-cmp-action="all">Select all</button><button type="button" data-cmp-action="clear">Clear</button></div></div>'
       +'<div class="compare-file-list">'+files.map(f=>'<label class="compare-file-choice"><input type="checkbox" data-cmp-file="'+esc(f.id)+'" '+(state.ids.includes(f.id)?'checked':'')+'/>'+fileStyleSvg(f.fileIndex)+'<span class="compare-filename" title="'+esc(f.name)+'">'+esc(f.name)+'</span></label>').join('')+'</div>'
       +'<div class="compare-small-title">02 · Channels</div>'
-      +'<div class="compare-channel-list">'+channels.map(ch=>'<label class="compare-channel-choice"><input data-cmp-channel="'+ch+'" type="checkbox" '+(state.channels.includes(ch)?'checked':'')+'/><span>'+ch+'</span></label>').join('')+'</div>'
+      +'<div class="compare-channel-list">'+channels.map(ch=>'<label class="compare-channel-choice"><input data-cmp-channel="'+ch+'" type="checkbox" '+(state.channels.includes(ch)?'checked':'')+'/><span class="channel-color-swatch" style="background:'+channelColor(ch)+'"></span><span>'+esc(ch)+'</span></label>').join('')+'</div>'
       +'<div class="compare-small-title">03 · Chart type</div>'
       +'<select class="compare-select" id="cmp-mode" aria-label="Chart to compare">'+MODES.map(m=>'<option value="'+m.id+'" '+(state.mode===m.id?'selected':'')+'>'+m.label+'</option>').join('')+'</select>'
       +'<div class="compare-guidance"><strong>How it works</strong><p>Color identifies the channel (Ch1, Ch2, etc.). Line style identifies the uploaded file. The spread chart is an aggregate of your selected channels, differentiated by file line style.</p></div></div>';
