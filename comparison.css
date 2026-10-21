@@ -80,7 +80,6 @@ body[data-section="comparison"] .bamco-views {width:100%}
 .comparison-point p {font-size:10px;color:#66847c;margin:9px 0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .comparison-point small {font-size:11px;color:#234f4c;font-variant-numeric:tabular-nums}
 .window-analysis-plot .window-svg {max-height:600px;margin:auto}
-.window-analysis-plot .window-legend {margin-top:-10px;padding:0 8px 12px;justify-content:center;font-size:12px;color:#718780}
 .analysis-titlebar,.analysis-table-title {gap:8px}
 .probe-card {border-top:3px solid #48ac81}
 .probe-card.bad {border-top-color:#d65f64}
