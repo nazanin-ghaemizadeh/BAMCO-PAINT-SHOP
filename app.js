@@ -117,10 +117,11 @@ function stageHTML(){return `<div class="stage-layout"><aside class="upload-pane
  <h3>${STAGES[tab]} recordings</h3>
  
  <div class="upload-control"><label class="control-label" for="files">Excel files</label>
- <div class="input-group"><span class="input-group-btn"><label class="btn" for="files">Browse files</label></span><input class="form-control" id="filename" type="text" readonly value="No files selected"></div>
- <input class="hidden-file" type="file" id="files" multiple accept=".xls,.xlsx"></div>
- 
- <div id="file-list"></div>
+ <div class="upload-file-stack">
+  <div class="input-group"><span class="input-group-btn"><label class="btn" for="files">Browse files</label></span><input class="form-control" id="filename" type="text" readonly value="No files selected"></div>
+  <input class="hidden-file" type="file" id="files" multiple accept=".xls,.xlsx">
+  <div id="file-list"></div>
+ </div></div>
  <div id="worksheet-picker"></div><div id="source-label"></div><div id="errors"></div>
  </aside><main class="chart-panel" id="chart-panel"></main></div>`;}
 function chooseTab(t){tab=t;document.querySelectorAll('[data-stage]').forEach(x=>x.classList.toggle('active',x.dataset.stage===t));$('workspace').innerHTML=stageHTML();
