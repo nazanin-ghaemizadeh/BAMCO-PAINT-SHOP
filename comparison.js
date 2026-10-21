@@ -64,7 +64,6 @@
           if(!node.checked)state.channels=state.channels.filter(x=>x!==ch);
           render();
         }else if(node.id==='cmp-mode'){state.mode=node.value;render();}
-        }
       });
       main.addEventListener('click',e=>{
         const b=e.target.closest('button');
