@@ -64,10 +64,52 @@ input[type=checkbox]{accent-color:var(--navy);}
 .analysis-card{margin:24px 0;padding:22px 16px;border:1px solid #e4eaf0;border-radius:12px;background:#fff;}
 .analysis-card h3{margin:0 0 10px;font-size:18px;font-weight:650;color:#14283f;}
 .plot-surface{width:100%;min-width:0;}
-.chart-actions{display:flex;gap:10px;flex-wrap:wrap;padding-top:12px;border-top:1px solid var(--line);}
+.chart-actions{display:flex;gap:10px;flex-wrap:wrap}
 .chart-actions .btn:first-child{background:var(--navy);color:#fff;border-color:var(--navy);}
 .chart-actions .btn:first-child:hover{background:#264b64;}
-.export-note{margin-top:12px;}
+
+.chart-topbar {
+ display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;
+ background:linear-gradient(110deg,#eef7f2,#f9fcfa);border:1px solid #cfe6d8;
+ border-radius:16px;padding:20px 22px;margin:12px 0 16px;
+}
+.chart-topbar .eyebrow {margin:0 0 8px}
+.chart-topbar h3 {margin:0;color:#1c5248;font-size:21px;font-weight:700}
+.chart-topbar .chart-actions {display:flex;gap:10px;flex-wrap:wrap;padding:0;border:0}
+.chart-topbar .chart-actions .btn {min-height:42px}
+.chart-channel-controls {
+ display:grid;grid-template-columns:minmax(170px,230px) minmax(0,1fr);
+ align-items:center;gap:16px;background:#fff;border:1px solid #dcebe3;
+ border-radius:15px;padding:20px 22px;margin:0 0 20px;
+}
+.chart-channel-heading .eyebrow {margin:0 0 8px}
+.chart-channel-heading h3 {font-size:17px;color:#1c5549;margin:0 0 7px}
+.chart-channel-heading p:last-child {margin:0}
+.chart-channel-options {display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.chart-channel-choice {
+ display:inline-flex;align-items:center;gap:8px;cursor:pointer;
+ padding:10px 13px;max-width:100%;border:1px solid #d8e8df;border-radius:10px;
+ background:#f9fcfa;font-size:12px;color:#285a4f;line-height:1.5;
+}
+.chart-channel-choice:hover {background:#ecf6ef;border-color:#9ed1b4}
+.chart-channel-choice:has(input:checked){background:#ebf8ee;border-color:#94cdae}
+.chart-channel-choice input {margin:0;flex:none;accent-color:#1e8260}
+.chart-channel-dot {width:9px;height:9px;flex:0 0 9px;border-radius:50%}
+.chart-card-heading {display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.analysis-card .chart-card-heading h3 {margin:0}
+.chart-png-btn {flex:0 0 auto;padding:8px 13px;background:#f1f8f4;color:#24654f;border-color:#cfe5d7}
+.chart-png-btn:hover:enabled {background:#e2f1e7;border-color:#8fcbab}
+@media (max-width:900px){
+ .chart-channel-controls {grid-template-columns:1fr;padding:16px}
+ .chart-topbar {padding:17px}
+}
+@media (max-width:540px){
+ .chart-topbar .chart-actions {width:100%}
+ .chart-topbar .chart-actions .btn {flex:1 1 160px}
+ .chart-card-heading {flex-wrap:wrap}
+ .chart-channel-choice {padding:8px 10px}
+}
+
 .section-title{font-size:17px;font-weight:650;margin:30px 0 14px;}
 .source-section{margin:18px 0;border:1px solid #e4eaf0;border-radius:10px;overflow:hidden;}
 .source-section h4{background:#14283f;color:white;padding:14px 18px;margin:0;font-size:14px;font-weight:600;}
