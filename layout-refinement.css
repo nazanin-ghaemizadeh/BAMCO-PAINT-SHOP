@@ -103,3 +103,81 @@
   #bamco-gateway .gate-window-container .gate-back {margin-bottom:14px!important;}
   #bamco-gateway .gate-window-container .window-selection {height:auto;max-height:none;}
 }
+
+/* Final viewport-balanced welcome screen: raised masthead and larger oven cards. */
+@media (min-width:901px) and (min-height:570px) {
+  /* Anchor the identity at the top rather than centering the entire page. */
+  #bamco-gateway .gate-container:not(.gate-window-container) {
+    justify-content:flex-start !important;
+  }
+  #bamco-gateway .gate-container:not(.gate-window-container) .gate-brand {
+    margin:0 0 clamp(28px,6dvh,52px) !important;
+  }
+  #bamco-gateway .gate-container:not(.gate-window-container) .gate-kicker {
+    font-size:clamp(11px,1.9dvh,13px);
+    margin-bottom:9px !important;
+  }
+  #bamco-gateway .gate-container:not(.gate-window-container)>h1 {
+    font-size:clamp(32px,5.9dvh,57px);
+    margin-bottom:12px !important;
+  }
+  #bamco-gateway .gate-container:not(.gate-window-container) .gate-subtitle span {
+    font-size:clamp(18px,3dvh,23px);
+  }
+  /* An automatic flex spacer sends the card row toward the bottom.
+     Padding guarantees breathing room between the subtitle and the cards. */
+  #bamco-gateway .gate-container:not(.gate-window-container) .oven-grid {
+    margin-top:auto !important;
+    padding-top:clamp(22px,3.5dvh,40px);
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:clamp(12px,1.35vw,22px);
+    flex:0 0 auto;
+  }
+  #bamco-gateway .oven-grid .oven-choice {
+    height:clamp(220px,min(45dvh,calc(100dvh - 320px)),325px) !important;
+    min-height:0 !important;
+    padding:clamp(16px,2.7dvh,25px) !important;
+    border-radius:21px;
+  }
+  #bamco-gateway .oven-grid .oven-choice .oven-number {
+    font-size:clamp(15px,2.2dvh,18px) !important;
+  }
+  #bamco-gateway .oven-grid .oven-choice .oven-graphic {
+    width:clamp(76px,13dvh,99px);
+    height:clamp(76px,13dvh,99px);
+    margin:clamp(11px,2.1dvh,21px) 0 clamp(12px,2.1dvh,21px) !important;
+    border-radius:20px;
+  }
+  #bamco-gateway .oven-grid .oven-choice .oven-icon {
+    width:79%;height:79%;
+  }
+  #bamco-gateway .oven-grid .oven-choice strong {
+    font-size:clamp(21px,3.2dvh,27px) !important;
+    line-height:1.22;
+    margin-bottom:8px;
+  }
+  #bamco-gateway .oven-grid .oven-choice small {
+    font-size:clamp(14px,2.15dvh,17px) !important;
+    line-height:1.38;
+  }
+  #bamco-gateway .oven-grid .oven-choice .oven-cta {
+    font-size:clamp(14px,2.1dvh,17px) !important;
+    padding-top:12px;
+  }
+}
+/* Four balanced cards instead of two rows at medium desktop widths. */
+@media (min-width:901px) and (max-width:1040px) and (min-height:570px) {
+  #bamco-gateway .oven-grid {grid-template-columns:repeat(4,minmax(0,1fr)) !important;gap:10px !important;}
+  #bamco-gateway .oven-grid .oven-choice {padding:13px !important;}
+  #bamco-gateway .oven-grid .oven-choice .oven-graphic {width:65px;height:65px;margin:10px 0 !important;}
+  #bamco-gateway .oven-grid .oven-choice strong {font-size:19px !important;}
+  #bamco-gateway .oven-grid .oven-choice small {font-size:13px !important;}
+}
+/* On unusually short landscape screens preserve every control; scrolling is
+   preferable to clipping. The common 1366×768 laptop stays scroll-free. */
+@media (min-width:901px) and (max-height:569px) {
+  body:not(.bamco-entered) {overflow:auto !important;}
+  #bamco-gateway {height:auto !important;min-height:100dvh !important;overflow:visible !important;}
+  #bamco-gateway .gate-container:not(.gate-window-container) {height:auto !important;max-height:none !important;}
+  #bamco-gateway .gate-container:not(.gate-window-container) .oven-grid {margin-top:24px !important;}
+}
