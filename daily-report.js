@@ -26,7 +26,7 @@
       if(!reference)throw Error('No active baking window is available for '+oven.name+'.');
       const results=window.BAMCOEnhance.evaluate(record,slot.reference);
       if(!results.length)throw Error('No channel cards are available for '+oven.name+'.');
-      return [{results,options:{ovenName:oven.name,manufacturer:reference.manufacturer}}];
+      return [{results,options:{ovenName:oven.name,manufacturer:reference.manufacturer,threshold:reference.threshold,rules:reference.rules}}];
     });
     if(!pages.length)throw Error('Upload at least one valid Excel file.');
     return pages;

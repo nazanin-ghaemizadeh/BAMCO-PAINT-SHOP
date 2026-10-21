@@ -5,7 +5,8 @@
   function details(options={}){
     const ovenName=String(options.ovenName||'Oven');
     const recordingDate=options.recordingDate||null;
-    return {ovenName,recordingDate,manufacturer:String(options.manufacturer||'')};
+    return {ovenName,recordingDate,manufacturer:String(options.manufacturer||''),
+      threshold:options.threshold,rules:Array.isArray(options.rules)?options.rules.map(rule=>rule.slice(0,3)):[]};
   }
   const pdfString=value=>'<FEFF'+Array.from({length:String(value).length},(_,i)=>String(value).charCodeAt(i).toString(16).padStart(4,'0')).join('')+'>';
   const finite=Number.isFinite;
@@ -17,8 +18,8 @@
   };
   const timeMargin=v=>finite(v)?(v>0?'+':'')+time(v):'N/A';
   const tempMargin=v=>finite(v)?(v>0?'+':'')+fmt(v)+' °C':'N/A';
-  function layout(count){
-    const availableW=PAGE_W-48,availableH=PAGE_H-CONTENT_TOP-24,gap=12;
+  function layout(count,bottom=24){
+    const availableW=PAGE_W-48,availableH=PAGE_H-CONTENT_TOP-bottom,gap=12;
     let best=null;
     for(let columns=1;columns<=count;columns++){
       const rows=Math.ceil(count/columns);
@@ -61,9 +62,10 @@
     text(info.ovenName,24,64,12,'#536d60',true);
     if(info.manufacturer)text(info.manufacturer,PAGE_W-24,64,10,'#536d60',false,'right');
     text('Date: '+(info.recordingDate||'Not available'),PAGE_W-24,43,11,'#536d60',false,'right');
-    const grid=layout(results.length),cw=240*grid.scale,ch=280*grid.scale;
+    const bottom=info.rules.length?78:24;
+    const grid=layout(results.length,bottom),cw=240*grid.scale,ch=280*grid.scale;
     const gridHeight=grid.rows*ch+(grid.rows-1)*grid.gap;
-    const startY=CONTENT_TOP+(PAGE_H-CONTENT_TOP-24-gridHeight)/2;
+    const startY=CONTENT_TOP+(PAGE_H-CONTENT_TOP-bottom-gridHeight)/2;
     results.forEach((v,i)=>{
       const row=Math.floor(i/grid.columns),col=i%grid.columns;
       const rowCount=Math.min(grid.columns,results.length-row*grid.columns);
@@ -100,6 +102,17 @@
       wrapped(v.violations?.length?v.violations.join('; '):v.status==='NO DATA'?'No numeric samples to evaluate':'All baking window rules satisfied',23,237,194,28,9,accent);
       ctx.restore();
     });
+    if(info.rules.length){
+      const y=PAGE_H-62,columnWidth=(PAGE_W-48)/3;
+      ctx.strokeStyle='#dce7e1';ctx.lineWidth=.6;
+      ctx.beginPath();ctx.moveTo(24,y);ctx.lineTo(PAGE_W-24,y);ctx.stroke();
+      text('Rules (failure conditions)',24,y+12,8.5,'#536d60',true);
+      const threshold=finite(info.threshold)?info.threshold:results.find(v=>finite(v.threshold))?.threshold;
+      text('D = time'+(finite(threshold)?' ≥'+threshold+'°C':' above threshold')+' (min); T = peak temperature (°C)',PAGE_W-24,y+12,8,'#708078',false,'right');
+      info.rules.forEach(([id,description,formula],i)=>{
+        wrapped(id+' - '+description+': '+formula,24+(i%3)*columnWidth,y+26+Math.floor(i/3)*18,columnWidth-12,17,8,'#536d60');
+      });
+    }
   }
   // One image per landscape A4 page; every oven retains its own summary page.
   function pdfBytes(pages,title){
