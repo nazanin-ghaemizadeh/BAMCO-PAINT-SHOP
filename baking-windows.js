@@ -25,7 +25,7 @@
   // Shared by Primer and Base Coat as specified by the user.
   const gamma={
     name:'Gamma Thinner Baking Window',manufacturer:'Gamma Thinner',shortManufacturer:'Gamma Thinner',
-    image:'assets/gamma-baking-window.png?v=20261021-2',
+    image:'assets/gamma-baking-window.png?v=20261021-3',
     threshold:140,minDuration:15,maxDuration:40,minTemp:140,maxTemp:155,
     vertices:[[15,155],[30,155],[40,140],[20,140]],
     xRange:[10,45],yRange:[135,160],xTicks:[10,15,20,25,30,35,40,45],yTicks:[135,140,145,150,155,160],
@@ -39,7 +39,7 @@
       ['R03','Insufficient Temperature','Peak < 140°C',(D,T)=>T<140-1e-9],
       ['R04','Excessive Absolute Temperature','Peak > 155°C',(D,T)=>T>155+1e-9],
       ['R05','Outside Upper Sloped Boundary','3D + 2T > 400',(D,T)=>3*D+2*T>400+1e-8],
-      ['R07','Outside Lower Sloped Boundary','3D + T < 200',(D,T)=>3*D+T<200-1e-8]
+      ['R06','Outside Lower Sloped Boundary','3D + T < 200',(D,T)=>3*D+T<200-1e-8]
     ]
   };
   const windows={ed,primer:gamma,bc:gamma};

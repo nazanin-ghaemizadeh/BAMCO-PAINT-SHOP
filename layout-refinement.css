@@ -429,3 +429,7 @@ body {font-size:16px;}
  .app-header .brand,#bamco-gateway .gate-header-slot .app-header .brand {font-size:21px;}
  .app-header h1,#bamco-gateway .gate-header-slot .app-header h1 {font-size:18px;}
 }
+
+/* The installed reference is available before importing any recordings. */
+.no-analysis .ed-reference-image {width:min(100%,980px);max-width:980px;padding:8px;margin:18px auto;}
+.no-analysis .ed-reference-image .window-photo {width:100%;height:auto;max-height:620px;object-fit:contain;}
