@@ -186,6 +186,18 @@ function renderMain(){
  window.BAMCOEnhance?.refresh?.();
  if(document.body.dataset.section==='charts')renderPlots();
 }
+function updateChartExportButtons(){
+ const available=id=>Boolean($('plot-'+id)?.data);
+ const ready=['profile','spread','bands','peaks'].every(available)
+   &&!document.querySelector('.view-charts')?.classList.contains('charts-drawing');
+ for(const id of ['profile','spread','bands','peaks']){
+  const btn=document.querySelector('[data-download-chart="'+id+'"]');
+  if(btn)btn.disabled=!available(id);
+ }
+ const png=$('download-png'),excel=$('download-xlsx');
+ if(png)png.disabled=!ready;
+ if(excel)excel.disabled=!ready;
+}
 function renderPlots(){
  const v=drawVersion,r=record();
  const section=$('plot-profile')?.closest('.view-charts');
@@ -193,6 +205,7 @@ function renderPlots(){
  if(chartsPreparedVersion===v){
   // Ignore re-entrant calls while the same chart set is still rendering.
   if(section.classList.contains('charts-drawing'))return;
+  updateChartExportButtons();
   // Returning to an already rendered tab only requires a resize.
   requestAnimationFrame(()=>{
    if(v!==drawVersion||document.body.dataset.section!=='charts'||!window.Plotly)return;
@@ -213,6 +226,7 @@ function renderPlots(){
   for(const n of ['profile','spread','bands','peaks'])$('plot-'+n).textContent='Select at least one channel.';
   section.classList.remove('charts-drawing');
   section.classList.add('charts-ready');
+  updateChartExportButtons();
   return;
  }
  const b=bands(r,chs);
@@ -229,6 +243,7 @@ function renderPlots(){
    for(const n of ['profile','spread','bands','peaks'])$('plot-'+n).textContent='Chart library unavailable.';
    section.classList.remove('charts-drawing');
    section.classList.add('charts-ready');
+   updateChartExportButtons();
    return;
   }
   Promise.allSettled([profile(r,chs),spread(r,chs),heatmap(chs,b),peaks(others,chs)]).then(results=>{
@@ -241,6 +256,7 @@ function renderPlots(){
    });
    section.classList.remove('charts-drawing');
    section.classList.add('charts-ready');
+   updateChartExportButtons();
   });
  });
 }
@@ -499,6 +515,23 @@ function renderSource(r){
  container.replaceChildren(frag);
 }
 function saveBlob(blob,name){const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1500);}
+async function downloadSingleChart(id,button){
+ const names={profile:'temperature_profile',spread:'channel_temperature_spread',
+  bands:'time_in_temperature_bands',peaks:'peak_temperatures_by_file'};
+ if(!Object.hasOwn(names,id))return;
+ const chart=$('plot-'+id);
+ if(!chart?.data||!window.Plotly)return;
+ button.disabled=true;
+ try{
+  const image=await Plotly.toImage(chart,{format:'png',width:1400,
+   height:id==='profile'?850:id==='bands'?750:700,scale:1.5});
+  const link=document.createElement('a');
+  link.href=image;
+  link.download=fileName(record())+'_'+names[id]+'.png';
+  document.body.appendChild(link);link.click();link.remove();
+ }catch(error){alert('Chart PNG export failed: '+error.message);}
+ finally{button.disabled=false;}
+}
 async function images(){
  const ids=['profile','spread','bands','peaks'];if(ids.some(k=>!$('plot-'+k)?.data))throw Error('Select channels and ensure that all four charts have rendered.');
  const data=[];for(let i=0;i<4;i++)data.push(await Plotly.toImage($('plot-'+ids[i]),{format:'png',width:1200,height:i===2?600:540,scale:1.5}));
