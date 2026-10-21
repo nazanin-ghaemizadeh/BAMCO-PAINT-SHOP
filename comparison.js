@@ -97,7 +97,22 @@
       autosize:true};
   }
 
-  // Compact, grouped tooltips shared by the comparison and baking charts.
+  // One reusable hover panel for both comparisons: exact file glyph, two rows,
+  // then additional horizontal columns when more recordings are selected.
+  function tooltipSwatch(fileIndex,color,kind){
+    if(kind!=='window')return '<svg class="tooltip-swatch" viewBox="0 0 24 16" aria-hidden="true">'
+      +'<path d="M1 8H23" fill="none" stroke="'+color+'" stroke-width="2.5" stroke-dasharray="'+FILE_DASH_PATTERNS[fileIndex%FILE_DASH_PATTERNS.length]+'"/></svg>';
+    const shape=fileSymbol(fileIndex), fill='fill="'+color+'"',line='stroke="'+color+'" stroke-width="2.6" stroke-linecap="round"';
+    let svg;
+    if(shape==='square')svg='<rect x="5" y="3" width="12" height="12" rx="1.1" '+fill+'/>';
+    else if(shape==='diamond')svg='<path d="M11 1L19 9L11 17L3 9Z" '+fill+'/>';
+    else if(shape==='cross')svg='<path d="M11 2V16M4 9H18" '+line+'/>';
+    else if(shape==='triangle-up')svg='<path d="M11 1L20 16H2Z" '+fill+'/>';
+    else if(shape==='triangle-down')svg='<path d="M2 2H20L11 17Z" '+fill+'/>';
+    else if(shape==='star')svg='<path d="M11 1L13.7 6.4L20 7.3L15.5 11.6L16.6 18L11 15L5.4 18L6.5 11.6L2 7.3L8.3 6.4Z" '+fill+'/>';
+    else svg='<circle cx="11" cy="9" r="6.1" '+fill+'/>';
+    return '<svg class="tooltip-swatch" viewBox="0 0 22 19" aria-hidden="true">'+svg+'</svg>';
+  }
   function comparisonTooltip(plot,kind){
     const tip=document.createElement('div');
     tip.className='bamco-compare-tooltip';
@@ -112,17 +127,19 @@
         if(!groups.has(m.fileId))groups.set(m.fileId,{name:m.fileName,rows:new Map()});
         const g=groups.get(m.fileId);
         const value=kind==='window'?'Peak '+fmt(p.y,1)+'°C · '+esc(String(custom[1]||'')):fmt(p.y,2)+'°C';
-        g.rows.set(label,'<div class="tooltip-line"><span class="tooltip-channel" style="--tooltip-dot:'+channelColor(label)+'">'+esc(label)+'</span><span>'+value+'</span></div>');
+        const marker=tooltipSwatch(m.fileIndex||0,channelColor(label),kind);
+        g.rows.set(label,'<div class="tooltip-line"><span class="tooltip-channel">'+marker+esc(label)+'</span><span>'+value+'</span></div>');
       }
       const heading=kind==='window'?mmss(pts[0].x):fmt(pts[0].y,2)+'°C';
-      tip.innerHTML='<div class="tooltip-value">'+esc(heading)+'</div>'
-        +[...groups.values()].map(g=>'<div class="tooltip-file"><strong>'+esc(g.name)+'</strong>'+[...g.rows.values()].join('')+'</div>').join('');
+      tip.innerHTML='<div class="tooltip-value">'+esc(heading)+'</div><div class="tooltip-groups">'
+        +[...groups.values()].map(g=>'<div class="tooltip-file"><strong title="'+esc(g.name)+'">'+esc(g.name)+'</strong>'+[...g.rows.values()].join('')+'</div>').join('')+'</div>';
       tip.hidden=false;
       const rect=plot.getBoundingClientRect(),e=event.event;
       const x=Number.isFinite(e?.clientX)?e.clientX-rect.left:rect.width/2;
       const y=Number.isFinite(e?.clientY)?e.clientY-rect.top:rect.height/2;
-      tip.style.left=Math.max(8,Math.min(x+16,rect.width-tip.offsetWidth-8))+'px';
-      tip.style.top=Math.max(8,Math.min(y+16,rect.height-tip.offsetHeight-8))+'px';
+      const w=tip.offsetWidth,h=tip.offsetHeight;
+      tip.style.left=Math.max(6,Math.min(x+14,rect.width-w-6))+'px';
+      tip.style.top=Math.max(6,Math.min(y+12,rect.height-h-6))+'px';
     });
     plot.on('plotly_unhover',()=>{tip.hidden=true;});
     plot.addEventListener('mouseleave',()=>{tip.hidden=true;});
@@ -147,7 +164,7 @@
         });flush();
         groups.forEach((group,j)=>data.push({type:'scatter',mode:group.length===1?'markers':'lines',
           x:group.map(p=>p.elapsed),y:group.map(p=>p.values[ch]),
-          name:file.name+' · '+ch,legendgroup:file.id+ch,showlegend:j===0,meta:{fileId:file.id,fileName:file.name,channel:ch},hoverinfo:'none',
+          name:file.name+' · '+ch,legendgroup:file.id+ch,showlegend:j===0,meta:{fileId:file.id,fileName:file.name,fileIndex:file.fileIndex,channel:ch},hoverinfo:'none',
           line:{color:channelColor(ch),width:2.5,dash:fileDash(file.fileIndex)},
           marker:{size:5,color:channelColor(ch)}}));
       }));
@@ -160,7 +177,7 @@
           const gap=i>0&&read.ts-file.r.reads[i-1].ts>file.r.step*1500+1;
           y.push(!gap&&channels.length>=2&&vals.every(Number.isFinite)?Math.max(...vals)-Math.min(...vals):null);
         }
-        data.push({type:'scatter',mode:'lines',x,y,name:file.name,meta:{fileId:file.id,fileName:file.name,channel:'Spread'},hoverinfo:'none',
+        data.push({type:'scatter',mode:'lines',x,y,name:file.name,meta:{fileId:file.id,fileName:file.name,fileIndex:file.fileIndex,channel:'Spread'},hoverinfo:'none',
           line:{color:'#246d6d',width:2.8,dash:fileDash(file.fileIndex)},connectgaps:false});
       });
     }
@@ -199,7 +216,7 @@
       if(!arr.length)return;
       records.push({type:'scatter',mode:'markers',name:f.name,showlegend:true,
         x:arr.map(v=>v.D),y:arr.map(v=>v.T),
-        customdata:arr.map(v=>[v.ch,v.status,f.name,mmss(v.D)]),meta:{fileId:f.id,fileName:f.name},hoverinfo:'none',
+        customdata:arr.map(v=>[v.ch,v.status,f.name,mmss(v.D)]),meta:{fileId:f.id,fileName:f.name,fileIndex:f.fileIndex},hoverinfo:'none',
         marker:{size:8,color:arr.map(v=>channelColor(v.ch)),line:{width:0.6,color:'#fff'},symbol:fileSymbol(f.fileIndex)}});
     });
     const l=chartLayout('ED compliance · selected files','Peak temperature (°C)');
