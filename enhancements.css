@@ -2,6 +2,9 @@
 /* BAMCO Paint Shop v2 — responsive welcome / sidebar / compliance workspace */
 body {background:#f3f6f7}
 body:not(.bamco-entered) .app-shell {display:none}
+/* Prevent any transient legacy upload view while the selected oven is prepared. */
+body.bamco-building .app-shell {visibility:hidden !important;pointer-events:none !important;}
+
 body.bamco-entered #bamco-gateway {display:none}
 #bamco-gateway {min-height:100vh;background:radial-gradient(circle at 80% 5%,#1b6b7040,transparent 43%),linear-gradient(140deg,#0c2436,#0f3443 65%,#153c43);color:#f4fafb;padding:40px 25px;box-sizing:border-box}
 .gate-container {max-width:1300px;margin:0 auto}
