@@ -61,7 +61,7 @@
   const CHANNEL_COLORS=['#087d8c','#e19a24','#4364c5','#ce4e68','#865ac2','#0e946e','#bb627f','#7d8737'];
   function channelColor(ch){const n=Number(String(ch).replace(/\D/g,''));return CHANNEL_COLORS[(Number.isFinite(n)&&n>0?n-1:0)%CHANNEL_COLORS.length];}
   function svgChart(points=[],small=false){
-    const w=790,h=small?310:460,L=65,R=23,top=26,B=small?58:95;
+    const w=790,h=small?340:485,L=65,R=23,top=26,B=small?82:126;
     const X=x=>L+(x-10)/30*(w-L-R),Y=y=>h-B-(y-155)/55*(h-top-B);
     const poly=WINDOW.vertices.map(p=>X(p[0])+','+Y(p[1])).join(' ');
     const lines=[];
@@ -73,38 +73,26 @@
       lines.push('<line x1="'+L+'" y1="'+Y(y)+'" x2="'+(w-R)+'" y2="'+Y(y)+'" stroke="#dfebe7" stroke-dasharray="4 5"/>');
       lines.push('<text x="'+(L-13)+'" y="'+(Y(y)+4)+'" text-anchor="end" font-size="12" fill="#708983">'+y+'</text>');
     }
-    let dots='',labels='',legend='';
+    let dots='',legend='';
     WINDOW.vertices.forEach(([x,y])=>dots+='<circle cx="'+X(x)+'" cy="'+Y(y)+'" r="4.5" fill="#237e4b" stroke="white" stroke-width="1.6"/>');
-    const occupied=[];
     points.forEach((p,i)=>{
       if(!Number.isFinite(p.d)||!Number.isFinite(p.t))return;
-      const x=X(p.d),y=Y(p.t),c=channelColor(p.ch),wLabel=82,hLabel=23;
-      // Do not change the measured coordinate. Move only its annotation if nearby probes overlap.
-      const offsets=[[14,14],[-95,14],[14,-37],[-95,-37],[14,39],[-95,39],[14,-62],[-95,-62],[25,65],[-104,65]];
-      let selected=null,score=Infinity;
-      for(const [dx,dy] of offsets){
-        const bx=Math.max(L+3,Math.min(w-R-wLabel-3,x+dx));
-        const by=Math.max(top+4,Math.min(h-B-hLabel-4,y+dy));
-        let penalty=Math.abs(dx)*.13+Math.abs(dy)*.15;
-        for(const o of occupied)if(bx<o.x+wLabel+8&&bx+wLabel+8>o.x&&by<o.y+hLabel+8&&by+hLabel+8>o.y)penalty+=1500;
-        if(penalty<score){score=penalty;selected={x:bx,y:by};}
-      }
-      occupied.push(selected);
-      const cx=selected.x+wLabel/2,cy=selected.y+hLabel/2;
-      labels+='<line x1="'+x+'" y1="'+y+'" x2="'+cx+'" y2="'+cy+'" stroke="'+c+'" stroke-width="1.25" opacity=".7"/>'
-        +'<rect x="'+selected.x+'" y="'+selected.y+'" width="'+wLabel+'" height="'+hLabel+'" rx="7" fill="white" stroke="'+c+'" stroke-width="1.4"/>'
-        +'<text x="'+cx+'" y="'+(selected.y+15.6)+'" text-anchor="middle" font-size="12" font-weight="bold" fill="'+c+'">'+esc(p.ch)+'</text>';
-      dots+='<circle cx="'+x+'" cy="'+y+'" r="6.4" fill="'+c+'" stroke="white" stroke-width="2.1"/>'
-        +'<circle cx="'+x+'" cy="'+y+'" r="8.9" fill="none" stroke="'+c+'" stroke-width="1.1" opacity=".65"/>';
-      legend+='<g><circle cx="'+(L+16+i*124)+'" cy="'+(h-49)+'" r="5" fill="'+c+'"/><text x="'+(L+27+i*124)+'" y="'+(h-45)+'" font-size="12" fill="#344b52">'+esc(p.ch)+' · '+(p.status==='PASS'?'PASS':'FAIL')+'</text></g>';
+      const x=X(p.d),y=Y(p.t),c=channelColor(p.ch);
+      // One precise, small colored circle per channel; no attached label or halo.
+      dots+='<circle cx="'+x+'" cy="'+y+'" r="5.4" fill="'+c+'" stroke="white" stroke-width="1.2"/>'
+        +'<title>'+esc(p.ch)+' — '+fmt(p.d,3)+' min, '+fmt(p.t,1)+'°C — '+esc(p.status)+'</title>';
+      const column=i%5,row=Math.floor(i/5);
+      const lx=L+20+column*133,ly=h-34+row*18;
+      legend+='<circle cx="'+lx+'" cy="'+(ly-4)+'" r="5" fill="'+c+'"/>'
+        +'<text x="'+(lx+13)+'" y="'+ly+'" font-size="12" fill="#344b52">'+esc(p.ch)+' · '+esc(p.status)+'</text>';
     });
-    return '<svg class="window-svg" viewBox="0 0 '+w+' '+h+'" role="img" aria-label="ED window: distinct probe colors; labels are offset so real probe locations remain precise." xmlns="http://www.w3.org/2000/svg">'
+    return '<svg class="window-svg" viewBox="0 0 '+w+' '+h+'" role="img" aria-label="ED baking window with small color-coded points. Channel status is shown in the legend beneath the horizontal axis." xmlns="http://www.w3.org/2000/svg">'
       +'<rect width="'+w+'" height="'+h+'" rx="12" fill="#fff"/>'
       +lines.join('')+'<line x1="'+L+'" y1="'+top+'" x2="'+L+'" y2="'+(h-B)+'" stroke="#82969c"/>'
       +'<line x1="'+L+'" y1="'+(h-B)+'" x2="'+(w-R)+'" y2="'+(h-B)+'" stroke="#82969c"/>'
       +'<polygon points="'+poly+'" fill="#74c990" fill-opacity=".26" stroke="#277f47" stroke-width="3.1" stroke-linejoin="round"/>'
-      +labels+dots
-      +'<text x="'+(w/2)+'" y="'+(h-B+43)+'" fill="#344b52" font-size="14" text-anchor="middle">Duration above 165°C (min)</text>'
+      +dots
+      +'<text x="'+(w/2)+'" y="'+(h-B+46)+'" fill="#344b52" font-size="14" text-anchor="middle">Duration above 165°C (min)</text>'
       +'<text transform="translate(19 '+((h-B+top)/2)+') rotate(-90)" text-anchor="middle" fill="#344b52" font-size="14">Peak Temperature (°C)</text>'
       +legend+'</svg>';
   }
@@ -172,11 +160,12 @@
     requestAnimationFrame(scrollToPageTop);
   }
   function navHTML(){
-    return '<aside class="workspace-nav" aria-label="Workspace navigation"><div class="nav-overline">ACTIVE WORKSPACE</div>'
-      +'<div class="nav-oven"><span class="nav-oven-symbol">'+ovenIcon(core().getStage())+'</span><div><strong>'+esc(ovens.find(x=>x.id===core().getStage()).name)+'</strong><small>'+(core().getStage()==='ed'?'ED — 165°C / 15 min':'No validated window')+'</small></div></div>'
-      +'<div class="nav-overline nav-section-label">WORKSPACE</div>'
-      +sections.map(s=>'<button type="button" class="workspace-nav-link '+(activeSection===s.id?'is-active':'')+'" data-section="'+s.id+'"><span class="nav-icon">'+s.icon+'</span><span>'+s.label+'</span></button>').join('')
-      +'<div class="nav-bottom"><button type="button" class="change-oven" data-change-oven>↻ &nbsp; Change oven / window</button><p>BAMCO • Paint Shop Analytics</p></div></aside>';
+    const oven=ovens.find(x=>x.id===core().getStage());
+    const labels={upload:'Upload & Files',information:'Information',charts:'Charts',analysis:'Baking Analysis',comparison:'Comparison'};
+    return '<nav class="workspace-nav" aria-label="Workspace navigation">'
+      +'<div class="nav-oven"><span class="nav-oven-symbol">'+ovenIcon(core().getStage())+'</span><div><strong>'+esc(oven.name)+'</strong><small>'+(core().getStage()==='ed'?'Kansai Paint':'Temperature analytics')+'</small></div></div>'
+      +'<div class="nav-links">'+sections.map(s=>'<button type="button" class="workspace-nav-link '+(activeSection===s.id?'is-active':'')+'" data-section="'+s.id+'" aria-label="'+esc(s.label)+'" title="'+esc(s.label)+'"'+(activeSection===s.id?' aria-current="page"':'')+'><span class="nav-icon" aria-hidden="true">'+s.icon+'</span><span>'+labels[s.id]+'</span></button>').join('')+'</div>'
+      +'<button type="button" class="change-oven" data-change-oven>↻ Change oven / window</button></nav>';
   }
   function switchSection(s){
     activeSection=s;document.body.dataset.section=s;
