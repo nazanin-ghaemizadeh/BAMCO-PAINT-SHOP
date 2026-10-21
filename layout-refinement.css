@@ -59,7 +59,7 @@
 }
 #bamco-gateway .window-description .approved-flag,#bamco-gateway .window-description .pending-flag {
   font-family:inherit;font-size:9px;font-weight:600;letter-spacing:1.3px;border-radius:6px;
-  background:#91d6b81a;color:#b3e7ca;padding:8px 10px;
+  background:#91d6b81a;color:#b3e7ca;border:1px solid #91d6b833;padding:8px 10px;
 }
 #bamco-gateway .window-description .pending-flag {color:#ebd4a0;background:#ebd4a015;}
 #bamco-gateway .gate-window-container .window-description h2 {font-family:inherit;font-size:24px;line-height:1.25;font-weight:500;letter-spacing:-.7px;margin:24px 0 9px;}
@@ -67,16 +67,16 @@
 #bamco-gateway .gate-window-container .window-spec {display:flex;flex-direction:column;width:100%;gap:0;margin:28px 0;}
 #bamco-gateway .gate-window-container .window-spec span {
   font-family:inherit;display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:8px;
-  width:100%;padding:16px 0;background:transparent;border-radius:0;border-bottom:1px solid #b7d9cc25;font-size:12px;color:#9bbeb0;
+  width:100%;padding:16px 0;background:transparent;border-radius:0;border:0;border-bottom:1px solid #b7d9cc25;font-size:12px;color:#9bbeb0;
 }
 #bamco-gateway .gate-window-container .window-spec span:first-child {padding-top:0;}
 #bamco-gateway .gate-window-container .window-spec b {font-size:24px;letter-spacing:-.5px;font-weight:500;color:#f1faf5;}
 #bamco-gateway .window-actions {margin-top:auto;width:100%;padding-top:22px;}
 #bamco-gateway .gate-window-container .primary-action {
   display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:48px;
-  padding:14px 17px;border:1px solid #b5e5cd;border-radius:10px;background:#b5e5cd;color:#153e32;font-family:inherit;font-size:14px;font-weight:600;box-shadow:none;
+  padding:14px 17px;border:1px solid #b5e5cd;border-radius:10px!important;background:#b5e5cd!important;color:#153e32;font-family:inherit;font-size:14px;font-weight:600;box-shadow:none;
 }
-#bamco-gateway .gate-window-container .primary-action:hover {background:#d0efdf;}
+#bamco-gateway .gate-window-container .primary-action:hover {background:#d0efdf!important;}
 #bamco-gateway .gate-window-container .ed-reference-image {display:flex;align-items:center;justify-content:center;min-width:0;min-height:0;padding:12px;height:100%;max-height:100%;background:#fff;border:0;border-radius:18px;box-shadow:0 15px 40px #001b2326;overflow:hidden;}
 #bamco-gateway .gate-window-container .ed-reference-image .window-photo {display:block;width:100%;height:100%!important;max-height:100%;aspect-ratio:auto!important;object-fit:contain;border-radius:8px;}
 #bamco-gateway .gate-window-container .window-selection.no-window {display:flex;align-items:center;justify-content:center;}
