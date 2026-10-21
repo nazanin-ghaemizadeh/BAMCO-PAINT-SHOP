@@ -232,3 +232,11 @@ body[data-section="comparison"] .bamco-views {width:100%}
 @media (prefers-reduced-motion: reduce) {
   #bamco-gateway .oven-choice .oven-graphic .oven-icon { transition: none !important; }
 }
+
+/* Keep the welcome headline on a single responsive line. */
+#bamco-gateway .gate-container:not(.gate-window-container) > h1 {
+  max-width: none;
+  white-space: nowrap;
+  font-size: clamp(17px, 4.4vw, 66px);
+  letter-spacing: -0.035em;
+}
