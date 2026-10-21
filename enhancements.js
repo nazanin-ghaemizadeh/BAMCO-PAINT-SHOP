@@ -255,6 +255,11 @@
       +'<tr class="status-row"><th>Final status</th>'+data.map(v=>'<td>'+tag(v.status)+'</td>').join('')+'</tr>'
       +'</tbody></table></div>';
   }
+  // Shared no-recordings screen across all non-upload workspace tabs and oven types.
+  function emptyState(){
+    return '<div class="compare-empty-wrap" role="status"><h3>No recordings uploaded yet</h3>'
+      +'<button type="button" data-section="upload" class="primary-action">Go to uploads →</button></div>';
+  }
   function renderAnalysis(r,stage){
     if(stage!=='ed'){
       return '<div class="no-analysis"><span class="pending-flag">NOT CONFIGURED</span><h2>No validated baking window for this oven</h2><p>The ED reference is never applied to another process. Configure the manufacturer-approved polygon before enabling pass/fail decisions here.</p></div>';
@@ -326,14 +331,19 @@
         else if(afterTitle)info.appendChild(el);
         else charts.appendChild(el);
       });
-      if(!r){
-        info.innerHTML='<div class="no-analysis"><h2>No worksheet loaded yet</h2><p>Choose Upload & File Management to add a workbook.</p></div>';
+      if(!r&&!core().getState().files.length){
+        top.replaceChildren();
+        charts.innerHTML=emptyState();
+        info.innerHTML=emptyState();
+        analysis.innerHTML=emptyState();
+      }else{
+        if(!r)info.innerHTML='<div class="no-analysis"><h2>No worksheet loaded yet</h2><p>Choose Upload & File Management to add a workbook.</p></div>';
+        analysis.innerHTML=renderAnalysis(r,core().getStage());
       }
-      analysis.innerHTML=renderAnalysis(r,core().getStage());
       holder.append(top,charts,info,analysis,comparison);main.appendChild(holder);
     }else{
       const analysis=main.querySelector('.view-analysis');
-      if(analysis)analysis.innerHTML=renderAnalysis(r,core().getStage());
+      if(analysis)analysis.innerHTML=(!r&&!core().getState().files.length)?emptyState():renderAnalysis(r,core().getStage());
     }
     window.BAMCOCompare?.mount?.();
     switchSection(activeSection);
@@ -351,6 +361,6 @@
     });
     refresh();
   }
-  window.BAMCOEnhance={refresh,evaluate,evaluationForExport};
+  window.BAMCOEnhance={refresh,evaluate,evaluationForExport,emptyState};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
