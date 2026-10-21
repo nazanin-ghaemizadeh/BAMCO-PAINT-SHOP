@@ -42,11 +42,6 @@
   }
   function active(rec){return rec.filter(x=>state.ids.includes(x.id));}
   function channelList(rec){return [...new Set(rec.flatMap(x=>x.r.channels))].sort((a,b)=>Number(a.slice(2))-Number(b.slice(2)));}
-  function header(files){
-    return '<div class="compare-hero"><div class="compare-kicker"><span class="compare-live"></span> MULTI-FILE ENGINEERING WORKSPACE</div>'
-     +'<h2>Comparison Studio</h2><p>Choose exactly which recordings and channels to compare. Switch chart types instantly, or review ED curing compliance on the same reference window.</p>'
-     +'<div class="compare-counts"><span>'+files.length+' available workbooks</span><span>'+state.ids.length+' selected files</span><span>'+state.channels.length+' selected channels</span></div></div>';
-  }
   function mount(){
     const main=document.querySelector('.bamco-views .view-comparison');
     if(main&&!main.dataset.compareReady){
@@ -203,12 +198,11 @@
     const el=document.querySelector('.view-comparison');
     if(!el||document.body.dataset.section!=='comparison')return;
     const files=records();sync(files);const selected=active(files),chs=channelList(files);
-    el.innerHTML=header(files)
-      +(files.length?'<div class="compare-layout">'+controls(files,selected,chs)
+    el.innerHTML=files.length?'<div class="compare-layout">'+controls(files,selected,chs)
         +'<div class="compare-results"><div class="compare-panel"><div class="compare-panel-title"><div><h3>Chart comparison</h3><p>Overlay or compare metrics for precisely the chosen files and channels.</p></div><button type="button" class="compare-download" data-cmp-action="download-chart">↓ Download PNG</button></div><div id="cmp-chart" class="compare-plot"></div></div>'
         +'<div class="compare-panel"><div class="compare-panel-title"><div><h3>ED baking-window comparison</h3><p>Marker color identifies the channel; marker shape identifies the file. Values use their exact coordinates.</p></div><div class="compare-download-group"><button type="button" class="compare-download" data-cmp-action="download-window">↓ Window PNG</button><button type="button" class="compare-download" data-cmp-action="download-csv">↓ CSV report</button></div></div><div id="cmp-window" class="compare-plot"></div><div id="cmp-window-matrix"></div></div>'
         +'</div></div>'
-        :'<div class="compare-empty-wrap"><h3>No recordings uploaded yet</h3><p>Go to Upload & File Management, upload two or more Excel recordings for this oven, then return to Comparison Studio.</p><button type="button" data-section="upload" class="primary-action">Go to uploads →</button></div>');
+        :'<div class="compare-empty-wrap"><h3>No recordings uploaded yet</h3><p>Go to Upload & File Management, upload two or more Excel recordings for this oven, then return to Comparison Studio.</p><button type="button" data-section="upload" class="primary-action">Go to uploads →</button></div>';
     if(!files.length)return;
     const req=++state.renderVersion;
     requestAnimationFrame(()=>{
