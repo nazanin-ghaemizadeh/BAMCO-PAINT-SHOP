@@ -79,7 +79,7 @@
       if(!Number.isFinite(p.d)||!Number.isFinite(p.t))return;
       const x=X(p.d),y=Y(p.t),c=channelColor(p.ch);
       // One precise, small colored circle per channel; no attached label or halo.
-      dots+='<circle cx="'+x+'" cy="'+y+'" r="5.4" fill="'+c+'" stroke="white" stroke-width="1.2"/>'
+      dots+='<circle cx="'+x+'" cy="'+y+'" r="2.6" fill="'+c+'" stroke="white" stroke-width="0.5"/>'
         +'<title>'+esc(p.ch)+' — '+fmt(p.d,3)+' min, '+fmt(p.t,1)+'°C — '+esc(p.status)+'</title>';
       const column=i%5,row=Math.floor(i/5);
       const lx=L+20+column*133,ly=h-34+row*18;
@@ -198,7 +198,7 @@
       const D=durationResult.duration;
       let violations=[],status='PASS';
       if(!Number.isFinite(D)||!Number.isFinite(T)||r.reads.length<2){
-        status='INVALID DATA';violations=['R07 — '+(durationResult.error||'Incomplete temperature readings')];
+        status='INVALID DATA';violations=['R06 — '+(durationResult.error||'Incomplete temperature readings')];
       }else{
         if(D<15-1e-9)violations.push('R01 — Insufficient Duration');
         if(D>35.5+1e-9)violations.push('R02 — Excessive Duration');
@@ -263,12 +263,11 @@
     return '<div class="analysis-titlebar"><div><span class="eyebrow">ENGINEERING VALIDATION / ED OVEN</span><h2>Baking Window Evaluation</h2><p>Time above 165°C is calculated from timestamped readings using linear interpolation.</p></div>'+tag(overall)+'</div>'
       +'<div class="eval-stats"><div><small>Total probes</small><strong>'+results.length+'</strong></div><div><small>Passed</small><strong class="text-green">'+pass+'</strong></div><div><small>Failed</small><strong class="text-red">'+fail+'</strong></div><div><small>Invalid</small><strong>'+invalid+'</strong></div></div>'
       +'<div class="window-analysis-plot"><h3>ED Baking Window — Measured Channel Points</h3>'+svgChart(results.map(v=>({ch:v.ch,d:v.D,t:v.T,status:v.status})))
-      +'<p class="window-legend"><span>Each channel is represented by one small colored circle.</span><span>Measured values always remain at their true coordinates.</span></p></div>'
+      +'</div>'
       +'<div class="analysis-table-title"><h3>Channel Comparison Matrix</h3><p>Dependent limits change with the measured point. N/A indicates an out-of-domain calculation, not a pass.</p></div>'
       +summaryRows(results)
       +'<div class="probe-grid">'+cards+'</div>'
-      +'<div class="rule-explanation"><strong>Rule logic</strong><span>R01: D &lt; 15 min</span><span>R02: D &gt; 35.5 min</span><span>R03: Peak &lt; 165°C</span><span>R04: Peak &gt; 200°C</span><span>R05: 28D + 13.5T &gt; 3316</span><span>R07: Invalid or missing data</span></div>'
-      +'<p class="evaluation-disclaimer">Geometric window compliance is not the instrument’s Cure Pass/Fail calculation. Manufacturer-approved tolerances, temperature sensor placement and coating requirements govern final quality release. All values refer to the selected workbook, not to simulated data.</p>';
+      +'<div class="rule-explanation"><strong>Rule logic</strong><span>R01: D &lt; 15 min</span><span>R02: D &gt; 35.5 min</span><span>R03: Peak &lt; 165°C</span><span>R04: Peak &gt; 200°C</span><span>R05: 28D + 13.5T &gt; 3316</span><span>R06: Invalid or missing data</span></div>';
   }
   function evaluationForExport(){
     const r=core()?.getRecord();if(core()?.getStage()!=='ed'||!r)return null;
