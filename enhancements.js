@@ -109,7 +109,7 @@
       +legend+'</svg>';
   }
   function preview(){
-    return '<div class="window-photo-card ed-reference-image"><img src="assets/ed-baking-window-original.avif?v=20261021-5" alt="ED Baking Window — Kansai Paint Iranian Co" class="window-photo" decoding="async" loading="eager"></div>';
+    return '<div class="window-photo-card ed-reference-image"><img src="assets/ed-baking-window-original.avif?v=20261021-5" alt="ED Baking Window — Kansai Paint Iranian Co" class="window-photo" width="1448" height="1086" decoding="async" loading="eager"></div>';
   }
   function applyGatewayLogo(){
     const original=document.getElementById('company-logo-image');
@@ -183,13 +183,7 @@
     document.querySelectorAll('.workspace-nav-link').forEach(b=>b.classList.toggle('is-active',b.dataset.section===s));
     const sectionName=sections.find(a=>a.id===s)?.label||'Workspace';
     const h=document.getElementById('selected-section-name');if(h)h.textContent=sectionName;
-    if(s==='charts'){
-      window.setTimeout(()=>{
-        if(window.Plotly)for(const id of ['plot-profile','plot-spread','plot-bands','plot-peaks']){
-          const e=document.getElementById(id);if(e&&e.data)try{Plotly.Plots.resize(e);}catch(_){}
-        }
-      },120);
-    }
+    if(s==='charts')core()?.renderPlots?.();
     if(s==='comparison')window.setTimeout(()=>window.BAMCOCompare?.render?.(),60);
   }
   function elapsedDuration(reads,ch,step){
@@ -346,8 +340,8 @@
     renderGate();
     document.addEventListener('click',function(e){
       const b=e.target.closest('button');if(!b)return;
-      if(b.dataset.oven){choice=b.dataset.oven;step=2;renderGate();}
-      else if(b.hasAttribute('data-go-back')){step=1;renderGate();}
+      if(b.dataset.oven){choice=b.dataset.oven;step=2;renderGate();scrollToPageTop();requestAnimationFrame(scrollToPageTop);}
+      else if(b.hasAttribute('data-go-back')){step=1;renderGate();scrollToPageTop();requestAnimationFrame(scrollToPageTop);}
       else if(b.hasAttribute('data-enter'))enter();
       else if(b.hasAttribute('data-change-oven'))openGate();
       else if(b.dataset.section)switchSection(b.dataset.section);
