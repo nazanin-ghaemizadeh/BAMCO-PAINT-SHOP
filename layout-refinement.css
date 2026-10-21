@@ -391,3 +391,11 @@ body {font-size:16px;}
  .daily-slot-status {margin-top:6px;}
  .daily-date-row {padding-bottom:10px;}
 }
+
+/* Comparison labels and compact table groups use their component selectors. */
+.compare-filename,.compare-select,.compare-channel-choice {font-size:15px;}
+.compare-small-title {font-size:17px;}
+.compare-status {font-size:12px;}
+.comparison-point p,.comparison-point small {font-size:14px;}
+.compare-empty,.compare-empty-wrap {font-size:16px;}
+.eval-matrix .matrix-group th {font-size:13px;}
