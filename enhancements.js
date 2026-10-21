@@ -287,6 +287,30 @@
       +'<div class="probe-grid">'+cards+'</div>'
       +'<div class="rule-explanation"><strong>Rule logic</strong><span>R01: D &lt; 15 min</span><span>R02: D &gt; 35.5 min</span><span>R03: Peak &lt; 165°C</span><span>R04: Peak &gt; 200°C</span><span>R05: 28D + 13.5T &gt; 3316</span><span>R06: Invalid or missing data</span></div>';
   }
+  // Use the date in the uploaded filename shown in Upload & Files.
+  // Keep Persian calendar dates as written; do not substitute a worksheet date.
+  function uploadedFileDate(filename){
+    const name=String(filename||'').replace(/[۰-۹٠-٩]/g,char=>{
+      const n=char.charCodeAt(0);return String(n>=1776?n-1776:n-1632);
+    });
+    const valid=(year,month,day)=>{
+      year=Number(year);month=Number(month);day=Number(day);
+      if(year<1300||year>2099||month<1||month>12||day<1)return null;
+      const max=year<1700?(month<=6?31:30):new Date(Date.UTC(year,month,0)).getUTCDate();
+      return day<=max?year+'-'+String(month).padStart(2,'0')+'-'+String(day).padStart(2,'0'):null;
+    };
+    const patterns=[
+      {regex:/(?:^|[^\d])((?:13|14|19|20)\d{2})[-_.\s]+(\d{1,2})[-_.\s]+(\d{1,2})(?!\d)/g,order:[1,2,3]},
+      {regex:/(?:^|[^\d])((?:13|14|19|20)\d{2})(\d{2})(\d{2})(?!\d)/g,order:[1,2,3]},
+      {regex:/(?:^|[^\d])(\d{1,2})[-_.\s]+(\d{1,2})[-_.\s]+((?:13|14|19|20)\d{2})(?!\d)/g,order:[3,2,1]}
+    ];
+    for(const {regex,order} of patterns){
+      for(const match of name.matchAll(regex)){
+        const date=valid(...order.map(index=>match[index]));if(date)return date;
+      }
+    }
+    return null;
+  }
   async function downloadSummary(button){
     const r=core()?.getRecord();
     if(core()?.getStage()!=='ed'||!r)return;
@@ -296,7 +320,8 @@
     try{
       if(!window.BAMCOSummaryPDF)throw Error('PDF export is unavailable. Reload the page and try again.');
       const ovenName=ovens.find(oven=>oven.id===core().getStage())?.name||core().getStage();
-      await window.BAMCOSummaryPDF.download(results,{ovenName,recordingDate:r.recordingDate});
+      const sourceFile=core().getFile?.()?.name||r.fileName;
+      await window.BAMCOSummaryPDF.download(results,{ovenName,recordingDate:uploadedFileDate(sourceFile)});
     }catch(error){alert('Summary PDF export failed: '+error.message);}
     finally{button.disabled=false;button.removeAttribute('aria-busy');button.textContent=label;}
   }
