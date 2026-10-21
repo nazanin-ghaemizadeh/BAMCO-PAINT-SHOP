@@ -263,7 +263,7 @@
     return '<div class="analysis-titlebar"><div><span class="eyebrow">ENGINEERING VALIDATION / ED OVEN</span><h2>Baking Window Evaluation</h2><p>Time above 165°C is calculated from timestamped readings using linear interpolation.</p></div>'+tag(overall)+'</div>'
       +'<div class="eval-stats"><div><small>Total probes</small><strong>'+results.length+'</strong></div><div><small>Passed</small><strong class="text-green">'+pass+'</strong></div><div><small>Failed</small><strong class="text-red">'+fail+'</strong></div><div><small>Invalid</small><strong>'+invalid+'</strong></div></div>'
       +'<div class="window-analysis-plot"><h3>ED Baking Window — Measured Channel Points</h3>'+svgChart(results.map(v=>({ch:v.ch,d:v.D,t:v.T,status:v.status})))
-      +'<p class="window-legend"><span>Each channel has a unique marker color. Label positions are offset only for readability.</span><span>Measured values always remain at their true coordinates.</span></p></div>'
+      +'<p class="window-legend"><span>Each channel is represented by one small colored circle.</span><span>Measured values always remain at their true coordinates.</span></p></div>'
       +'<div class="analysis-table-title"><h3>Channel Comparison Matrix</h3><p>Dependent limits change with the measured point. N/A indicates an out-of-domain calculation, not a pass.</p></div>'
       +summaryRows(results)
       +'<div class="probe-grid">'+cards+'</div>'
