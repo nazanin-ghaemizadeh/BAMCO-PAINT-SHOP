@@ -131,10 +131,9 @@
       gateway.innerHTML='<div class="gate-container"><div class="gate-brand"><span class="brand-mark">B</span><span>BAM AUTOMOTIVE COMPANY <small>PAINT SHOP INTELLIGENCE</small></span></div>'
       +'<div class="gate-kicker">WELCOME TO YOUR THERMAL WORKSPACE</div>'
       +'<h1>Precision starts with every degree.</h1>'
-      +'<p class="gate-lead">A smarter way to explore oven recordings, validate curing windows and make confident engineering decisions.</p>'
-      +'<h2 class="gate-subtitle">01 <span>Select your oven</span></h2>'
+      +'<h2 class="gate-subtitle"><span>Select your oven</span></h2>'
       +'<div class="oven-grid">'+ovens.map(o=>'<button class="oven-choice" data-oven="'+o.id+'"><span class="oven-number">'+o.symbol+'</span><span class="oven-graphic" aria-hidden="true">'+ovenIcon(o.id)+'</span><strong>'+o.name+'</strong><small>'+o.description+'</small><span class="oven-cta">Select oven →</span></button>').join('')+'</div>'
-      +'<p class="gate-footer">BAMCO • Temperature Profile Analysis & Process Evaluation</p></div>';
+      +'</div>';
       applyGatewayLogo();
     } else {
       gateway.innerHTML='<div class="gate-container gate-window-container"><div class="gate-brand"><span class="brand-mark">B</span><span>BAM AUTOMOTIVE COMPANY <small>PAINT SHOP INTELLIGENCE</small></span></div>'
