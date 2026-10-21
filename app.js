@@ -272,6 +272,64 @@ function sourceSections(r){
   kind:n===r.head?'readings':summaries.includes(n)?'summary':'metadata',skip:titles.includes(n),
   title:n===r.head?'Readings':summaries.includes(n)?'Channel summary — from workbook':titles.includes(n)?text[n][0]:'Worksheet content'}));
 }
+
+ // Compact workbook channel-summary display. The original sheet cells remain
+ // unmodified for uploads/exports; consecutive value + unit cells are shown
+ // together per sensor while retaining every nonempty source value.
+function renderCompactSummary(r,sec,rowIndexes,hidden,section){
+ const header=r.rows[sec.start]||[];
+ const sensorColumns=header.map((v,j)=>({j,label:display(v).trim()}))
+  .filter(x=>/^Ch\d+$/i.test(x.label));
+ if(sensorColumns.length<2)return false;
+ const firstSensor=sensorColumns[0].j;
+ const lastColumn=Math.max(...rowIndexes.map(i=>r.rows[i]?.length||0),header.length);
+ const table=document.createElement('table');
+ table.className='table source-compact-summary';
+ const head=document.createElement('thead'),headerRow=document.createElement('tr');
+ const metricHead=document.createElement('th');metricHead.textContent='Parameter';metricHead.scope='col';metricHead.className='source-parameter';
+ headerRow.appendChild(metricHead);
+ for(const sensor of sensorColumns){
+  const th=document.createElement('th');th.textContent=sensor.label;th.scope='col';th.className='source-sensor-column';
+  headerRow.appendChild(th);
+ }
+ head.appendChild(headerRow);table.appendChild(head);
+ const body=document.createElement('tbody');
+ for(const i of rowIndexes){
+  if(i===sec.start)continue;
+  const row=r.rows[i]||[];
+  const texts=(from,to)=>{const out=[];for(let j=from;j<to;j++){
+    if(hidden.has(i+','+j))continue;
+    const value=display(row[j]);
+    if(value.trim())out.push(value.trim());
+   }return out;
+  };
+  const tr=document.createElement('tr'),name=document.createElement('th');
+  name.scope='row';name.className='source-parameter';
+  name.textContent=texts(0,firstSensor).join(' · ');
+  tr.appendChild(name);
+  for(let k=0;k<sensorColumns.length;k++){
+   const from=sensorColumns[k].j;
+   const to=k+1<sensorColumns.length?sensorColumns[k+1].j:lastColumn;
+   const td=document.createElement('td');
+   td.className='source-sensor-value';
+   const parts=texts(from,to);
+   if(parts.length){
+    const value=document.createElement('span');value.className='source-measure-value';value.textContent=parts[0];
+    td.appendChild(value);
+    if(parts.length>1){
+     const unit=document.createElement('span');unit.className='source-measure-unit';unit.textContent=parts.slice(1).join(' ');
+     td.appendChild(unit);
+    }
+   }
+   tr.appendChild(td);
+  }
+  body.appendChild(tr);
+ }
+ if(!body.childElementCount)return false;
+ table.appendChild(body);
+ const grid=document.createElement('div');grid.className='source-grid source-summary-grid';
+ grid.appendChild(table);section.appendChild(grid);return true;
+}
 function renderSource(r){
  const container=$('source-sections'),top=new Map(),hidden=new Set();
  if(!container)return;
@@ -294,6 +352,10 @@ function renderSource(r){
   if(!rowIndexes.length)continue;
   const section=document.createElement('section');section.className='source-section';
   const heading=document.createElement('h4');heading.textContent=sec.title;section.appendChild(heading);
+  if(sec.kind==='summary'&&renderCompactSummary(r,sec,rowIndexes,hidden,section)){
+   frag.appendChild(section);
+   continue;
+  }
   const grid=document.createElement('div');grid.className='source-grid'+(sec.kind==='readings'?' source-readings':'');
   const table=document.createElement('table');table.className='table'+(isMetadata?' source-metadata-table':'');
   if(isMetadata){
