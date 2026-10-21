@@ -44,5 +44,5 @@
   };
   const windows={ed,primer:gamma,bc:gamma};
   window.BAMCOBakingWindows={get:stage=>windows[stage]||null,
-    references:()=>[{id:'ed',name:ed.manufacturer},{id:'primer',name:gamma.manufacturer}]};
+    references:stage=>windows[stage]?[{id:stage,name:windows[stage].manufacturer}]:[]};
 })();

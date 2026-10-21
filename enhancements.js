@@ -401,7 +401,7 @@
     });
     refresh();
   }
-  window.BAMCOEnhance={refresh,evaluate,evaluationForExport,emptyState};
+  window.BAMCOEnhance={refresh,evaluate,evaluationForExport,emptyState,ovenIcon};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
 

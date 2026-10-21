@@ -143,7 +143,7 @@
     return pdfBytes([page],'Summary - '+info.ovenName+' - '+(info.recordingDate||'Undated'));
   }
   async function buildReport(entries,recordingDate){
-    if(!Array.isArray(entries)||entries.length!==4)throw Error('Select one recording for each of the four ovens.');
+    if(!Array.isArray(entries)||!entries.length||entries.length>4)throw Error('Upload between one and four oven recordings.');
     if(!recordingDate)throw Error('Enter the report date.');
     const pages=[];
     for(const entry of entries)pages.push(await pageImage(entry.results,{...entry.options,recordingDate}));

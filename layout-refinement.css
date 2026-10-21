@@ -275,3 +275,52 @@ body:not(.bamco-entered):has(.daily-report-container) {overflow:auto;}
 }
 @media(max-width:1100px){.daily-oven-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
 @media(max-width:600px){.daily-oven-grid{grid-template-columns:1fr;}.daily-date-row,#bamco-gateway .daily-entry{flex-direction:column;align-items:stretch;}.daily-report-form{padding:18px;}.daily-date-row>label{min-width:0;}}
+
+/* Color-coded oven identities, shared serif type and a viewport-sized report. */
+#bamco-gateway,#bamco-gateway *,#bamco-gateway input::file-selector-button {
+ font-family:"Times New Roman",Times,serif!important;
+}
+#bamco-gateway .gate-intro h1 {font-weight:700;}
+.daily-oven-heading {display:flex;align-items:center;gap:12px;margin-bottom:18px;}
+.daily-oven-heading h3 {margin:0;font-size:22px;}
+.daily-oven-icon {display:grid;place-items:center;flex:0 0 42px;width:42px;height:42px;border-radius:12px;border:1px solid #c9e4d8;background:#eaf6ef;color:#287c66;}
+.daily-oven-icon .oven-icon {width:32px;height:32px;}
+.daily-oven-primer .daily-oven-icon {color:#a87929;background:#fcf4e5;border-color:#efdfbd;}
+.daily-oven-sealer .daily-oven-icon {color:#566faf;background:#edf2fc;border-color:#d8e1f5;}
+.daily-oven-bc .daily-oven-icon {color:#96658d;background:#f8eef5;border-color:#ead4e4;}
+.daily-report-form select:disabled,.daily-report-form input:disabled {background:#f5f7f5;border-color:#e3e9e4;color:#9aaa9f;cursor:default;}
+.daily-file-status {display:flex;align-items:flex-start;gap:8px;}
+.daily-slot-status {flex:1;min-width:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.daily-clear-file {flex:0 0 24px;margin-top:10px;padding:0;width:24px;height:24px;border:1px solid #d9e4dc;border-radius:7px;background:#fff;color:#7c8f81;font-size:18px;cursor:pointer;}
+.daily-clear-file[hidden] {display:none;}
+.daily-clear-file:hover {color:#a8444f;border-color:#d6afb4;}
+@media (min-width:901px) and (min-height:570px) {
+ #bamco-gateway:has(.daily-entry) .gate-intro {margin:clamp(22px,4dvh,38px) 0;}
+ #bamco-gateway:has(.daily-entry) .gate-intro h1 {font-size:clamp(38px,6dvh,64px);font-weight:700;}
+ #bamco-gateway .daily-entry {padding:12px 20px;}
+ #bamco-gateway:has(.daily-report-container) {height:100dvh;min-height:0;padding:18px 28px;overflow:hidden;}
+ body:not(.bamco-entered):has(.daily-report-container) {overflow:hidden;}
+ #bamco-gateway .daily-report-container {height:100%;display:flex;flex-direction:column;gap:14px;min-height:0;}
+ .daily-report-form {margin:0;flex:1;min-height:0;max-height:620px;padding:18px;display:flex;flex-direction:column;}
+ .daily-date-row {padding-bottom:14px;gap:20px;flex:0 0 auto;}
+ .daily-date-row h2 {font-size:25px;margin:0;}
+ .daily-date-row>label {margin:0;}
+ .daily-date-row input {min-height:40px!important;padding:8px 12px!important;margin-top:6px!important;}
+ .daily-date-row small {font-size:11px;margin-top:4px;line-height:1.3;}
+ .daily-oven-grid {grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;flex:1;min-height:0;}
+ .daily-oven-card {padding:14px;min-height:0;}
+ .daily-oven-heading {gap:9px;margin-bottom:14px;}
+ .daily-oven-heading h3 {font-size:20px;}
+ .daily-oven-icon {flex-basis:36px;width:36px;height:36px;border-radius:10px;}
+ .daily-oven-icon .oven-icon {width:28px;height:28px;}
+ .daily-report-form label {font-size:12px;margin-bottom:6px;}
+ .daily-oven-card select {font-size:14px;min-height:36px;padding:8px;margin:0 0 12px;}
+ .daily-oven-card input[type=file] {font-size:11px;}
+ .daily-oven-card input[type=file]::file-selector-button {padding:8px;margin-right:5px;}
+ .daily-slot-status {font-size:12px;margin-top:8px;line-height:1.4;}
+ .daily-sheet-picker label {display:none;}
+ .daily-sheet-picker select {margin:6px 0 0;min-height:34px;font-size:13px;padding:6px 8px;}
+ .daily-report-footer {margin-top:14px;gap:10px;flex:0 0 auto;}
+ .daily-report-footer small {margin:0;font-size:12px;}
+ .daily-report-error {font-size:13px;line-height:1.3;}
+}

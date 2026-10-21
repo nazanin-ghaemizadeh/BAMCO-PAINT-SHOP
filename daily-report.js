@@ -1,7 +1,7 @@
 /* Daily summaries keep their own uploads and never change the oven workspaces. */
 'use strict';
 (function(){
-  const ovens=[{id:'ed',name:'ED Oven',reference:'ed'},{id:'primer',name:'Primer Oven',reference:'primer'},{id:'sealer',name:'Sealer Oven',reference:''},{id:'bc',name:'Base Coat Oven',reference:'primer'}];
+  const ovens=[{id:'ed',name:'ED Oven',reference:'ed'},{id:'primer',name:'Primer Oven',reference:'primer'},{id:'sealer',name:'Sealer Oven',reference:''},{id:'bc',name:'Base Coat Oven',reference:'bc'}];
   const slots=Object.fromEntries(ovens.map(o=>[o.id,{reference:o.reference,records:[],sheet:0,name:'',error:'',warnings:[],pending:false,version:0}]));
   const state={date:''};
   let refreshActive=null;
@@ -16,24 +16,34 @@
     return day<=max?text:null;
   }
   function entries(){
-    return ovens.map(oven=>{
-      const slot=slots[oven.id],reference=window.BAMCOBakingWindows.get(slot.reference),record=slot.records[slot.sheet];
-      if(!reference)throw Error('Select a baking-window manufacturer for '+oven.name+'.');
+    const pages=ovens.flatMap(oven=>{
+      const slot=slots[oven.id],record=slot.records[slot.sheet];
       if(slot.pending)throw Error('Wait for '+oven.name+' to finish loading.');
-      if(!record)throw Error('Upload a valid Excel file for '+oven.name+'.');
+      if(slot.error)throw Error(oven.name+': '+slot.error+' Clear or replace this file.');
+      if(!record)return [];
+      const allowed=window.BAMCOBakingWindows.references(oven.id);
+      const reference=allowed.some(ref=>ref.id===slot.reference)?window.BAMCOBakingWindows.get(slot.reference):null;
+      if(!reference)throw Error('No active baking window is available for '+oven.name+'.');
       const results=window.BAMCOEnhance.evaluate(record,slot.reference);
       if(!results.length)throw Error('No channel cards are available for '+oven.name+'.');
-      return {results,options:{ovenName:oven.name,manufacturer:reference.manufacturer}};
+      return [{results,options:{ovenName:oven.name,manufacturer:reference.manufacturer}}];
     });
+    if(!pages.length)throw Error('Upload at least one valid Excel file.');
+    return pages;
+  }
+  function cardHTML(oven){
+    const references=window.BAMCOBakingWindows.references(oven.id),slot=slots[oven.id];
+    if(!references.some(ref=>ref.id===slot.reference))slot.reference=references[0]?.id||'';
+    const disabled=references.length?'':' disabled';
+    return '<section class="daily-oven-card daily-oven-'+oven.id+'" data-daily-slot="'+oven.id+'"><div class="daily-oven-heading"><span class="daily-oven-icon" aria-hidden="true">'+window.BAMCOEnhance.ovenIcon(oven.id)+'</span><h3>'+oven.name+'</h3></div>'
+      +'<label for="daily-reference-'+oven.id+'">Baking-window manufacturer</label><select id="daily-reference-'+oven.id+'" data-daily-reference="'+oven.id+'"'+disabled+'>'+(references.length?references.map(ref=>'<option value="'+ref.id+'" '+(slot.reference===ref.id?'selected':'')+'>'+esc(ref.name)+'</option>').join(''):'<option value=""></option>')+'</select>'
+      +'<label for="daily-file-'+oven.id+'">Excel recording</label><input id="daily-file-'+oven.id+'" data-daily-file="'+oven.id+'" type="file" accept=".xls,.xlsx"'+disabled+'><div class="daily-file-status"><div class="daily-slot-status" aria-live="polite"></div><button type="button" class="daily-clear-file" data-daily-clear="'+oven.id+'" aria-label="Clear '+oven.name+' file" hidden>×</button></div><div class="daily-sheet-picker"></div></section>';
   }
   function open(host,onBack){
-    const references=window.BAMCOBakingWindows.references();
     host.innerHTML='<div class="daily-report-container"><div class="window-topbar"><div><span class="window-eyebrow">THERMAL WORKSPACE</span><h1>Daily report</h1></div><button type="button" class="window-change-oven" data-daily-back>← Back to ovens</button></div>'
-      +'<form class="daily-report-form"><div class="daily-date-row"><div><h2>Four ovens. One daily summary.</h2><p>Upload one workbook for each oven. Each summary gets its own A4 landscape page.</p></div><label for="daily-date">Report date<input id="daily-date" type="text" inputmode="numeric" dir="ltr" placeholder="1405-06-05" autocomplete="off" required value="'+esc(state.date)+'"><small>YYYY-MM-DD · entered manually</small></label></div>'
-      +'<div class="daily-oven-grid">'+ovens.map(oven=>'<section class="daily-oven-card" data-daily-slot="'+oven.id+'"><h3>'+oven.name+'</h3><label for="daily-reference-'+oven.id+'">Baking-window manufacturer</label><select id="daily-reference-'+oven.id+'" data-daily-reference="'+oven.id+'" required><option value="">Select manufacturer</option>'+references.map(ref=>'<option value="'+ref.id+'" '+(slots[oven.id].reference===ref.id?'selected':'')+'>'+esc(ref.name)+'</option>').join('')+'</select>'
-        +(oven.id==='sealer'?'<small class="daily-reference-note">Choose the supplied reference that applies to this oven.</small>':'')
-        +'<label for="daily-file-'+oven.id+'">Excel recording</label><input id="daily-file-'+oven.id+'" data-daily-file="'+oven.id+'" type="file" accept=".xls,.xlsx"><div class="daily-slot-status" aria-live="polite"></div><div class="daily-sheet-picker"></div></section>').join('')+'</div>'
-      +'<div class="daily-report-footer"><p class="daily-report-error" role="alert"></p><button type="submit" class="primary-action">Download daily summary PDF <span aria-hidden="true">→</span></button><small>4 pages · ED / Primer / Sealer / Base Coat</small></div></form></div>';
+      +'<form class="daily-report-form"><div class="daily-date-row"><div><h2>Daily oven summary</h2></div><label for="daily-date">Report date<input id="daily-date" type="text" inputmode="numeric" dir="ltr" placeholder="1405-06-05" autocomplete="off" required value="'+esc(state.date)+'"><small>YYYY-MM-DD · entered manually</small></label></div>'
+      +'<div class="daily-oven-grid">'+ovens.map(cardHTML).join('')+'</div>'
+      +'<div class="daily-report-footer"><p class="daily-report-error" role="alert"></p><button type="submit" class="primary-action">Download daily summary PDF <span aria-hidden="true">→</span></button><small>Only uploaded ovens are included · A4 landscape</small></div></form></div>';
     const form=host.querySelector('.daily-report-form'),date=form.querySelector('#daily-date'),error=form.querySelector('.daily-report-error'),button=form.querySelector('[type="submit"]');
     let generating=false;
     host.querySelector('[data-daily-back]').addEventListener('click',()=>{state.date=date.value;refreshActive=null;onBack();});
@@ -42,11 +52,19 @@
       const slot=slots[id],card=form.querySelector('[data-daily-slot="'+id+'"]');
       card.querySelector('.daily-slot-status').textContent=slot.pending?'Reading workbook…':slot.error||slot.name;
       card.querySelector('.daily-slot-status').classList.toggle('has-error',!!slot.error);
+      card.querySelector('.daily-slot-status').title=slot.error||slot.name;
+      card.querySelector('.daily-clear-file').hidden=!slot.name;
       card.querySelector('.daily-sheet-picker').innerHTML=slot.records.length>1?'<label for="daily-sheet-'+id+'">Worksheet</label><select id="daily-sheet-'+id+'" data-daily-sheet="'+id+'">'+slot.records.map((record,i)=>'<option value="'+i+'" '+(slot.sheet===i?'selected':'')+'>'+esc(record.sheetName)+'</option>').join('')+'</select>':slot.warnings.length?'<small>'+esc(slot.warnings.join('; '))+'</small>':'';
       button.disabled=generating||Object.values(slots).some(s=>s.pending);
     }
     refreshActive=()=>ovens.forEach(o=>update(o.id));
     refreshActive();
+    form.addEventListener('click',event=>{
+      const clear=event.target.closest('[data-daily-clear]');if(!clear)return;
+      const id=clear.dataset.dailyClear,slot=slots[id];
+      ++slot.version;Object.assign(slot,{records:[],sheet:0,name:'',error:'',warnings:[],pending:false});
+      form.querySelector('#daily-file-'+id).value='';error.textContent='';refreshActive?.();
+    });
     form.addEventListener('change',async event=>{
       const target=event.target,id=target.dataset.dailyFile;
       error.textContent='';
@@ -73,7 +91,7 @@
       state.date=reportDate;date.value=reportDate;
       try{
         const pages=entries();
-        generating=true;button.disabled=true;button.setAttribute('aria-busy','true');button.textContent='Creating four-page PDF…';
+        generating=true;button.disabled=true;button.setAttribute('aria-busy','true');button.textContent='Creating summary PDF…';
         await window.BAMCOSummaryPDF.downloadReport(pages,reportDate);
       }catch(problem){error.textContent=problem.message;}
       finally{generating=false;button.disabled=generating||Object.values(slots).some(s=>s.pending);button.removeAttribute('aria-busy');button.textContent='Download daily summary PDF →';}
