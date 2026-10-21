@@ -109,7 +109,7 @@
       +legend+'</svg>';
   }
   function preview(){
-    return '<div class="window-photo-card ed-reference-image"><img src="assets/ed-baking-window.svg?v=20261021-4" alt="ED Baking Window — Kansai Paint Iranian Co" class="window-photo" decoding="async" loading="eager"></div>';
+    return '<div class="window-photo-card ed-reference-image"><img src="assets/ed-baking-window-original.avif?v=20261021-5" alt="ED Baking Window — Kansai Paint Iranian Co" class="window-photo" decoding="async" loading="eager"></div>';
   }
   function applyGatewayLogo(){
     const original=document.getElementById('company-logo-image');
