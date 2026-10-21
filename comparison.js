@@ -96,6 +96,37 @@
       paper_bgcolor:'#fff',plot_bgcolor:'#fff',barmode:'group',hovermode:bar?'closest':'x unified',
       autosize:true};
   }
+
+  // Compact, grouped tooltips shared by the comparison and baking charts.
+  function comparisonTooltip(plot,kind){
+    const tip=document.createElement('div');
+    tip.className='bamco-compare-tooltip';
+    tip.setAttribute('role','status');
+    tip.hidden=true;plot.appendChild(tip);
+    plot.on('plotly_hover',event=>{
+      const pts=(event.points||[]).filter(p=>Number.isFinite(p.y)&&p.data?.meta?.fileName);
+      if(!pts.length){tip.hidden=true;return;}
+      const groups=new Map();
+      for(const p of pts){
+        const m=p.data.meta,custom=p.customdata||[],label=kind==='window'?String(custom[0]||''):String(m.channel||'');
+        if(!groups.has(m.fileId))groups.set(m.fileId,{name:m.fileName,rows:new Map()});
+        const g=groups.get(m.fileId);
+        const value=kind==='window'?'Peak '+fmt(p.y,1)+'°C · '+esc(String(custom[1]||'')):fmt(p.y,2)+'°C';
+        g.rows.set(label,'<div class="tooltip-line"><span class="tooltip-channel" style="--tooltip-dot:'+channelColor(label)+'">'+esc(label)+'</span><span>'+value+'</span></div>');
+      }
+      const heading=kind==='window'?mmss(pts[0].x):fmt(pts[0].y,2)+'°C';
+      tip.innerHTML='<div class="tooltip-value">'+esc(heading)+'</div>'
+        +[...groups.values()].map(g=>'<div class="tooltip-file"><strong>'+esc(g.name)+'</strong>'+[...g.rows.values()].join('')+'</div>').join('');
+      tip.hidden=false;
+      const rect=plot.getBoundingClientRect(),e=event.event;
+      const x=Number.isFinite(e?.clientX)?e.clientX-rect.left:rect.width/2;
+      const y=Number.isFinite(e?.clientY)?e.clientY-rect.top:rect.height/2;
+      tip.style.left=Math.max(8,Math.min(x+16,rect.width-tip.offsetWidth-8))+'px';
+      tip.style.top=Math.max(8,Math.min(y+16,rect.height-tip.offsetHeight-8))+'px';
+    });
+    plot.on('plotly_unhover',()=>{tip.hidden=true;});
+    plot.addEventListener('mouseleave',()=>{tip.hidden=true;});
+  }
   function plotChart(items,channels){
     const element=document.getElementById('cmp-chart');
     if(!element)return;
@@ -116,10 +147,10 @@
         });flush();
         groups.forEach((group,j)=>data.push({type:'scatter',mode:group.length===1?'markers':'lines',
           x:group.map(p=>p.elapsed),y:group.map(p=>p.values[ch]),
-          name:file.name+' · '+ch,legendgroup:file.id+ch,showlegend:j===0,
+          name:file.name+' · '+ch,legendgroup:file.id+ch,showlegend:j===0,meta:{fileId:file.id,fileName:file.name,channel:ch},hoverinfo:'none',
           line:{color:channelColor(ch),width:2.5,dash:fileDash(file.fileIndex)},
           marker:{size:5,color:channelColor(ch)},
-          hovertemplate:esc(file.name)+' · '+ch+'<br>%{x:.2f} min<br>%{y:.2f} °C<extra></extra>'}));
+          hovertemplate:'<extra></extra>'}));
       }));
     }else if(mode==='spread'){
       items.forEach(file=>{
@@ -130,9 +161,9 @@
           const gap=i>0&&read.ts-file.r.reads[i-1].ts>file.r.step*1500+1;
           y.push(!gap&&channels.length>=2&&vals.every(Number.isFinite)?Math.max(...vals)-Math.min(...vals):null);
         }
-        data.push({type:'scatter',mode:'lines',x,y,name:file.name,
+        data.push({type:'scatter',mode:'lines',x,y,name:file.name,meta:{fileId:file.id,fileName:file.name,channel:'Spread'},hoverinfo:'none',
           line:{color:'#246d6d',width:2.8,dash:fileDash(file.fileIndex)},connectgaps:false,
-          hovertemplate:esc(file.name)+'<br>%{x:.2f} min<br>Spread: %{y:.2f} °C<extra></extra>'});
+          hovertemplate:'<extra></extra>'});
       });
     }
     const title=MODES.find(x=>x.id===mode)?.label||'Comparison';
@@ -141,7 +172,9 @@
     if(mode==='profile'){layout.showlegend=false;layout.margin.b=65;}
     if(mode==='spread'&&channels.length<2)element.innerHTML='<div class="compare-empty">Select at least two channels to compare temperature spread.</div>';
     else if(!data.length)element.innerHTML='<div class="compare-empty">No valid numeric data exists for the selected channel(s).</div>';
-    else Plotly.newPlot(element,data,layout,{responsive:true,displaylogo:false,modeBarButtonsToRemove:['lasso2d','select2d']}).catch(e=>element.textContent='Comparison chart error: '+e.message);
+    else Plotly.newPlot(element,data,layout,{responsive:true,displaylogo:false,modeBarButtonsToRemove:['lasso2d','select2d']})
+      .then(plot=>comparisonTooltip(plot,'chart'))
+      .catch(e=>element.textContent='Comparison chart error: '+e.message);
   }
   function windowResults(items,channels){
     const all=[];
@@ -168,9 +201,9 @@
       if(!arr.length)return;
       records.push({type:'scatter',mode:'markers',name:f.name,showlegend:true,
         x:arr.map(v=>v.D),y:arr.map(v=>v.T),
-        customdata:arr.map(v=>[v.ch,v.status,f.name,mmss(v.D)]),
+        customdata:arr.map(v=>[v.ch,v.status,f.name,mmss(v.D)]),meta:{fileId:f.id,fileName:f.name},hoverinfo:'none',
         marker:{size:8,color:arr.map(v=>channelColor(v.ch)),line:{width:0.6,color:'#fff'},symbol:fileSymbol(f.fileIndex)},
-        hovertemplate:'%{customdata[2]} · %{customdata[0]}<br>Time ≥165°C: %{customdata[3]}<br>Peak: %{y:.1f}°C<br>Status: %{customdata[1]}<extra></extra>'});
+        hovertemplate:'<extra></extra>'});
     });
     const l=chartLayout('ED compliance · selected files','Peak temperature (°C)');
     l.xaxis.title='Duration above 165°C (mm:ss)';
@@ -180,13 +213,20 @@
     l.xaxis.ticktext=l.xaxis.tickvals.map(mmss);
     l.yaxis.range=[150,211];l.height=510;
     l.legend={orientation:'h',y:-.28,x:0,font:{size:11}};
-    Plotly.newPlot(element,records,l,{responsive:true,displaylogo:false,modeBarButtonsToRemove:['lasso2d','select2d']}).catch(e=>element.textContent=e.message);
-    legend.innerHTML='<div class="comparison-point-grid">'+data.map(v=>
-      '<div class="comparison-point" style="--point-color:'+channelColor(v.ch)+'">'
-      +'<div class="comparison-point-head"><span class="point-symbol">'+fileSymbol(v.fileIndex).replace('triangle-up','▲').replace('triangle-down','▼').replace('circle','●').replace('square','■').replace('diamond','◆').replace('cross','✚').replace('star','★')+'</span><strong>'+esc(v.ch)+'</strong><span class="compare-status '+(v.status==='PASS'?'ok':'issue')+'">'+esc(v.status)+'</span></div>'
-      +'<p title="'+esc(v.fileName)+'">'+esc(v.fileName)+'</p>'
-      +'<small>'+mmss(v.D)+' · '+fmt(v.T,1)+'°C</small>'
-      +'</div>').join('')+'</div>';
+    Plotly.newPlot(element,records,l,{responsive:true,displaylogo:false,modeBarButtonsToRemove:['lasso2d','select2d']})
+      .then(plot=>comparisonTooltip(plot,'window'))
+      .catch(e=>element.textContent=e.message);
+    // Each file receives one dedicated row of channel cards.
+    legend.innerHTML='<div class="comparison-file-groups">'+items.map(file=>{
+      const values=data.filter(v=>v.fileId===file.id);
+      if(!values.length)return '';
+      const cards=values.map(v=>'<div class="comparison-point" style="--point-color:'+channelColor(v.ch)+'">'
+        +'<div class="comparison-point-head"><span class="point-symbol">'+fileSymbol(v.fileIndex).replace('triangle-up','▲').replace('triangle-down','▼').replace('circle','●').replace('square','■').replace('diamond','◆').replace('cross','✚').replace('star','★')+'</span>'
+        +'<strong>'+esc(v.ch)+'</strong><span class="compare-status '+(v.status==='PASS'?'ok':'issue')+'">'+esc(v.status)+'</span></div>'
+        +'<small>'+mmss(v.D)+' · '+fmt(v.T,1)+'°C</small></div>').join('');
+      return '<section class="comparison-file-group"><h4 class="comparison-file-name">'+fileStyleSvg(file.fileIndex)+'<span>'+esc(file.name)+'</span></h4>'
+        +'<div class="comparison-file-cards">'+cards+'</div></section>';
+    }).join('')+'</div>';
   }
   async function exportPlot(id,suffix){
     const el=document.getElementById(id);
@@ -204,7 +244,7 @@
         +'<div class="compare-results"><div class="compare-panel"><div class="compare-panel-title"><div><h3>Chart comparison</h3></div><button type="button" class="compare-download" data-cmp-action="download-chart">↓ Download PNG</button></div><div id="cmp-chart" class="compare-plot"></div></div>'
         +'<div class="compare-panel"><div class="compare-panel-title"><div><h3>ED baking-window comparison</h3></div><button type="button" class="compare-download" data-cmp-action="download-window">↓ Window PNG</button></div><div id="cmp-window" class="compare-plot"></div><div id="cmp-window-matrix"></div></div>'
         +'</div></div>'
-        :'<div class="compare-empty-wrap"><h3>No recordings uploaded yet</h3><p>Go to Upload & File Management, upload two or more Excel recordings for this oven, then return to Comparison Studio.</p><button type="button" data-section="upload" class="primary-action">Go to uploads →</button></div>';
+        :(window.BAMCOEnhance?.emptyState?.()||'<div class="compare-empty-wrap"><h3>No recordings uploaded yet</h3><button type="button" data-section="upload" class="primary-action">Go to uploads →</button></div>');
     if(!files.length)return;
     const req=++state.renderVersion;
     requestAnimationFrame(()=>{
