@@ -167,7 +167,7 @@ function renderMain(){
  <div class="analysis-card"><h3>Peak temperatures by uploaded file</h3><p class="field-note">All active channels across uploaded files in this process. Uses the matching worksheet name where available, otherwise the first readable worksheet.</p><div class="plot-surface" id="plot-peaks" style="height:360px"></div><div class="channel-legend" id="legend-peaks" aria-label="Channel colors for peak temperatures"></div></div>
  <div class="chart-actions"><button class="btn" id="download-xlsx">Download Excel</button><button class="btn" id="download-png">Download all charts (PNG)</button></div>
  <p class="field-note export-note">Excel has two sheets: the selected source worksheet, recolored, and all four charts. PNG contains the same four charts and uses the same colors.</p>
- <h3 class="section-title">Uploaded worksheet</h3><p class="field-note">Original sections, fields and values in source order. Blank cells remain blank. Scroll the readings table to view every row.</p><div id="source-sections"></div>`;
+ <h3 class="section-title">Uploaded worksheet</h3><p class="field-note">Worksheet sections are preserved. In Readings, the primary temperature column is shown for each sensor; the original Excel export remains unchanged.</p><div id="source-sections"></div>`;
  $('download-xlsx').onclick=downloadExcel;$('download-png').onclick=downloadPNG;
  renderChannelLegends(chs);
  // Avoid blocking the initial chart paint with a potentially very long worksheet table.
