@@ -179,11 +179,17 @@
   }
   function switchSection(s){
     activeSection=s;document.body.dataset.section=s;
-    document.querySelectorAll('.workspace-nav-link').forEach(b=>b.classList.toggle('is-active',b.dataset.section===s));
+    document.querySelectorAll('.workspace-nav-link').forEach(b=>{
+      const selected=b.dataset.section===s;
+      b.classList.toggle('is-active',selected);
+      if(selected)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');
+    });
     const sectionName=sections.find(a=>a.id===s)?.label||'Workspace';
     const h=document.getElementById('selected-section-name');if(h)h.textContent=sectionName;
     if(s==='charts')core()?.renderPlots?.();
-    if(s==='comparison')window.setTimeout(()=>window.BAMCOCompare?.render?.(),60);
+    // Build the comparison contents before the browser paints the active tab.
+    // An empty intermediate frame shrinks the page and clamps its scroll position.
+    if(s==='comparison')window.BAMCOCompare?.render?.();
   }
   function elapsedDuration(reads,ch,step){
     const valid=reads.every(x=>Number.isFinite(x.values[ch]));
