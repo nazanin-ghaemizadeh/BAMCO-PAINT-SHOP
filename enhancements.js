@@ -128,17 +128,16 @@
     const oven=ovens.find(x=>x.id===choice);
     if(step===1){
       gateway.innerHTML='<div class="gate-container"><div class="gate-brand"><span class="brand-mark">B</span><span>BAM AUTOMOTIVE COMPANY <small>PAINT SHOP INTELLIGENCE</small></span></div>'
-      +'<div class="gate-intro"><div class="gate-kicker">WELCOME TO YOUR THERMAL WORKSPACE</div>'
-      +'<h1>Precision starts with every degree.</h1>'
-      +'<h2 class="gate-subtitle"><span>Select your oven</span></h2></div>'
+      +'<div class="gate-intro"><h1>Precision starts with <span>every degree.</span></h1></div>'
       +'<div class="oven-grid">'+ovens.map(o=>'<button class="oven-choice" data-oven="'+o.id+'"><span class="oven-number">'+o.symbol+'</span><span class="oven-graphic" aria-hidden="true">'+ovenIcon(o.id)+'</span><strong>'+o.name+'</strong><small>'+o.description+'</small><span class="oven-cta">Select oven →</span></button>').join('')+'</div>'
       +'</div>';
       applyGatewayLogo();
     } else {
       gateway.innerHTML='<div class="gate-container gate-window-container">'
+      +'<div class="window-topbar"><div><span class="window-eyebrow">THERMAL WORKSPACE</span><h1>'+oven.name+'</h1></div><button class="window-change-oven" data-go-back>← Change oven</button></div>'
       +(choice==='ed'
-        ?'<div class="window-selection"><div class="window-description"><span class="approved-flag">CONFIGURED WINDOW</span><h2>ED — Kansai Paint Iranian Co</h2><div class="window-spec"><span>Min duration <b>15:00</b></span><span>Max duration <b>35:30</b></span><span>Peak range <b>165–200°C</b></span></div><button class="primary-action" data-enter>Start ED analysis <span aria-hidden="true">→</span></button><button class="window-change-oven" data-go-back>Change oven</button></div>'+preview()+'</div>'
-        :'<div class="window-selection no-window"><div class="window-description"><span class="pending-flag">WINDOW NOT CONFIGURED</span><h2>Temperature data exploration</h2><p>No validated baking-window coordinates have been supplied for '+oven.name+'. Uploads, tables and charts remain available. The evaluation panel will clearly show “Not configured” rather than an unverified PASS or FAIL.</p><button class="primary-action" data-enter>Continue without curing rules →</button><button class="window-change-oven" data-go-back>Change oven</button></div></div>')
+        ?'<div class="window-selection"><section class="window-description"><span class="approved-flag">VALIDATED REFERENCE</span><h2>ED baking window</h2><p class="window-supplier">Kansai Paint Iranian Co</p><div class="window-spec"><span>Minimum duration <b>15:00</b></span><span>Maximum duration <b>35:30</b></span><span>Peak temperature <b>165–200°C</b></span></div><div class="window-actions"><button class="primary-action" data-enter>Start ED analysis <span aria-hidden="true">→</span></button></div></section>'+preview()+'</div>'
+        :'<div class="window-selection no-window"><section class="window-description"><span class="pending-flag">REFERENCE PENDING</span><h2>Explore your recordings</h2><p>No validated baking window has been configured for '+oven.name+'. You can upload recordings and explore temperature tables and charts.</p><p class="window-pending-note">Baking-window evaluation will show “Not configured”.</p><div class="window-actions"><button class="primary-action" data-enter>Continue to workspace <span aria-hidden="true">→</span></button></div></section></div>')
       +'</div>';
     }
     applyGatewayLogo();
