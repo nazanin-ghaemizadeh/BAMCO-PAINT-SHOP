@@ -144,14 +144,24 @@
     }
     applyGatewayLogo();
   }
+  function scrollToPageTop(){
+    // The welcome page can be taller than the upload view. Reset the retained
+    // scroll offset without animating, even when html uses smooth scrolling.
+    window.scrollTo({top:0,left:0,behavior:'instant'});
+  }
   function enter(){
     document.body.classList.add('bamco-entered');
     core().chooseTab(choice);
     activeSection='upload';
     switchSection('upload');
+    // Jump to the upload screen's top now and once after layout has settled.
+    scrollToPageTop();
+    requestAnimationFrame(scrollToPageTop);
   }
   function openGate(){
-    step=1;document.body.classList.remove('bamco-entered');renderGate();window.scrollTo(0,0);
+    step=1;document.body.classList.remove('bamco-entered');renderGate();
+    scrollToPageTop();
+    requestAnimationFrame(scrollToPageTop);
   }
   function navHTML(){
     return '<aside class="workspace-nav" aria-label="Workspace navigation"><div class="nav-overline">ACTIVE WORKSPACE</div>'
