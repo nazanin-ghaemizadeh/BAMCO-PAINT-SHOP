@@ -19,19 +19,6 @@ body[data-section="comparison"] .view-analysis {display:none!important}
 body[data-section="comparison"] .view-comparison {display:block!important}
 body[data-section="comparison"] .stage-layout>.chart-panel {padding:25px 28px 34px}
 body[data-section="comparison"] .bamco-views {width:100%}
-.compare-hero {
- position:relative;border-radius:22px;background:
- radial-gradient(circle at 95% -20%,#8ee7bb24,transparent 48%),
- linear-gradient(120deg,#123844,#1c5b54);
- padding:30px 34px;margin:0 0 24px;color:white;overflow:hidden;
-}
-.compare-hero:after {content:"";position:absolute;right:-40px;top:-65px;width:240px;height:240px;border:1px solid #b4ebd337;border-radius:50%;box-shadow:0 0 0 40px #b4ebd311,0 0 0 84px #b4ebd307;pointer-events:none}
-.compare-kicker {font-size:11px;letter-spacing:1.4px;font-weight:bold;color:#b0e5cf;display:flex;align-items:center;gap:9px}
-.compare-live {width:8px;height:8px;border-radius:50%;display:inline-block;background:#55dfae;box-shadow:0 0 0 4px #55dfae1f}
-.compare-hero h2 {font-size:34px;letter-spacing:-.8px;margin:17px 0 10px;font-weight:750}
-.compare-hero p {max-width:770px;color:#c0ddda;font-size:14px;line-height:1.7;margin:0}
-.compare-counts {display:flex;flex-wrap:wrap;gap:9px;margin-top:20px}
-.compare-counts span {background:#ffffff12;color:#d8f3e9;border:1px solid #c6f0e531;border-radius:40px;padding:7px 13px;font-size:11px}
 .compare-layout {display:grid;grid-template-columns:minmax(215px,270px) minmax(0,1fr);gap:21px;align-items:start}
 .compare-controls {position:sticky;top:16px;padding:20px 17px;border:1px solid var(--c-border);border-radius:16px;background:#f9fcfa;box-shadow:0 8px 35px #274c3910}
 .compare-controls h3 {font-size:15px;line-height:1.4;margin:0;color:#204b49}
@@ -96,7 +83,6 @@ body[data-section="comparison"] .bamco-views {width:100%}
  #bamco-gateway .gate-brand{gap:10px}
  #bamco-gateway .gate-brand>span:last-child{font-size:10px;letter-spacing:.5px}
  #bamco-gateway .gate-brand small{font-size:8px}
- .compare-hero{padding:23px 19px;border-radius:16px}.compare-hero h2{font-size:27px}
  body[data-section="comparison"] .stage-layout>.chart-panel{padding:12px}
  .compare-controls{padding:16px 12px}
  .compare-file-list{grid-template-columns:1fr}
