@@ -35,7 +35,7 @@ const ensurePlotly=()=>loadDependency('Plotly',[
  'https://cdn.plot.ly/plotly-cartesian-2.35.2.min.js',
  'https://cdn.jsdelivr.net/npm/plotly.js-cartesian-dist-min@2.35.2/plotly-cartesian.min.js'
 ]);
-let tab='ed',uid=0,drawVersion=0;
+let tab='ed',uid=0,drawVersion=0,chartsPreparedVersion=-1;
 const $=id=>document.getElementById(id);
 const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const num=x=>typeof x==='number'&&Number.isFinite(x);
@@ -174,16 +174,66 @@ function renderMain(){
  const later=()=>{if(v===drawVersion&&$('source-sections'))renderSource(r);};
  if('requestIdleCallback' in window)requestIdleCallback(later,{timeout:1800});
  else setTimeout(later,80);
- if(!chs.length){['profile','spread','bands','peaks'].forEach(n=>$('plot-'+n).innerHTML='<p class="field-note">Select at least one channel.</p>');window.BAMCOEnhance?.refresh?.();return;}
+ // Build the final sidebar/layout first. Plotly must never paint
+ // the legacy DOM and then be moved into the new tabbed dashboard.
+ window.BAMCOEnhance?.refresh?.();
+ if(document.body.dataset.section==='charts')renderPlots();
+}
+function renderPlots(){
+ const v=drawVersion,r=record();
+ const section=$('plot-profile')?.closest('.view-charts');
+ if(!r||!section||document.body.dataset.section!=='charts')return;
+ if(chartsPreparedVersion===v){
+  // Returning to an already rendered tab only requires a resize.
+  requestAnimationFrame(()=>{
+   if(v!==drawVersion||document.body.dataset.section!=='charts'||!window.Plotly)return;
+   for(const id of ['profile','spread','bands','peaks']){
+    const el=$('plot-'+id);
+    if(el?.data)try{Plotly.Plots.resize(el);}catch(_){}
+   }
+  });
+  return;
+ }
+ chartsPreparedVersion=v;
+ section.classList.add('charts-drawing');
+ section.classList.remove('charts-ready');
+ const chs=channels(r);
+ const s=current();
+ const others=s.files.filter(x=>x.records.length).map(x=>x.records.find(y=>y.sheetName===r.sheetName)||x.records[0]);
+ if(!chs.length){
+  for(const n of ['profile','spread','bands','peaks'])$('plot-'+n).textContent='Select at least one channel.';
+  section.classList.remove('charts-drawing');
+  section.classList.add('charts-ready');
+  return;
+ }
  const b=bands(r,chs);
  $('plot-bands').style.height=Math.max(420,180+25*b.labels.length)+'px';
  $('plot-peaks').style.height=Math.max(440,210+50*others.length)+'px';
  $('band-coverage').textContent='Covered time: '+chs.map((ch,i)=>ch+' '+b.coverage[i].toFixed(2)+' min').join(' · ');
- Promise.allSettled([profile(r,chs),spread(r,chs),heatmap(chs,b),peaks(others,chs)]).then(results=>{
-  if(v!==drawVersion)return;
-  results.forEach((x,i)=>{if(x.status==='rejected'){const el=$('plot-'+['profile','spread','bands','peaks'][i]);if(el)el.textContent='Chart error: '+x.reason.message;}});
+ // Plot only in their visible final containers; hide intermediate redraws.
+ requestAnimationFrame(()=>{
+  if(v!==drawVersion||document.body.dataset.section!=='charts'){
+   if(v===drawVersion)chartsPreparedVersion=-1;
+   return;
+  }
+  if(!window.Plotly){
+   for(const n of ['profile','spread','bands','peaks'])$('plot-'+n).textContent='Chart library unavailable.';
+   section.classList.remove('charts-drawing');
+   section.classList.add('charts-ready');
+   return;
+  }
+  Promise.allSettled([profile(r,chs),spread(r,chs),heatmap(chs,b),peaks(others,chs)]).then(results=>{
+   if(v!==drawVersion||!section.isConnected)return;
+   results.forEach((result,i)=>{
+    if(result.status==='rejected'){
+     const node=$('plot-'+['profile','spread','bands','peaks'][i]);
+     if(node)node.textContent='Chart error: '+(result.reason?.message||'Unknown error');
+    }
+   });
+   section.classList.remove('charts-drawing');
+   section.classList.add('charts-ready');
+  });
  });
- window.BAMCOEnhance?.refresh?.();
 }
 function renderChannelLegends(chs){
  const markup='<div class="channel-legend-track">'+chs.map(ch=>
@@ -474,7 +524,7 @@ async function downloadExcel(){
   const blob=new Blob([await wb.xlsx.writeBuffer()],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});saveBlob(blob,fileName(r)+'_report.xlsx');
  }catch(e){alert('Excel export failed: '+e.message);}finally{btn.disabled=false;}
 }
-window.BAMCO_CORE={getStage:()=>tab,getRecord:record,getFile:file,getState:current,chooseTab};
+window.BAMCO_CORE={getStage:()=>tab,getRecord:record,getFile:file,getState:current,chooseTab,renderPlots};
 function init(){document.querySelectorAll('[data-stage]').forEach(btn=>btn.onclick=()=>chooseTab(btn.dataset.stage));chooseTab(tab);}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
