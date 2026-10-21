@@ -167,7 +167,7 @@
       records.push({type:'scatter',mode:'markers',name:f.name,showlegend:true,
         x:arr.map(v=>v.D),y:arr.map(v=>v.T),
         customdata:arr.map(v=>[v.ch,v.status,f.name]),
-        marker:{size:7,color:arr.map(v=>channelColor(v.ch)),line:{width:0.8,color:'#fff'},symbol:fileSymbol(f.fileIndex)},
+        marker:{size:5.5,color:arr.map(v=>channelColor(v.ch)),line:{width:0.5,color:'#fff'},symbol:fileSymbol(f.fileIndex)},
         hovertemplate:'%{customdata[2]} · %{customdata[0]}<br>Time ≥165°C: %{x:.3f} min<br>Peak: %{y:.1f}°C<br>Status: %{customdata[1]}<extra></extra>'});
     });
     const l=chartLayout('ED compliance · selected files','Peak temperature (°C)');
