@@ -281,7 +281,7 @@
       +'<span>Min temp margin <b>'+signed(v.mtMin,1,'°C')+'</b></span>'
       +'<span>Max temp margin <b>'+signed(v.mtMax,1,'°C')+'</b></span></div>'
       +'<div class="probe-reason">'+(v.violations.length?esc(v.violations.join('; ')):'All baking window rules satisfied')+'</div></article>').join('');
-    return '<div class="analysis-titlebar"><div><h2>Baking Window Evaluation</h2></div>'+tag(overall)+'</div>'
+    return '<div class="analysis-titlebar"><div><h2>Baking Window Evaluation</h2></div><div class="chart-actions"><button type="button" class="btn" data-download-summary>Summary PDF</button>'+tag(overall)+'</div></div>'
       +'<div class="eval-stats"><div><small>Total probes</small><strong>'+results.length+'</strong></div><div><small>Passed</small><strong class="text-green">'+pass+'</strong></div><div><small>Failed</small><strong class="text-red">'+fail+'</strong></div><div><small>Invalid</small><strong>'+invalid+'</strong></div></div>'
       +'<div class="window-analysis-plot"><h3>ED Baking Window — Measured Channel Points</h3>'+svgChart(results.map(v=>({ch:v.ch,d:v.D,t:v.T,status:v.status})))
       +'</div>'
@@ -289,6 +289,18 @@
       +summaryRows(results)
       +'<div class="probe-grid">'+cards+'</div>'
       +'<div class="rule-explanation"><strong>Rule logic</strong><span>R01: D &lt; 15 min</span><span>R02: D &gt; 35.5 min</span><span>R03: Peak &lt; 165°C</span><span>R04: Peak &gt; 200°C</span><span>R05: 28D + 13.5T &gt; 3316</span><span>R06: Invalid or missing data</span></div>';
+  }
+  async function downloadSummary(button){
+    const r=core()?.getRecord();
+    if(core()?.getStage()!=='ed'||!r)return;
+    const results=evaluate(r);
+    const label=button.textContent;
+    button.disabled=true;button.setAttribute('aria-busy','true');button.textContent='Creating PDF...';
+    try{
+      if(!window.BAMCOSummaryPDF)throw Error('PDF export is unavailable. Reload the page and try again.');
+      await window.BAMCOSummaryPDF.download(results);
+    }catch(error){alert('Summary PDF export failed: '+error.message);}
+    finally{button.disabled=false;button.removeAttribute('aria-busy');button.textContent=label;}
   }
   function evaluationForExport(){
     const r=core()?.getRecord();if(core()?.getStage()!=='ed'||!r)return null;
@@ -360,6 +372,7 @@
       else if(b.hasAttribute('data-go-back')){step=1;renderGate();scrollToPageTop();requestAnimationFrame(scrollToPageTop);}
       else if(b.hasAttribute('data-enter'))enter();
       else if(b.hasAttribute('data-change-oven'))openGate();
+      else if(b.hasAttribute('data-download-summary'))downloadSummary(b);
       else if(b.dataset.section)switchSection(b.dataset.section);
     });
     refresh();
