@@ -124,8 +124,6 @@ body[data-section="charts"] .view-analysis,body[data-section="information"] .vie
 .text-green {color:#188654}.text-red,.negative {color:#c83244 !important}
 .window-analysis-plot {border:1px solid #e1ebe9;border-radius:15px;background:#fff;padding:18px;margin:22px 0}
 .window-analysis-plot h3,.analysis-table-title h3 {font-size:19px;margin:3px 0 12px}
-.window-legend {display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;color:#617c81;font-size:12px;margin:8px 0 0}
-.window-legend span {margin-left:auto}
 .dot {display:inline-block;width:9px;height:9px;border-radius:50%}.dot.green {background:#158056}.dot.red {background:#d24e4e}
 .analysis-table-title {margin:30px 0 14px}
 .matrix-scroll {overflow-x:auto;border:1px solid #e1e9ea;border-radius:12px}
@@ -155,7 +153,6 @@ body[data-section="charts"] .view-analysis,body[data-section="information"] .vie
 .rule-explanation {display:flex;gap:10px;flex-wrap:wrap;align-items:center;background:#edf5f2;border-radius:12px;padding:17px;margin-top:22px;font:11px Arial,sans-serif;color:#3d7060}
 .rule-explanation strong {width:100%;font-size:13px;color:#1e564e}
 .rule-explanation span {background:#fff;padding:8px;border-radius:7px}
-.evaluation-disclaimer {color:#73858b;font-size:11px;line-height:1.85;margin:22px 0 3px}
 .no-analysis {padding:25px 10px 40px}
 .no-analysis h2 {font-size:25px}
 .no-analysis p {max-width:690px;font-size:14px;line-height:1.8;color:#73858b}
@@ -177,5 +174,4 @@ body[data-section="charts"] .view-analysis,body[data-section="information"] .vie
  .stage-layout>.upload-panel {padding:20px 15px}.eval-stats{grid-template-columns:repeat(2,1fr)}
  .probe-grid{grid-template-columns:1fr}.analysis-titlebar h2{font-size:22px}.analysis-titlebar{flex-wrap:wrap}
  #plot-profile {height:510px!important;min-height:510px}.app-header{padding:18px}
- .window-legend span{width:100%;margin-left:0}
 }
