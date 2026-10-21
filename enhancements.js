@@ -109,9 +109,7 @@
       +legend+'</svg>';
   }
   function preview(){
-    return '<div class="window-photo-card"><div class="reference-image-meta"><span class="photo-status"><span class="status-dot"></span> REFERENCE WINDOW</span><span class="photo-caption">ED Oven · 165°C / 15 min</span></div>'
-      +'<button type="button" class="window-photo-trigger" data-photo-open aria-label="View full-size ED baking-window reference image"><img src="assets/ed-baking-window.svg?v=20261020-5" alt="ED Baking Window — five vertices, polygon and equations" class="window-photo" decoding="async"/><span class="image-zoom-hint">⤢ View full size</span></button>'
-      +'<div class="reference-image-footer"><span>5 vertices · time–temperature evaluation</span><span>REFERENCE 01 / ED</span></div></div>';
+    return '<div class="window-photo-card ed-reference-image"><img src="assets/ed-baking-window.svg?v=20261021-4" alt="ED Baking Window — Kansai Paint Iranian Co" class="window-photo" decoding="async" loading="eager"></div>';
   }
   function applyGatewayLogo(){
     const original=document.getElementById('company-logo-image');
@@ -140,7 +138,7 @@
       +'<button class="gate-back" data-go-back>← All ovens</button><div class="gate-kicker">STEP 02 / BAKING WINDOW SELECTION</div>'
       +'<h1>'+oven.name+'</h1><p class="gate-lead">Choose a validated reference before analysing your temperature recordings.</p>'
       +(choice==='ed'
-        ?'<div class="window-selection"><div class="window-description"><span class="approved-flag">CONFIGURED WINDOW</span><h2>ED — 165°C / 15 min</h2><p>Five-point curing polygon. Evaluation compares each probe’s interpolated time above 165°C with its peak temperature.</p><div class="window-spec"><span>Min duration <b>15 min</b></span><span>Max duration <b>35.5 min</b></span><span>Peak range <b>165–200°C</b></span></div><button class="primary-action" data-enter>Start ED analysis <span aria-hidden="true">→</span></button></div>'+preview()+'</div>'
+        ?'<div class="window-selection"><div class="window-description"><span class="approved-flag">CONFIGURED WINDOW</span><h2>ED — Kansai Paint Iranian Co</h2><div class="window-spec"><span>Min duration <b>15 min</b></span><span>Max duration <b>35.5 min</b></span><span>Peak range <b>165–200°C</b></span></div><button class="primary-action" data-enter>Start ED analysis <span aria-hidden="true">→</span></button></div>'+preview()+'</div>'
         :'<div class="window-selection no-window"><div class="window-description"><span class="pending-flag">WINDOW NOT CONFIGURED</span><h2>Temperature data exploration</h2><p>No validated baking-window coordinates have been supplied for '+oven.name+'. Uploads, tables and charts remain available. The evaluation panel will clearly show “Not configured” rather than an unverified PASS or FAIL.</p><button class="primary-action" data-enter>Continue without curing rules →</button></div></div>')
       +'</div>';
     }
@@ -325,25 +323,12 @@
     window.BAMCOCompare?.mount?.();
     switchSection(activeSection);
   }
-  function openReferenceImage(){
-    let dialog=document.getElementById('ed-window-lightbox');
-    if(!dialog){
-      dialog=document.createElement('dialog');dialog.id='ed-window-lightbox';dialog.className='ed-lightbox';
-      dialog.innerHTML='<div class="lightbox-top"><span>ED Oven — Baking Window Reference</span><button type="button" data-photo-close aria-label="Close image">×</button></div><div class="lightbox-image-frame"><img src="assets/ed-baking-window.svg?v=20261020-5" alt="Full size ED Baking Window with equations"></div>';
-      document.body.appendChild(dialog);
-      dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.close();});
-    }
-    if(typeof dialog.showModal==='function')dialog.showModal();
-    else dialog.setAttribute('open','');
-  }
   function init(){
     gateway=document.createElement('div');gateway.id='bamco-gateway';document.body.insertBefore(gateway,document.body.firstChild);
     renderGate();
     document.addEventListener('click',function(e){
       const b=e.target.closest('button');if(!b)return;
-      if(b.hasAttribute('data-photo-open'))openReferenceImage();
-      else if(b.hasAttribute('data-photo-close')){const d=document.getElementById('ed-window-lightbox');if(d?.close)d.close();else d?.removeAttribute('open');}
-      else if(b.dataset.oven){choice=b.dataset.oven;step=2;renderGate();}
+      if(b.dataset.oven){choice=b.dataset.oven;step=2;renderGate();}
       else if(b.hasAttribute('data-go-back')){step=1;renderGate();}
       else if(b.hasAttribute('data-enter'))enter();
       else if(b.hasAttribute('data-change-oven'))openGate();
