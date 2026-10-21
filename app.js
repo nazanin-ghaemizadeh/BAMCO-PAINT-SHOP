@@ -382,6 +382,32 @@ function renderCompactSummary(r,sec,rowIndexes,hidden,section){
  const grid=document.createElement('div');grid.className='source-grid source-summary-grid';
  grid.appendChild(table);section.appendChild(grid);return true;
 }
+// Display only the primary, named column for each sensor in Readings.
+// Raw worksheet source and exported Excel remain unchanged.
+function renderReadings(r,sec,rowIndexes,hidden,section){
+ const headers=r.rows[r.head]||[];
+ const selected=headers.map((cell,j)=>({j,label:display(cell).trim()}))
+  .filter(x=>x.label&&!hidden.has(r.head+','+x.j));
+ if(!selected.some(x=>/^Ch\d+\b/i.test(x.label)))return false;
+ const grid=document.createElement('div');grid.className='source-grid source-readings';
+ const table=document.createElement('table');table.className='table source-readings-table';
+ const cols=document.createElement('colgroup');
+ selected.forEach(({label})=>{const c=document.createElement('col');
+  c.style.width=/^Number$/i.test(label)?'8%':/^(?:Date\s*&?\s*Time|Timestamp)$/i.test(label)?'18%':'auto';
+  cols.appendChild(c);
+ });
+ table.appendChild(cols);
+ const thead=document.createElement('thead'),hr=document.createElement('tr');
+ selected.forEach(({label})=>{const th=document.createElement('th');th.scope='col';th.textContent=label;hr.appendChild(th);});
+ thead.appendChild(hr);table.appendChild(thead);
+ const tbody=document.createElement('tbody');
+ rowIndexes.forEach(i=>{if(i===r.head)return;
+  const tr=document.createElement('tr');
+  selected.forEach(({j})=>{const td=document.createElement('td');td.textContent=hidden.has(i+','+j)?'':display(r.rows[i]?.[j]);tr.appendChild(td);});
+  tbody.appendChild(tr);
+ });
+ table.appendChild(tbody);grid.appendChild(table);section.appendChild(grid);return true;
+}
 function renderSource(r){
  const container=$('source-sections'),top=new Map(),hidden=new Set();
  if(!container)return;
@@ -405,6 +431,10 @@ function renderSource(r){
   const section=document.createElement('section');section.className='source-section';
   const heading=document.createElement('h4');heading.textContent=sec.title;section.appendChild(heading);
   if(sec.kind==='summary'&&renderCompactSummary(r,sec,rowIndexes,hidden,section)){
+   frag.appendChild(section);
+   continue;
+  }
+  if(sec.kind==='readings'&&renderReadings(r,sec,rowIndexes,hidden,section)){
    frag.appendChild(section);
    continue;
   }
