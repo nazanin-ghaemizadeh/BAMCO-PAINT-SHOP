@@ -157,6 +157,19 @@ body[data-section="charts"] .view-analysis,body[data-section="information"] .vie
 .no-analysis h2 {font-size:25px}
 .no-analysis p {max-width:690px;font-size:14px;line-height:1.8;color:#73858b}
 .no-analysis .window-preview {max-width:900px;margin:20px 0}
+/* Compact official reference in the empty ED Baking Window analysis state only. */
+.no-analysis .ed-reference-image {
+  width:min(100%,440px);
+  max-width:440px;
+  margin:18px auto 16px;
+  padding:10px;
+}
+.no-analysis .ed-reference-image .window-photo {
+  width:100%;
+  height:auto;
+  display:block;
+  object-fit:contain;
+}
 .no-analysis .primary-action {margin-top:12px}
 @media(max-width:1130px) {.oven-grid {grid-template-columns:repeat(2,1fr)}.stage-layout {grid-template-columns:minmax(0,1fr)}.app-shell {padding:16px}.stage-layout>.chart-panel{padding:22px 19px}.window-selection{grid-template-columns:1fr}}
 @media(max-width:920px) {
