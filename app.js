@@ -184,6 +184,8 @@ function renderPlots(){
  const section=$('plot-profile')?.closest('.view-charts');
  if(!r||!section||document.body.dataset.section!=='charts')return;
  if(chartsPreparedVersion===v){
+  // Ignore re-entrant calls while the same chart set is still rendering.
+  if(section.classList.contains('charts-drawing'))return;
   // Returning to an already rendered tab only requires a resize.
   requestAnimationFrame(()=>{
    if(v!==drawVersion||document.body.dataset.section!=='charts'||!window.Plotly)return;
