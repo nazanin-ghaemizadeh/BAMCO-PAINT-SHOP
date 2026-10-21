@@ -2,6 +2,12 @@
    All calculations run locally in the browser. No uploaded data leaves the device. */
 'use strict';
 (function () {
+  // Start downloading and decoding the official ED image as the initial welcome page loads.
+  const ED_WINDOW_ASSET='assets/ed-baking-window-original.avif?v=20261021-5';
+  const edWindowPreload=new Image();
+  edWindowPreload.decoding='async';
+  edWindowPreload.src=ED_WINDOW_ASSET;
+  if(typeof edWindowPreload.decode==='function')edWindowPreload.decode().catch(()=>{});
   const WINDOW = {name:'ED Baking Window — 165°C / 15 min', threshold:165, minDuration:15,
     maxDuration:35.5, minTemp:165, maxTemp:200,
     vertices:[[15,165],[15,200],[22,200],[35.5,172],[35.5,165]]};
@@ -104,7 +110,7 @@
       +legend+'</svg>';
   }
   function preview(){
-    return '<div class="window-photo-card ed-reference-image"><img src="assets/ed-baking-window-original.avif?v=20261021-5" alt="ED Baking Window — Kansai Paint Iranian Co" class="window-photo" width="1448" height="1086" decoding="async" loading="eager"></div>';
+    return '<div class="window-photo-card ed-reference-image"><img src="'+ED_WINDOW_ASSET+'" alt="ED Baking Window — Kansai Paint Iranian Co" class="window-photo" width="1448" height="1086" decoding="async" loading="eager"></div>';
   }
   function applyGatewayLogo(){
     const original=document.getElementById('company-logo-image');
@@ -254,7 +260,7 @@
       return '<div class="no-analysis"><span class="pending-flag">NOT CONFIGURED</span><h2>No validated baking window for this oven</h2><p>The ED reference is never applied to another process. Configure the manufacturer-approved polygon before enabling pass/fail decisions here.</p></div>';
     }
     if(!r){
-      return '<div class="no-analysis"><h2>Ready to evaluate ED curing.</h2><p>Upload an Elcometer Excel workbook in <strong>Upload & File Management</strong>, then return here. Your temperature channels will be evaluated automatically against the selected green baking window.</p>'+preview()+'<button type="button" class="primary-action" data-section="upload">Upload a workbook →</button></div>';
+      return '<div class="no-analysis"><h2>Ready to evaluate ED curing.</h2>'+preview()+'<button type="button" class="primary-action" data-section="upload">Upload a workbook →</button></div>';
     }
     const results=evaluate(r);
     const pass=results.filter(v=>v.status==='PASS').length,fail=results.filter(v=>v.status==='FAIL').length,invalid=results.filter(v=>v.status==='INVALID DATA').length;
