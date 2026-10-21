@@ -240,3 +240,28 @@ body[data-section="comparison"] .bamco-views {width:100%}
   font-size: clamp(17px, 4.4vw, 66px);
   letter-spacing: -0.035em;
 }
+
+
+/* ED — Kansai Paint: static full reference image, no zoom controls. */
+#bamco-gateway .ed-reference-image {
+  padding: 12px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  cursor: default;
+  border: 1px solid #d8e7e0;
+  border-radius: 18px;
+}
+#bamco-gateway .ed-reference-image .window-photo {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  border-radius: 9px;
+  background: #fff;
+  border: 0;
+  box-shadow: none;
+}
