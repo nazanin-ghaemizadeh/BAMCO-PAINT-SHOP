@@ -376,7 +376,8 @@
         top.replaceChildren();
         charts.innerHTML=emptyState();
         info.innerHTML=emptyState();
-        analysis.innerHTML=renderAnalysis(r,core().getStage());
+        analysis.innerHTML=emptyState();
+        comparison.innerHTML=emptyState();
       }else{
         if(!r)info.innerHTML='<div class="no-analysis"><h2>No worksheet loaded yet</h2><p>Choose Upload & File Management to add a workbook.</p></div>';
         analysis.innerHTML=renderAnalysis(r,core().getStage());
