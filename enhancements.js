@@ -147,7 +147,7 @@
     const body=document.body;
     // Prepare the entire selected oven workspace behind the welcome screen.
     // Do not expose the legacy upload layout while it is being rebuilt.
-    const initialSection=getWindow(choice)?'analysis':'upload';
+    const initialSection='upload';
     activeSection=initialSection;
     body.dataset.section=initialSection;
     body.classList.add('bamco-building');
