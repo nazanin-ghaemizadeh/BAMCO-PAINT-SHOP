@@ -127,3 +127,7 @@ html[lang=fa] #source-sections .source-section>h4{direction:rtl;text-align:right
 /* Reliable unified cards: keep them above Plotly canvases and hide native SVG tooltip only when the card is open. */
 .js-plotly-plot>.bamco-compare-tooltip:not([hidden]){display:block!important;position:absolute!important;z-index:999!important;opacity:1!important;visibility:visible!important;pointer-events:none!important}
 .js-plotly-plot:has(>.bamco-compare-tooltip:not([hidden])) .hoverlayer .hovertext{opacity:0!important}
+
+/* Plotly-independent hover card: fixed overlay survives chart redraw and cannot intercept the cursor. */
+.bamco-chart-overlay{position:fixed!important;z-index:2147483000!important;pointer-events:none!important;max-width:min(420px,calc(100vw - 16px))!important}
+.js-plotly-plot .hoverlayer .hovertext{opacity:1}
