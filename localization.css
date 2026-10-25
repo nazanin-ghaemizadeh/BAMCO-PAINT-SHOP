@@ -119,4 +119,7 @@ html[lang=fa] #source-sections .source-section>h4{direction:rtl;text-align:right
 .bamco-compare-tooltip .tooltip-file{background:#f3faf6;border-radius:8px;padding:7px 8px}
 .bamco-compare-tooltip .tooltip-line{display:flex;align-items:center;justify-content:space-between;gap:8px;white-space:nowrap}
 .bamco-compare-tooltip .tooltip-channel{display:inline-flex;align-items:center;gap:5px}
-.js-plotly-plot .hoverlayer{opacity:0!important;pointer-events:none!important}
+/* Keep Plotly hover fallback visible when a custom hover card is not active. */
+
+/* A floating card must not steal hover away from plotted points. */
+#plot-profile>.bamco-compare-tooltip,#plot-spread>.bamco-compare-tooltip,#plot-bands>.bamco-compare-tooltip,#plot-peaks>.bamco-compare-tooltip{pointer-events:none;z-index:45}
