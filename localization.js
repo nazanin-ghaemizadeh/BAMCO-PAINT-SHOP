@@ -513,7 +513,139 @@ const dictionary={
  "Temperature Fall": "کاهش دما",
  "Heating Rate": "نرخ گرم‌شدن",
  "Cooling Rate": "نرخ سردشدن",
- "Name / Description": "نام / شرح"
+ "Name / Description": "نام / شرح",
+ "Gauge Type": "نوع دستگاه اندازه‌گیری",
+ "Gauge Name": "نام دستگاه اندازه‌گیری",
+ "Gauge Serial Number": "شماره سریال دستگاه اندازه‌گیری",
+ "Gauge Firmware": "نسخه نرم‌افزار دستگاه اندازه‌گیری",
+ "Sample Period": "دوره نمونه‌برداری",
+ "Sampling Period": "دوره نمونه‌برداری",
+ "Measurement Interval": "فاصله اندازه‌گیری",
+ "Measurement Period": "دوره اندازه‌گیری",
+ "Logging Interval": "فاصله ثبت داده",
+ "Logging Period": "دوره ثبت داده",
+ "Logging Start": "شروع ثبت داده",
+ "Logging Stop": "پایان ثبت داده",
+ "Start Recording": "شروع ثبت داده",
+ "Stop Recording": "توقف ثبت داده",
+ "Recording Start": "شروع ثبت داده",
+ "Recording End": "پایان ثبت داده",
+ "Start of Run": "شروع آزمون",
+ "End of Run": "پایان آزمون",
+ "Length of Run": "مدت آزمون",
+ "Run Name": "نام آزمون",
+ "Run Number": "شماره آزمون",
+ "Run Duration": "مدت آزمون",
+ "Absolute Time": "زمان مطلق",
+ "Relative Time": "زمان نسبی",
+ "Date Time": "تاریخ و ساعت",
+ "Temperature Profile": "پروفایل دما",
+ "Temperature Profile Summary": "خلاصه پروفایل دما",
+ "Profile Summary": "خلاصه پروفایل",
+ "Profile Name": "نام پروفایل",
+ "Channel Summary": "خلاصه کانال‌ها",
+ "Detailed Channel Statistics": "آمار تفصیلی کانال‌ها",
+ "Measurement Summary": "خلاصه اندازه‌گیری‌ها",
+ "Summary Statistics": "خلاصه آماری",
+ "Maximum Value": "بیشترین مقدار",
+ "Minimum Value": "کمترین مقدار",
+ "Average Value": "میانگین مقدار",
+ "Maximum Temp": "حداکثر دما",
+ "Minimum Temp": "حداقل دما",
+ "Max Temp": "حداکثر دما",
+ "Min Temp": "حداقل دما",
+ "Max. Temp": "حداکثر دما",
+ "Min. Temp": "حداقل دما",
+ "Max. Temperature": "حداکثر دما",
+ "Min. Temperature": "حداقل دما",
+ "Mean Temp": "میانگین دما",
+ "Average Temp": "میانگین دما",
+ "Peak Temp": "دمای اوج",
+ "Time at Maximum": "زمان در دمای بیشینه",
+ "Time at Minimum": "زمان در دمای کمینه",
+ "Time Above Threshold": "زمان بالاتر از آستانه",
+ "Time Below Threshold": "زمان پایین‌تر از آستانه",
+ "Time Over Temperature": "زمان بالاتر از دمای تعیین‌شده",
+ "Rise Time": "زمان افزایش دما",
+ "Fall Time": "زمان کاهش دما",
+ "Heating Time": "مدت گرم‌شدن",
+ "Cooling Time": "مدت سردشدن",
+ "Dwell Time": "زمان ماند",
+ "Cure Time": "زمان پخت",
+ "Curing Time": "زمان پخت",
+ "Cure Index": "شاخص پخت",
+ "Cure Value": "مقدار شاخص پخت",
+ "Cure Temperature": "دمای پخت",
+ "Curing Temperature": "دمای پخت",
+ "Cure Window": "محدوده پخت",
+ "Coating": "پوشش",
+ "Oven Name": "نام کوره",
+ "Zone": "ناحیه",
+ "Oven Zone": "ناحیه کوره",
+ "Reference Temperature": "دمای مرجع",
+ "Upper Temperature": "دمای بالا",
+ "Lower Temperature": "دمای پایین",
+ "High Alarm": "هشدار حد بالا",
+ "Low Alarm": "هشدار حد پایین",
+ "Alarm": "هشدار",
+ "Alarms": "هشدارها",
+ "Battery Level": "سطح باتری",
+ "Sensor Status": "وضعیت حسگر",
+ "Channel Status": "وضعیت کانال",
+ "Calibration Date": "تاریخ کالیبراسیون",
+ "Calibration": "کالیبراسیون",
+ "Calibration Due": "موعد کالیبراسیون",
+ "Time Stamp": "زمان ثبت",
+ "Reading Count": "تعداد اندازه‌گیری‌ها",
+ "Sample Count": "تعداد نمونه‌ها",
+ "Samples": "نمونه‌ها",
+ "File Name": "نام فایل",
+ "File": "فایل",
+ "Channel Number": "شماره کانال",
+ "Probe Number": "شماره حسگر",
+ "Probe Type": "نوع حسگر",
+ "Sensor Type": "نوع حسگر",
+ "Channel Type": "نوع کانال",
+ "Enable": "فعال",
+ "Enabled": "فعال",
+ "Disable": "غیرفعال",
+ "Disabled": "غیرفعال",
+ "Ambient": "محیط",
+ "Ambient Temperature": "دمای محیط",
+ "Surface": "سطح",
+ "Surface Temperature": "دمای سطح",
+ "Body": "بدنه",
+ "Roof": "سقف",
+ "Left": "چپ",
+ "Right": "راست",
+ "Center": "مرکز",
+ "Centre": "مرکز",
+ "Front": "جلو",
+ "Rear": "عقب",
+ "Door": "در",
+ "Hood": "در موتور",
+ "Bonnet": "در موتور",
+ "Trunk": "صندوق",
+ "Boot": "صندوق",
+ "Underbody": "زیر بدنه",
+ "Passenger": "سرنشین",
+ "Driver": "راننده",
+ "Upper": "بالا",
+ "Lower": "پایین",
+ "Inside": "داخل",
+ "Outside": "خارج",
+ "Left Side": "سمت چپ",
+ "Right Side": "سمت راست",
+ "Air Temperature": "دمای هوا",
+ "Metal Temperature": "دمای فلز",
+ "° C": "°C",
+ "Deg.C": "°C",
+ "DegC": "°C",
+ "Sec(s)": "s",
+ "Min(s)": "min",
+ "Temp Units": "واحد دما",
+ "Temperature Unit": "واحد دما",
+ "Time Unit": "واحد زمان"
 };
 const pageTitle=document.title;
 const KEY='bamco.ui.language',font="'Bamco Nazanin', 'Times New Roman', Times, serif";
@@ -522,6 +654,10 @@ const textState=new WeakMap(),attributeState=new WeakMap();let observer,schedule
 // Translate complete messages and explicit parameterized labels; never splice words.
 const faNumber=value=>String(value).replace(/\d/g,x=>'۰۱۲۳۴۵۶۷۸۹'[x]);
 const patterns=[
+ [/^(?:Location|Position) of (?:Probe|Sensor|Channel)\s*(\d+)$/i,m=>'محل حسگر '+faNumber(m[1])],
+ [/^((?:Left|Right|Front|Rear|Upper|Lower|Inside|Outside|Top|Bottom))\s+((?:Door|Body|Roof|Surface|Air|Side|Hood|Trunk))$/i,m=>translate(m[2])+' '+translate(m[1])],
+ [/^(.+?)\s*\/\s*(°C|min|s)$/i,m=>translate(m[1])+' ('+m[2]+')'],
+
  [/^Ch\s*(\d+)\s*\(\s*°?\s*C\s*\)$/i,m=>'کانال '+faNumber(m[1])+' (°C)'],
  [/^Channel\s*(\d+)$/i,m=>'کانال '+faNumber(m[1])],
  [/^(?:Time|Duration)\s+(?:above|over|at or above)\s*([\d.]+)\s*°?\s*C(?:\s*\((min|s)\))?$/i,m=>'زمان در دمای حداقل '+faNumber(m[1])+' °C'+(m[2]?' ('+m[2]+')':'')],
@@ -534,7 +670,7 @@ const patterns=[
  [/^(.+\.xlsx?): (.+)$/,m=>m[1]+': '+translate(m[2])],
  [/^Summary PDF export failed: (.+)$/,m=>'خطا در تهیه گزارش خلاصه: '+translate(m[1])],
  [/^[+−\-]?[0-9]+(?:[.:][0-9]+)*(?:–[0-9.]+)?$/,m=>faNumber(m[0])],
- [/^([\d.]+)–([\d.]+)°C$/,m=>faNumber(m[1])+' تا '+faNumber(m[2])+' \u2066°C\u2069'],
+ [/^([\d.]+)–([\d.]+)°C$/,m=>faNumber(m[1])+'–'+faNumber(m[2])+' °C'],
  [/^(.+) — Channel Evaluation$/,m=>'ارزیابی کانال‌ها بر اساس '+translate(m[1])],
  [/^Time at or above ([\d.]+)C \(min\)$/,m=>'زمان در دمای '+faNumber(m[1])+' °C یا بیشتر (min)'],
  [/^(.+) recordings$/,m=>'فایل‌های ثبت دمای کوره '+translate(m[1])],
@@ -571,7 +707,7 @@ const patterns=[
  [/^(.+) · (.+)$/,m=>translate(m[1])+' · '+translate(m[2])],
  [/^(.+): (.+)$/,m=>dictionary[m[1]]?translate(m[1])+': '+translate(m[2]):m[0]],
 ];
-const normalizedLabel=value=>String(value).trim().replace(/\s+/g,' ').replace(/[:：]$/,'').toLowerCase();
+const normalizedLabel=value=>String(value).trim().replace(/([a-z])([A-Z])/g,'$1 $2').replace(/[_]+/g,' ').replace(/\s+/g,' ').replace(/[:：]$/,'').toLowerCase();
 const labelTranslations=new Map(Object.entries(dictionary).map(([key,value])=>[normalizedLabel(key),value]));
 function translate(value){
  const source=String(value??'');if(language==='en')return source;
@@ -582,6 +718,8 @@ function translate(value){
  if(result===undefined)result=key;
  return source.slice(0,source.indexOf(key))+result+source.slice(source.indexOf(key)+key.length);
 }
+const numericMeasurement=/([+\-−]?[0-9۰-۹٠-٩]+(?:[.,:][0-9۰-۹٠-٩]+)*(?:[–-][0-9۰-۹٠-٩]+(?:[.,:][0-9۰-۹٠-٩]+)*)?\s*(?:°C|mm:ss|min|s))(?![A-Za-z0-9_.])/g;
+function measurementText(value){return String(value??'').replace(numericMeasurement,(match,group,offset,source)=>source[offset-1]==='\u2066'?match:'\u2066'+match+'\u2069')}
 const skip='script,style,noscript,textarea,[data-i18n-skip],.language-switch,#title,#subtitle,#meta b,.folder-copy strong,.folder-copy small:first-of-type,.latin-data,.uploaded-select,.compare-filename,.device-label,.chart-heading h2,.chart-heading .secondary,.daily-slot-status[data-filename],.tooltip-file strong,.comparison-file-name span';
 function original(state,value){return state&&value===state.display?state.source:value}
 function localize(){
@@ -591,7 +729,7 @@ function localize(){
  const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let node;
  while((node=walker.nextNode())){
   if(!node.parentElement||node.parentElement.closest(skip)||!node.nodeValue.trim())continue;
-  const source=original(textState.get(node),node.nodeValue),display=translate(source);
+  const source=original(textState.get(node),node.nodeValue),display=measurementText(translate(source));
   textState.set(node,{source,display});if(node.nodeValue!==display)node.nodeValue=display;
  }
  document.querySelectorAll('[title],[aria-label],[placeholder],[alt],[data-title],input[readonly]').forEach(el=>{
@@ -620,7 +758,7 @@ function setLanguage(value){
 function localizePlot(value,key=''){
  if(Array.isArray(value))return value.map(item=>localizePlot(item,key));
  if(value&&typeof value==='object'){const output={};for(const [k,v] of Object.entries(value))output[k]=localizePlot(v,k);return output}
- if(typeof value==='string'&&['title','text','hovertemplate','hovertext','ticktext','name'].includes(key))return translate(value);
+ if(typeof value==='string'&&['title','text','hovertemplate','hovertext','ticktext','name'].includes(key))return key==='name'?translate(value):measurementText(translate(value));
  return value;
 }
 function cloneLocalized(element){
@@ -629,7 +767,7 @@ function cloneLocalized(element){
  const originals=[element,...element.querySelectorAll('*')],copies=[copy,...copy.querySelectorAll('*')];
  originals.forEach((node,index)=>{const state=attributeState.get(node);if(state)attributeState.set(copies[index],structuredClone(state))});return copy;
 }
-window.BamcoI18n={t:translate,formatDigits,refresh:localize,setLanguage,clone:cloneLocalized,get language(){return language},font,
+window.BamcoI18n={t:translate,measurementText,formatDigits,refresh:localize,setLanguage,clone:cloneLocalized,get language(){return language},font,
  newPlot:(target,data,layout,...args)=>{
   const localized=localizePlot(layout),traces=localizePlot(data);
   if(language==='fa'&&localized.xaxis?.type==='category'){

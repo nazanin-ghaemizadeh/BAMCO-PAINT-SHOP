@@ -34,7 +34,7 @@
     ctx.fillStyle='#fff';ctx.fillRect(0,0,PAGE_W,PAGE_H);
     const font=(size,bold=false)=>{ctx.font=(bold?'bold ':'')+size+'px '+window.BamcoI18n.font;};
     const text=(s,x,y,size=10,color='#25443b',bold=false,align='left')=>{
-      font(size,bold);ctx.fillStyle=color;const label=tr(s);ctx.direction=/[\u0600-\u06ff]/.test(label)?'rtl':'ltr';if(rtl){ctx.save();ctx.translate(x,y);ctx.scale(-1,1);ctx.textAlign=align==='left'?'right':align==='right'?'left':align;ctx.fillText(label,0,0);ctx.restore()}else{ctx.textAlign=align;ctx.fillText(label,x,y)}ctx.textAlign='left';
+      font(size,bold);ctx.fillStyle=color;const label=window.BamcoI18n.measurementText(tr(s));ctx.direction=/[\u0600-\u06ff]/.test(label)?'rtl':'ltr';if(rtl){ctx.save();ctx.translate(x,y);ctx.scale(-1,1);ctx.textAlign=align==='left'?'right':align==='right'?'left':align;ctx.fillText(label,0,0);ctx.restore()}else{ctx.textAlign=align;ctx.fillText(label,x,y)}ctx.textAlign='left';
     };
     const box=(x,y,w,h,r,fill,stroke)=>{
       ctx.beginPath();ctx.roundRect(x,y,w,h,r);

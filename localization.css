@@ -88,3 +88,12 @@ body{padding-bottom:0}
 .baking-rule b{font-weight:600}.baking-rule bdi{direction:ltr;unicode-bidi:isolate}
 .source-measure-unit,.probe-numbers em{direction:ltr;unicode-bidi:isolate}
 @media(max-width:620px){#bamco-gateway .window-topbar{flex-wrap:wrap}.window-topbar-actions{gap:8px}.window-topbar-actions .language-switch button{min-width:48px;padding:7px 9px}}
+
+/* Measurements are LTR groups even inside Persian paragraphs. */
+html[lang=fa] .window-spec b{direction:ltr;unicode-bidi:isolate;text-align:end}
+.probe-numbers b{display:flex;flex-direction:row;gap:5px;align-items:baseline;justify-content:flex-end;direction:ltr;unicode-bidi:isolate}
+.probe-numbers em{flex:0 0 auto;white-space:nowrap}
+.source-compact-summary td.source-sensor-value{direction:ltr;unicode-bidi:isolate;text-align:center}
+.source-compact-summary .source-measure-value,.source-compact-summary .source-measure-unit{display:inline-block;direction:ltr;unicode-bidi:isolate}
+.source-compact-summary .source-measure-unit{margin-inline-start:5px;margin-inline-end:0}
+.source-readings-table td{direction:ltr;unicode-bidi:isolate;text-align:center}
