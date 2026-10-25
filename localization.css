@@ -112,3 +112,11 @@ html[lang=fa] #source-sections .source-section>h4{direction:rtl;text-align:right
 
 /* Match pinned baking-window cards to Plotly comparison cards. */
 .window-analysis-plot .baking-svg-tooltip{z-index:40;max-width:min(280px,calc(100% - 12px))}.baking-data-point{cursor:pointer;outline-offset:3px}.baking-data-point:focus-visible{outline:2px solid #198a66}
+
+/* One hover-card design for chart, comparison, and baking views. */
+.bamco-compare-tooltip,.window-analysis-plot .baking-svg-tooltip{box-sizing:border-box;background:#fff;border:1px solid #a9c8bc;border-radius:12px;box-shadow:0 12px 32px rgba(16,58,51,.20);color:#28544b;padding:9px;font-size:12px;line-height:1.4;text-align:left;direction:ltr}
+.bamco-compare-tooltip .tooltip-value{text-align:center;font-size:17px;font-weight:700;color:#1d5b4c;border-bottom:1px solid #dfece6;padding:3px 7px 8px;margin-bottom:4px}
+.bamco-compare-tooltip .tooltip-file{background:#f3faf6;border-radius:8px;padding:7px 8px}
+.bamco-compare-tooltip .tooltip-line{display:flex;align-items:center;justify-content:space-between;gap:8px;white-space:nowrap}
+.bamco-compare-tooltip .tooltip-channel{display:inline-flex;align-items:center;gap:5px}
+.js-plotly-plot .hoverlayer{opacity:0!important;pointer-events:none!important}
