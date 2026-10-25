@@ -107,3 +107,5 @@ html[lang=fa] #source-sections .source-grid,html[lang=fa] #source-sections .sour
 html[lang=fa] #source-sections .source-section>h4{direction:rtl;text-align:right}
 .probe-numbers>span>b,html[lang=fa] .probe-numbers>span>b,html[lang=en] .probe-numbers>span>b{width:100%;justify-content:flex-end;text-align:right;direction:ltr;unicode-bidi:isolate}
 .js-plotly-plot .hoverlayer .hovertext rect{fill:#fff !important;stroke:#b8d8ca !important;stroke-width:1.2px}.js-plotly-plot .hoverlayer .hovertext text{font-family:Arial,sans-serif !important;fill:#24554b !important;font-size:12px !important}
+
+.chart-tooltip-dot{display:inline-block;width:9px;height:9px;border-radius:50%;flex:0 0 9px}.js-plotly-plot:has(>.bamco-compare-tooltip:not([hidden])) .hoverlayer{opacity:0;pointer-events:none}
