@@ -131,3 +131,5 @@ html[lang=fa] #source-sections .source-section>h4{direction:rtl;text-align:right
 /* Plotly-independent hover card: fixed overlay survives chart redraw and cannot intercept the cursor. */
 .bamco-chart-overlay{position:fixed!important;z-index:2147483000!important;pointer-events:none!important;max-width:min(420px,calc(100vw - 16px))!important}
 .js-plotly-plot .hoverlayer .hovertext{opacity:1}
+
+body:has(.bamco-chart-overlay:not([hidden])) .js-plotly-plot .hoverlayer .hovertext{opacity:0!important}
