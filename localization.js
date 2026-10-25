@@ -728,7 +728,7 @@ function localize(){
  mountLanguageControls();
  const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let node;
  while((node=walker.nextNode())){
-  if(!node.parentElement||node.parentElement.closest(skip)||!node.nodeValue.trim())continue;
+  if(!node.parentElement||node.parentElement.closest(skip)||node.parentElement.closest('#source-sections .source-grid')||!node.nodeValue.trim())continue;
   const source=original(textState.get(node),node.nodeValue),display=node.parentElement.matches('[data-persian-time]')?formatDigits(source):measurementText(translate(source));
   textState.set(node,{source,display});if(node.nodeValue!==display)node.nodeValue=display;
  }
