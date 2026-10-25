@@ -286,7 +286,7 @@
       +'<div class="analysis-table-title"><h3>Channel Comparison Matrix</h3></div>'
       +summaryRows(results,config)
       +'<div class="probe-grid">'+cards+'</div>'
-      +'<div class="rule-explanation"><strong>Rule logic</strong><p>Duration D is measured in minutes; T is the peak temperature in degrees Celsius.</p>'+config.rules.map(([id,description,formula],index)=>'<span><b>Rule '+(index+1)+'</b><bdi dir="ltr" data-i18n-skip>'+esc(formula.replace(/Peak/g,'T').replace(/ min/g,''))+'</bdi></span>').join('')+'</div>';
+      +'<div class="rule-explanation"><strong>Rule logic</strong><div class="baking-rules" lang="en" dir="ltr" data-i18n-skip>'+config.rules.map(([id,description,formula])=>'<div class="baking-rule"><b>'+esc(id+' — '+description)+'</b><bdi>'+esc(formula)+'</bdi></div>').join('')+'</div></div>';
 
   }
   // Use the date in the uploaded filename shown in Upload & Files.

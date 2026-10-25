@@ -77,3 +77,14 @@ body{padding-bottom:0}
 #daily-date{font-variant-numeric:tabular-nums;font-size:19px!important;letter-spacing:1px;text-align:center}
 @media(max-width:1100px){.workspace-nav{grid-template-columns:minmax(0,1fr) max-content;grid-template-rows:auto auto;gap:10px}.workspace-nav .nav-oven{grid-column:1;grid-row:1}.workspace-nav .change-oven{grid-column:2;grid-row:1;min-width:210px}.workspace-nav .nav-links{grid-column:1/-1;grid-row:2;display:flex;overflow-x:auto;padding:0 0 4px}.workspace-nav-link{flex:1 0 auto;min-width:132px}.app-header .language-switch{display:inline-flex}}
 @media(max-width:620px){.app-header{flex-wrap:wrap;gap:15px}.app-header .language-switch{margin-inline-start:auto}.language-switch button{min-width:52px;padding:7px 10px}.workspace-nav{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto}.workspace-nav .nav-oven{grid-column:1;grid-row:1}.workspace-nav .nav-links{grid-column:1;grid-row:2}.workspace-nav .change-oven{grid-column:1;grid-row:3;min-width:0;width:100%}.upload-panel .input-group .input-group-btn{min-width:96px}.upload-panel .input-group .input-group-btn .btn{padding:0 12px}.upload-panel .input-group .form-control{padding:0 10px;font-size:15px}}
+
+.window-topbar-actions{display:flex;flex-flow:row wrap;gap:12px;align-items:center;justify-content:flex-end;flex:0 0 auto}
+#bamco-gateway .window-topbar .window-topbar-actions{display:flex;flex-direction:row;gap:12px;align-items:center}
+.window-topbar-actions .language-switch{margin:0;align-self:center}
+.window-topbar-actions .window-change-oven{margin:0;white-space:nowrap}
+#bamco-gateway .window-topbar{align-items:center;gap:18px}
+.baking-rules{width:100%;display:grid;gap:10px;direction:ltr;text-align:left;unicode-bidi:isolate}
+.baking-rule{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:baseline;justify-content:flex-start;font-size:15px;line-height:1.5}
+.baking-rule b{font-weight:600}.baking-rule bdi{direction:ltr;unicode-bidi:isolate}
+.source-measure-unit,.probe-numbers em{direction:ltr;unicode-bidi:isolate}
+@media(max-width:620px){#bamco-gateway .window-topbar{flex-wrap:wrap}.window-topbar-actions{gap:8px}.window-topbar-actions .language-switch button{min-width:48px;padding:7px 9px}}
