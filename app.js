@@ -291,7 +291,7 @@ function plotWithUnifiedCard(target,data,layout){
  return Promise.resolve(window.BamcoI18n.newPlot(target,data,layout,config)).then(plot=>{
   if(!plot||typeof plot.on!=='function')return plot;
   plot.querySelectorAll('.bamco-compare-tooltip').forEach(n=>n.remove());
-  const tip=document.createElement('div');tip.className='bamco-compare-tooltip';tip.hidden=true;plot.appendChild(tip);
+  const tip=document.createElement('div');tip.className='bamco-compare-tooltip';tip.hidden=true;plot.style.position='relative';plot.appendChild(tip);
   let pinned=false;
   const showCard=event=>{
 
@@ -317,7 +317,7 @@ function plotWithUnifiedCard(target,data,layout){
   plot.on('plotly_hover',event=>{pinned=false;showCard(event)});
   // Preserve Plotly's built-in hover as a safe fallback on every chart.
   plot.on('plotly_click',event=>{pinned=false;showCard(event)});
-  plot.on('plotly_unhover',()=>{if(!pinned&&!tip.matches(':hover'))tip.hidden=true});
+  // Keep the unified card visible while the pointer stays inside the plot; Plotly can emit unhover between adjacent traces.
   tip.addEventListener('mouseleave',()=>{if(!pinned)tip.hidden=true});
   plot.addEventListener('mouseleave',()=>{if(!pinned)tip.hidden=true});
   plot.addEventListener('click',event=>{if(event.target===plot||event.target.closest('.draglayer')){pinned=false;tip.hidden=true}},true);
