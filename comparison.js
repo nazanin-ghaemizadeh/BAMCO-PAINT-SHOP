@@ -118,7 +118,8 @@
     tip.className='bamco-compare-tooltip';
     tip.setAttribute('role','status');
     tip.hidden=true;plot.appendChild(tip);
-    plot.on('plotly_hover',event=>{
+    let pinned=false;
+    const showCard=event=>{
       const pts=(event.points||[]).filter(p=>Number.isFinite(p.y)&&p.data?.meta?.fileName);
       if(!pts.length){tip.hidden=true;return;}
       const groups=new Map();
@@ -140,11 +141,13 @@
       const w=tip.offsetWidth,h=tip.offsetHeight;
       tip.style.left=Math.max(6,Math.min(x+14,rect.width-w-6))+'px';
       tip.style.top=Math.max(6,Math.min(y+12,rect.height-h-6))+'px';
-    });
-    // Keep the panel available for scrolling when many recordings exceed two rows.
-    plot.on('plotly_unhover',()=>{if(!tip.matches(':hover'))tip.hidden=true;});
-    tip.addEventListener('mouseleave',()=>{tip.hidden=true;});
-    plot.addEventListener('mouseleave',()=>{tip.hidden=true;});
+    };
+    plot.on('plotly_hover',event=>{if(!pinned)showCard(event)});
+    plot.on('plotly_click',event=>{pinned=true;showCard(event)});
+    plot.on('plotly_unhover',()=>{if(!pinned&&!tip.matches(':hover'))tip.hidden=true;});
+    tip.addEventListener('mouseleave',()=>{if(!pinned)tip.hidden=true;});
+    plot.addEventListener('mouseleave',()=>{if(!pinned)tip.hidden=true;});
+    document.addEventListener('pointerdown',event=>{if(plot.isConnected&&!plot.contains(event.target)){pinned=false;tip.hidden=true}});
   }
   function plotChart(items,channels){
     const element=document.getElementById('cmp-chart');
