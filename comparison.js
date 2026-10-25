@@ -142,8 +142,8 @@
       tip.style.left=Math.max(6,Math.min(x+14,rect.width-w-6))+'px';
       tip.style.top=Math.max(6,Math.min(y+12,rect.height-h-6))+'px';
     };
-    plot.on('plotly_hover',event=>{if(!pinned)showCard(event)});
-    plot.on('plotly_click',event=>{pinned=true;showCard(event)});
+    plot.on('plotly_hover',event=>{pinned=false;showCard(event)});
+    plot.on('plotly_click',event=>{pinned=false;showCard(event)});
     plot.on('plotly_unhover',()=>{if(!pinned&&!tip.matches(':hover'))tip.hidden=true;});
     tip.addEventListener('mouseleave',()=>{if(!pinned)tip.hidden=true;});
     plot.addEventListener('mouseleave',()=>{if(!pinned)tip.hidden=true;});
