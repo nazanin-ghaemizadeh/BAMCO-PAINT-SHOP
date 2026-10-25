@@ -97,3 +97,8 @@ html[lang=fa] .window-spec b{direction:ltr;unicode-bidi:isolate;text-align:end}
 .source-compact-summary .source-measure-value,.source-compact-summary .source-measure-unit{display:inline-block;direction:ltr;unicode-bidi:isolate}
 .source-compact-summary .source-measure-unit{margin-inline-start:5px;margin-inline-end:0}
 .source-readings-table td{direction:ltr;unicode-bidi:isolate;text-align:center}
+
+/* Align baking evaluation card readings on one shared baseline. */
+.probe-numbers>span{display:flex;flex-direction:column;min-width:0;justify-content:space-between;align-items:stretch}
+.probe-numbers>span>small{min-height:3.5em;line-height:1.65}
+.probe-numbers>span>b{margin-top:auto;min-height:32px;align-items:baseline}
