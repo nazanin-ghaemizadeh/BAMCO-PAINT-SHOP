@@ -122,6 +122,9 @@
     panel.style.left=Math.max(6,Math.min(point.left-bounds.left+16,bounds.width-panel.offsetWidth-6))+'px';
     panel.style.top=Math.max(6,Math.min(point.top-bounds.top+12,bounds.height-panel.offsetHeight-6))+'px';
   });
+  document.addEventListener('pointerover',event=>{const dot=event.target.closest?.('.baking-data-point');if(dot)dot.dispatchEvent(new MouseEvent('click',{bubbles:true}))});
+  document.addEventListener('pointerout',event=>{const dot=event.target.closest?.('.baking-data-point');if(dot&&!dot.contains(event.relatedTarget))dot.closest('.window-analysis-plot')?.querySelector('.baking-svg-tooltip')?.remove()});
+  document.addEventListener('focusin',event=>{if(event.target.matches?.('.baking-data-point'))event.target.dispatchEvent(new MouseEvent('click',{bubbles:true}))});
   document.addEventListener('keydown',event=>{if((event.key==='Enter'||event.key===' ')&&event.target.matches?.('.baking-data-point')){event.preventDefault();event.target.dispatchEvent(new MouseEvent('click',{bubbles:true}))}});
   function preview(stage=choice){
     const config=getWindow(stage);if(!config)return '';
