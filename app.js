@@ -48,9 +48,9 @@ const record=()=>file()?.records[current().sheet];
 const selected=r=>current().visibility[current().selected+':'+current().sheet]||r.channels;
 const channels=r=>selected(r).filter(ch=>r.channels.includes(ch));
 const fileName=r=>STAGES[tab]+'_'+r.fileName.replace(/\.[^.]+$/,'').replace(/[^A-Za-z0-9_.-]/g,'_');
-const font={family:'Times New Roman, Times, serif',color:'#20354B',size:13};
+const font={family:window.BamcoI18n.font,color:'#20354B',size:13};
 const config={displaylogo:false,responsive:true,scrollZoom:false,modeBarButtonsToRemove:['toImage','lasso2d','select2d']};
-function plotLayout(x,y,b=88){return {xaxis:{title:{text:x,standoff:13},gridcolor:'#E5EBF1',zeroline:false,automargin:true},yaxis:{title:{text:y,standoff:12},gridcolor:'#E5EBF1',zeroline:false,automargin:true},paper_bgcolor:'white',plot_bgcolor:'white',font,margin:{l:80,r:30,t:46,b},hovermode:'closest',legend:{orientation:'h',x:.5,xanchor:'center',y:-.26,yanchor:'top',entrywidth:112,entrywidthmode:'pixels',tracegroupgap:24,font:{family:'Times New Roman, Times, serif',size:13}}};}
+function plotLayout(x,y,b=88){return {xaxis:{title:{text:x,standoff:13},gridcolor:'#E5EBF1',zeroline:false,automargin:true},yaxis:{title:{text:y,standoff:12},gridcolor:'#E5EBF1',zeroline:false,automargin:true},paper_bgcolor:'white',plot_bgcolor:'white',font,margin:{l:80,r:30,t:46,b},hovermode:'closest',legend:{orientation:'h',x:.5,xanchor:'center',y:-.26,yanchor:'top',entrywidth:112,entrywidthmode:'pixels',tracegroupgap:24,font:{family:window.BamcoI18n.font,size:13}}};}
 function excelTime(v,date1904){
  if(v instanceof Date)return v.getTime();
  if(num(v)&&v>10000&&v<100000){const d=XLSX.SSF.parse_date_code(v,{date1904:!!date1904});return d?Date.UTC(d.y,d.m-1,d.d,d.H,d.M,d.S,Math.round((d.u||0)*1000)):NaN;}
@@ -297,16 +297,16 @@ function profile(r,chs){
  const lay=plotLayout('Elapsed time from first reading (min)','Recorded temperature (°C)',88);lay.showlegend=false;
  if(all.length){let hi=-Infinity,lo=Infinity,p=all[0];for(let a of all){if(a.y>hi){hi=a.y;p=a;}lo=Math.min(lo,a.y);}
   const span=Math.max(1,hi-lo);lay.xaxis.range=[0,r.duration];lay.yaxis.range=[lo-span*.08,hi+span*.14];
-  lay.annotations=[{x:p.x,y:p.y,text:'Peak: '+p.y.toFixed(1)+' C ('+p.ch+')',showarrow:true,arrowhead:2,ax:p.x>r.duration/2?-65:65,ay:-38,font:{family:'Times New Roman',size:13,color:'#243247'}}];
+  lay.annotations=[{x:p.x,y:p.y,text:'Peak: '+p.y.toFixed(1)+' C ('+p.ch+')',showarrow:true,arrowhead:2,ax:p.x>r.duration/2?-65:65,ay:-38,font:{family:window.BamcoI18n.font,size:13,color:'#243247'}}];
  }
- return Plotly.newPlot('plot-profile',data,lay,config);
+ return window.BamcoI18n.newPlot('plot-profile',data,lay,config);
 }
 function spread(r,chs){
  let traces=[],part=[];function add(){if(part.length)traces.push({x:part.map(d=>d.x),y:part.map(d=>d.y),type:'scatter',mode:'lines+markers',showlegend:false,line:{color:'#167F83',width:2.7},marker:{size:3,color:'#167F83'},fill:'tozeroy',fillcolor:'rgba(22,127,131,.10)',hovertemplate:'%{x:.2f} min<br>Spread: %{y:.1f} °C<extra></extra>'});part=[];}
  r.reads.forEach((d,i)=>{const v=chs.map(c=>d.values[c]),ok=chs.length>=2&&v.every(num),gap=i>0&&d.ts-r.reads[i-1].ts>r.step*1500+1;if(gap||!ok)add();if(ok)part.push({x:d.elapsed,y:Math.max(...v)-Math.min(...v)});});add();
  const lay=plotLayout('Elapsed time (min)','Channel spread (°C)');lay.showlegend=false;
  if(chs.length<2)lay.annotations=[{text:'Select at least two channels to calculate spread.',xref:'paper',yref:'paper',x:.5,y:.5,showarrow:false}];
- return Plotly.newPlot('plot-spread',traces,lay,config);
+ return window.BamcoI18n.newPlot('plot-spread',traces,lay,config);
 }
 function validIntervals(r,ch){
  let out=[];for(let i=1;i<r.reads.length;i++){const a=r.reads[i-1],b=r.reads[i],dt=(b.ts-a.ts)/60000;
@@ -332,10 +332,10 @@ function heatmap(chs,b){
   colorscale:[[0,'#EDF5F5'],[.333,'#83BCB8'],[.667,'#167F83'],[1,'#123C52']],xgap:2,ygap:2,
   colorbar:{title:'Minutes'},hovertemplate:'%{x}<br>%{y} °C<br>%{z:.2f} min<extra></extra>',
   text:b.values.map(row=>row.map(v=>num(v)?v.toFixed(1):'N/A')),
-  texttemplate:'%{text}',textfont:{family:'Times New Roman',size:12,color:'#14283F'}}];
+  texttemplate:'%{text}',textfont:{family:window.BamcoI18n.font,size:12,color:'#14283F'}}];
  const lay=plotLayout('Channel','Temperature band (°C)');lay.showlegend=false;
  lay.xaxis={type:'category',title:'Channel',automargin:true};lay.yaxis={type:'category',categoryorder:'array',categoryarray:b.labels,title:'Temperature band (°C)',automargin:true};
- return Plotly.newPlot('plot-bands',data,lay,config);
+ return window.BamcoI18n.newPlot('plot-bands',data,lay,config);
 }
 function peaks(records,chs){
  const data=[];
@@ -350,7 +350,7 @@ function peaks(records,chs){
  const lay=plotLayout('File name','Peak temperature (°C)',125);lay.showlegend=false;
  lay.xaxis.tickmode='array';lay.xaxis.tickvals=records.map((r,i)=>i+1);lay.xaxis.ticktext=records.map(r=>r.fileName);lay.xaxis.range=[.5,records.length+.5];lay.xaxis.tickangle=records.some(r=>r.fileName.length>20)?-20:0;
 
- return Plotly.newPlot('plot-peaks',data,lay,config);
+ return window.BamcoI18n.newPlot('plot-peaks',data,lay,config);
 }
 function sourceSections(r){
  const text=r.rows.map(row=>row.map(display)),occ=text.map(x=>x.some(y=>y.length)),titles=[],summaries=[];

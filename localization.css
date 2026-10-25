@@ -1,0 +1,45 @@
+/* Arabic glyphs use Nazanin; Latin glyphs fall through to Times in every language. */
+@font-face{font-family:'Bamco Nazanin';src:url('assets/fonts/BNazanin.woff2') format('woff2');font-weight:400;font-display:swap;unicode-range:U+0600-06FF,U+0750-077F,U+08A0-08FF,U+200C-200D,U+FB50-FDFF,U+FE70-FEFF}
+@font-face{font-family:'Bamco Nazanin';src:url('assets/fonts/BNaznnBd.woff2') format('woff2');font-weight:600 900;font-display:swap;unicode-range:U+0600-06FF,U+0750-077F,U+08A0-08FF,U+200C-200D,U+FB50-FDFF,U+FE70-FEFF}
+:root{--bamco-font:'Bamco Nazanin','Times New Roman',Times,serif}
+body,body *,body input,body button,body select,body textarea,svg text{font-family:var(--bamco-font)!important}
+#bamco-gateway,#bamco-gateway *,#bamco-gateway input::file-selector-button,body *::before,body *::after{font-family:var(--bamco-font)!important}
+html[lang=fa] body{font-size:18px;line-height:1.65}
+html[dir=rtl] .app-header,html[dir=rtl] .header-identity,html[dir=rtl] .header-account{direction:rtl}
+html[lang=fa] h1,html[lang=fa] h2,html[lang=fa] h3,html[lang=fa] .brand,html[lang=fa] .header-tag,html[lang=fa] .eyebrow{letter-spacing:0!important}
+html[dir=rtl] .folder,html[dir=rtl] td,html[dir=rtl] th,html[dir=rtl] .field,html[dir=rtl] .dmeta{text-align:start}
+html[dir=rtl] .folder-arrow{right:auto;left:17px;transform:scaleX(-1)}
+html[lang=fa] .field label,html[lang=fa] .hint,html[lang=fa] .folder small,html[lang=fa] .dmeta,html[lang=fa] .kpi small{font-size:15px}
+html[lang=fa] table{font-size:15px}
+input[type=number],input[name^=chassis],input[name=code],.latin-data{direction:ltr;unicode-bidi:isolate;text-align:start}
+svg{direction:ltr}svg text{unicode-bidi:plaintext}
+.language-switch{position:fixed;z-index:1000;bottom:16px;inset-inline-end:18px;display:flex;direction:ltr;gap:3px;padding:4px;background:#fff;border:1px solid #bfd8cc;border-radius:12px;box-shadow:0 5px 18px #163e3026}
+.language-switch button{border:0;background:transparent;color:#285447;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:15px}
+.language-switch button[aria-pressed=true]{background:#176d5b;color:#fff}
+body{padding-bottom:64px}
+.measurement-pair{min-width:0;padding:12px;border:1px solid #d6e7de;border-radius:10px;background:#f7fbf9;display:grid;gap:10px}
+.values .measurement-pair label{grid-template-rows:auto 42px;white-space:normal}
+.values .measurement-pair label span{white-space:normal}
+.readings{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.reading{display:grid;gap:4px}.reading small{color:#62766b}.reading bdi{overflow-wrap:anywhere}
+.point:focus{outline:none;stroke:#102e32;stroke-width:4}
+@media(max-width:620px){.values{grid-template-columns:1fr}.header-identity{flex-wrap:wrap}.app-header{align-items:flex-start}.header-tag{white-space:normal}.language-switch{bottom:10px;inset-inline-end:10px}}
+@media print{.language-switch{display:none}body{padding-bottom:0}}
+html[dir=rtl] #bamco-gateway .oven-grid .oven-choice,html[dir=rtl] .window-description,html[dir=rtl] .uploaded-select,html[dir=rtl] .compare-controls,html[dir=rtl] .compare-hover-panel{text-align:start}
+html[dir=rtl] #bamco-gateway .oven-grid .oven-number{right:auto;left:24px}
+html[dir=rtl] .eval-matrix th:first-child,html[dir=rtl] .eval-matrix .matrix-group th{text-align:start;padding-inline-start:18px;padding-inline-end:9px}
+html[dir=rtl] .workspace-nav .nav-oven{border-left:0;border-right:5px solid #8ce6b7}
+html[dir=rtl] .source-label{border-left:0;border-right:3px solid var(--accent);border-radius:6px 0 0 6px}
+html[dir=rtl] .import-errors ul{padding-left:0;padding-right:18px}
+html[dir=rtl] .compare-status{margin-left:0;margin-right:auto}
+html[dir=rtl] .comparison-point{border-left:1px solid #e2ece8;border-right:4px solid var(--point-color)}
+html[lang=fa] #bamco-gateway h1{line-height:1.5;letter-spacing:0}
+html[lang=fa] .btn,html[lang=fa] .primary-action,html[lang=fa] .workspace-nav-link,html[lang=fa] .change-oven{font-size:16px;line-height:1.5}
+html[lang=fa] .secondary,html[lang=fa] .field-note,html[lang=fa] .control-label,html[lang=fa] .window-spec span,html[lang=fa] .probe-numbers small,html[lang=fa] .eval-matrix,html[lang=fa] .compare-small-title{font-size:15px}
+html[lang=fa] #bamco-gateway .oven-grid .oven-choice small{font-size:17px}
+.plot-surface,.js-plotly-plot,.window-analysis-plot svg{direction:ltr}
+.window-photo,.window-photo-card{direction:ltr}
+input[type=file]::file-selector-button{font-family:var(--bamco-font)}
+@media(max-width:760px){html[lang=fa] .workspace-nav-link{font-size:14px}html[lang=fa] .app-header{flex-wrap:wrap}}
+
+.window-spec b,.probe-numbers b,.probe-margins b,.rule-explanation span{direction:ltr;unicode-bidi:isolate}

@@ -87,8 +87,8 @@
       +'</div>';
   }
   function chartLayout(title,yTitle,bar=false){
-    return {title:{text:title,font:{family:'Times New Roman',size:17,color:'#214d4c'},x:0.02},
-      font:{family:'Times New Roman',size:12,color:'#38535d'},
+    return {title:{text:title,font:{family:window.BamcoI18n.font,size:17,color:'#214d4c'},x:0.02},
+      font:{family:window.BamcoI18n.font,size:12,color:'#38535d'},
       xaxis:{title:bar?'Uploaded file':'Elapsed time (min)',automargin:true,gridcolor:'#e5efec',zeroline:false,tickangle:bar?-18:0},
       yaxis:{title:yTitle,automargin:true,gridcolor:'#e5efec',zeroline:false},
       height:535,margin:{l:75,r:26,b:bar?132:92,t:60},
@@ -189,7 +189,7 @@
     if(mode==='profile'){layout.showlegend=false;layout.margin.b=65;}
     if(mode==='spread'&&channels.length<2)element.innerHTML='<div class="compare-empty">Select at least two channels to compare temperature spread.</div>';
     else if(!data.length)element.innerHTML='<div class="compare-empty">No valid numeric data exists for the selected channel(s).</div>';
-    else Plotly.newPlot(element,data,layout,{responsive:true,displaylogo:false,modeBarButtonsToRemove:['lasso2d','select2d']})
+    else window.BamcoI18n.newPlot(element,data,layout,{responsive:true,displaylogo:false,modeBarButtonsToRemove:['lasso2d','select2d']})
       .then(plot=>comparisonTooltip(plot,'chart'))
       .catch(e=>element.textContent='Comparison chart error: '+e.message);
   }
@@ -229,7 +229,7 @@
     l.xaxis.ticktext=l.xaxis.tickvals.map(mmss);
     l.yaxis.range=config.yRange;l.height=510;
     l.legend={orientation:'h',y:-.28,x:0,font:{size:11}};
-    Plotly.newPlot(element,records,l,{responsive:true,displaylogo:false,modeBarButtonsToRemove:['lasso2d','select2d']})
+    window.BamcoI18n.newPlot(element,records,l,{responsive:true,displaylogo:false,modeBarButtonsToRemove:['lasso2d','select2d']})
       .then(plot=>comparisonTooltip(plot,'window'))
       .catch(e=>element.textContent=e.message);
     // Each file receives one dedicated row of channel cards.

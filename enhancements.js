@@ -114,7 +114,7 @@
     const slot=gateway?.querySelector('.gate-header-slot');
     const source=document.querySelector('.app-shell > .app-header');
     if(!slot||!source)return;
-    const header=source.cloneNode(true);
+    const header=window.BamcoI18n.clone(source);
     header.removeAttribute('id');
     header.querySelectorAll('[id]').forEach(node=>node.removeAttribute('id'));
     slot.replaceChildren(header);
