@@ -288,41 +288,50 @@ function segments(r,ch){const out=[];let part=[],last=null;
  }if(part.length)out.push(part);return out;
 }
 function plotWithUnifiedCard(target,data,layout){
- return Promise.resolve(window.BamcoI18n.newPlot(target,data,layout,config)).then(plot=>{
-  if(!plot||typeof plot.on!=='function')return plot;
+ // Keep the card outside Plotly's managed DOM: redraws/resizes may replace plot children.
+ return Promise.resolve(window.BamcoI18n.newPlot(target,data,layout,config)).then(result=>{
+  const plot=document.getElementById(target);
+  if(!plot||typeof plot.on!=='function')return result;
   plot.querySelectorAll('.bamco-compare-tooltip').forEach(n=>n.remove());
-  const tip=document.createElement('div');tip.className='bamco-compare-tooltip';tip.hidden=true;plot.style.position='relative';plot.appendChild(tip);
-  let pinned=false;
-  const showCard=event=>{
-
-   const points=(event.points||[]).filter(p=>p&&p.y!==undefined);
-   if(!points.length){tip.hidden=true;return;}
-   const first=points[0],time=first.x,units=target==='plot-bands'?'':target==='plot-peaks'?'':' min';
-   const heading=String(time??'')+units;
+  const old=document.querySelector('.bamco-chart-overlay[data-owner="'+target+'"]');
+  old?.remove();
+  const tip=document.createElement('div');
+  tip.className='bamco-compare-tooltip bamco-chart-overlay';
+  tip.dataset.owner=target;
+  tip.hidden=true;
+  document.body.appendChild(tip);
+  const escapeHtml=value=>String(value??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const dismiss=()=>{tip.hidden=true;};
+  const show=event=>{
+   const points=(event?.points||[]).filter(p=>p&&(p.y!==undefined||p.z!==undefined));
+   if(!points.length)return;
+   const first=points[0],isBands=target==='plot-bands',isPeaks=target==='plot-peaks';
+   const x=isBands?first.y:first.x;
+   const heading=escapeHtml(String(x??'')+(isBands||isPeaks?'':' min'));
    const rows=points.map(p=>{
-    const name=String(p.data?.name||p.x||'Temperature');
-    const v=target==='plot-bands'?p.z:p.y;
-    const numeric=Number(v);
-    const value=Number.isFinite(numeric)?numeric.toFixed(target==='plot-bands'?2:1):String(v??'');
-    const color=p.fullData?.line?.color||p.fullData?.marker?.color||'#167f83';
-    const swatch='<span class="chart-tooltip-dot" style="background:'+String(color).replace(/[^#a-zA-Z0-9(),.% ]/g,'')+'"></span>';
-    return '<div class="tooltip-line"><span class="tooltip-channel">'+swatch+name.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</span><span>'+value+(target==='plot-bands'?' min':' °C')+'</span></div>';
-   });
-   tip.innerHTML='<div class="tooltip-value">'+heading.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div><div class="tooltip-groups"><div class="tooltip-file">'+rows.join('')+'</div></div>';
+    const name=escapeHtml(p.data?.name||(isBands?p.x:'Temperature'));
+    const v=isBands?p.z:p.y;
+    const number=Number(v);
+    const value=Number.isFinite(number)?number.toFixed(isBands?2:1):String(v??'');
+    const rawColor=p.fullData?.line?.color||p.fullData?.marker?.color||'#167f83';
+    const color=typeof rawColor==='string'&&/^(#[0-9a-fA-F]{3,8}|rgb[a]?\\([0-9.,% ]+\\)|[a-zA-Z]+)$/.test(rawColor)?rawColor:'#167f83';
+    return '<div class="tooltip-line"><span class="tooltip-channel"><span class="chart-tooltip-dot" style="background:'+color+'"></span>'+name+'</span><span>'+escapeHtml(value)+(isBands?' min':' °C')+'</span></div>';
+   }).join('');
+   tip.innerHTML='<div class="tooltip-value">'+heading+'</div><div class="tooltip-groups"><div class="tooltip-file">'+rows+'</div></div>';
    tip.hidden=false;
-   const rect=plot.getBoundingClientRect(),e=event.event,x=Number.isFinite(e?.clientX)?e.clientX-rect.left:rect.width/2,y=Number.isFinite(e?.clientY)?e.clientY-rect.top:rect.height/2;
-   tip.style.left=Math.max(6,Math.min(x+14,rect.width-tip.offsetWidth-6))+'px';
-   tip.style.top=Math.max(6,Math.min(y+12,rect.height-tip.offsetHeight-6))+'px';
+   const e=event.event;
+   const bounds=plot.getBoundingClientRect();
+   const xPos=Number.isFinite(e?.clientX)?e.clientX:bounds.left+bounds.width/2;
+   const yPos=Number.isFinite(e?.clientY)?e.clientY:bounds.top+bounds.height/2;
+   tip.style.left=Math.max(8,Math.min(xPos+14,window.innerWidth-tip.offsetWidth-8))+'px';
+   tip.style.top=Math.max(8,Math.min(yPos+12,window.innerHeight-tip.offsetHeight-8))+'px';
   };
-  plot.on('plotly_hover',event=>{pinned=false;showCard(event)});
-  // Preserve Plotly's built-in hover as a safe fallback on every chart.
-  plot.on('plotly_click',event=>{pinned=false;showCard(event)});
-  // Keep the unified card visible while the pointer stays inside the plot; Plotly can emit unhover between adjacent traces.
-  tip.addEventListener('mouseleave',()=>{if(!pinned)tip.hidden=true});
-  plot.addEventListener('mouseleave',()=>{if(!pinned)tip.hidden=true});
-  plot.addEventListener('click',event=>{if(event.target===plot||event.target.closest('.draglayer')){pinned=false;tip.hidden=true}},true);
-  document.addEventListener('pointerdown',event=>{if(!plot.isConnected)return;if(!plot.contains(event.target)){pinned=false;tip.hidden=true}});
-  return plot;
+  plot.on('plotly_hover',show);
+  plot.on('plotly_click',show);
+  plot.on('plotly_unhover',dismiss);
+  plot.addEventListener('mouseleave',dismiss);
+  document.addEventListener('pointerdown',e=>{if(!plot.contains(e.target))dismiss()});
+  return result;
  });
 }
 function profile(r,chs){
