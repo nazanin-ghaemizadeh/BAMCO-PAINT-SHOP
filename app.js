@@ -50,7 +50,7 @@ const channels=r=>selected(r).filter(ch=>r.channels.includes(ch));
 const fileName=r=>STAGES[tab]+'_'+r.fileName.replace(/\.[^.]+$/,'').replace(/[^A-Za-z0-9_.-]/g,'_');
 const font={family:window.BamcoI18n.font,color:'#20354B',size:13};
 const config={displaylogo:false,responsive:true,scrollZoom:false,modeBarButtonsToRemove:['toImage','lasso2d','select2d']};
-function plotLayout(x,y,b=88){return {xaxis:{title:{text:x,standoff:13},gridcolor:'#E5EBF1',zeroline:false,automargin:true},yaxis:{title:{text:y,standoff:12},gridcolor:'#E5EBF1',zeroline:false,automargin:true},paper_bgcolor:'white',plot_bgcolor:'white',font,margin:{l:80,r:30,t:46,b},hovermode:'closest',legend:{orientation:'h',x:.5,xanchor:'center',y:-.26,yanchor:'top',entrywidth:112,entrywidthmode:'pixels',tracegroupgap:24,font:{family:window.BamcoI18n.font,size:13}}};}
+function plotLayout(x,y,b=88){return {hovermode:'x unified',hoverlabel:{bgcolor:'#ffffff',bordercolor:'#b8d8ca',font:{family:'Arial',size:12,color:'#24554b'}},xaxis:{title:{text:x,standoff:13},gridcolor:'#E5EBF1',zeroline:false,automargin:true},yaxis:{title:{text:y,standoff:12},gridcolor:'#E5EBF1',zeroline:false,automargin:true},paper_bgcolor:'white',plot_bgcolor:'white',font,margin:{l:80,r:30,t:46,b},hovermode:'closest',legend:{orientation:'h',x:.5,xanchor:'center',y:-.26,yanchor:'top',entrywidth:112,entrywidthmode:'pixels',tracegroupgap:24,font:{family:window.BamcoI18n.font,size:13}}};}
 function excelTime(v,date1904){
  if(v instanceof Date)return v.getTime();
  if(num(v)&&v>10000&&v<100000){const d=XLSX.SSF.parse_date_code(v,{date1904:!!date1904});return d?Date.UTC(d.y,d.m-1,d.d,d.H,d.M,d.S,Math.round((d.u||0)*1000)):NaN;}
