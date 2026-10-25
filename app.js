@@ -453,7 +453,7 @@ function renderReadings(r,sec,rowIndexes,hidden,section){
  const tbody=document.createElement('tbody');
  rowIndexes.forEach(i=>{if(i===r.head)return;
   const tr=document.createElement('tr');
-  selected.forEach(({j})=>{const td=document.createElement('td');td.textContent=hidden.has(i+','+j)?'':display(r.rows[i]?.[j]);tr.appendChild(td);});
+  selected.forEach(({j,label})=>{const td=document.createElement('td');if(/^(?:Date\s*(?:&|and)?\s*Time|Timestamp|Time)$/i.test(label))td.dataset.persianTime='';td.textContent=hidden.has(i+','+j)?'':display(r.rows[i]?.[j]);tr.appendChild(td);});
   tbody.appendChild(tr);
  });
  table.appendChild(tbody);grid.appendChild(table);section.appendChild(grid);return true;
