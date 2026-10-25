@@ -117,7 +117,7 @@
     const tip=document.createElement('div');
     tip.className='bamco-compare-tooltip';
     tip.setAttribute('role','status');
-    tip.hidden=true;plot.appendChild(tip);
+    tip.hidden=true;plot.style.position='relative';plot.appendChild(tip);
     let pinned=false;
     const showCard=event=>{
       const pts=(event.points||[]).filter(p=>Number.isFinite(p.y)&&p.data?.meta?.fileName);
@@ -144,7 +144,7 @@
     };
     plot.on('plotly_hover',event=>{pinned=false;showCard(event)});
     plot.on('plotly_click',event=>{pinned=false;showCard(event)});
-    plot.on('plotly_unhover',()=>{if(!pinned&&!tip.matches(':hover'))tip.hidden=true;});
+    // Plotly may emit unhover immediately when switching traces; mouseleave controls dismissal.
     tip.addEventListener('mouseleave',()=>{if(!pinned)tip.hidden=true;});
     plot.addEventListener('mouseleave',()=>{if(!pinned)tip.hidden=true;});
     document.addEventListener('pointerdown',event=>{if(plot.isConnected&&!plot.contains(event.target)){pinned=false;tip.hidden=true}});
