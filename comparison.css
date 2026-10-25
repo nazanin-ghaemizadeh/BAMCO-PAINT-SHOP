@@ -575,3 +575,7 @@ body[data-section="comparison"] .bamco-views {width:100%}
 
 .compare-channel-choice{display:grid;grid-template-columns:auto auto;grid-template-rows:auto auto;justify-content:center;justify-items:center;align-content:center;column-gap:5px;row-gap:7px;min-height:73px;direction:ltr}
 .compare-channel-choice input{grid-column:1;grid-row:1}.compare-channel-choice .channel-color-swatch{grid-column:2;grid-row:1;align-self:center}.compare-channel-choice .compare-channel-name{grid-column:1/-1;grid-row:2;white-space:nowrap;text-align:center;font-size:13px}
+
+/* Match channel summary typography to the other information tables. */
+#source-sections .source-grid .source-compact-summary{font-family:inherit;font-size:14px}
+#source-sections .source-compact-summary th,#source-sections .source-compact-summary td,#source-sections .source-compact-summary .source-measure-value,#source-sections .source-compact-summary .source-measure-unit{font-family:inherit;font-size:inherit}
