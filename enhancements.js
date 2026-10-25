@@ -108,12 +108,7 @@
   }
   function preview(stage=choice){
     const config=getWindow(stage);if(!config)return '';
-    const vertices=config.vertices.map(([d,t])=>'<bdi dir="ltr">('+d+', '+t+')</bdi>').join('');
-    const equations=config.rules.map(([id,description,formula])=>'<bdi dir="ltr" data-i18n-skip>'+esc(formula.replace(/Peak/g,'T').replace(/ min/g,'').replace(/ > /g,' ≤ ').replace(/ < /g,' ≥ '))+'</bdi>').join('');
-    return '<figure class="localized-reference"><div class="reference-fa" lang="fa">'+svgChart([],true,config)
-      +'<figcaption><section><h3>مختصات رأس‌های محدوده پخت</h3><p>مدت زمان بر حسب دقیقه؛ دمای اوج بر حسب درجه سانتی‌گراد</p><div class="reference-values">'+vertices+'</div></section>'
-      +'<section><h3>روابط حدود مجاز پخت</h3><div class="reference-values">'+equations+'</div></section></figcaption></div>'
-      +'<div class="reference-en window-photo-card ed-reference-image" lang="en"><img src="'+config.image+'" alt="'+esc(config.name+' — '+config.manufacturer)+'" class="window-photo" width="1448" height="1086" decoding="async" loading="eager"></div></figure>';
+    return '<div class="window-photo-card ed-reference-image"><img src="'+config.image+'" alt="'+esc(config.name+' — '+config.manufacturer)+'" class="window-photo" width="1448" height="1086" decoding="async" loading="eager"></div>';
   }
   function applyGatewayHeader(){
     const slot=gateway?.querySelector('.gate-header-slot');

@@ -41,7 +41,7 @@
   }
   function open(host,onBack){
     host.innerHTML='<div class="daily-report-container"><div class="window-topbar"><div><span class="window-eyebrow">THERMAL WORKSPACE</span><h1>Daily report</h1></div><button type="button" class="window-change-oven" data-daily-back>← Back to ovens</button></div>'
-      +'<form class="daily-report-form"><div class="daily-date-row"><div><h2>Daily oven summary</h2></div><label for="daily-date">Report date<input id="daily-date" type="text" inputmode="numeric" dir="ltr" placeholder="1405-06-05" autocomplete="off" required value="'+esc(state.date)+'"><small>YYYY-MM-DD · entered manually</small></label></div>'
+      +'<form class="daily-report-form"><div class="daily-date-row"><div><h2>Daily oven summary</h2></div><label for="daily-date">Report date<input id="daily-date" data-localized-digits type="text" inputmode="numeric" dir="ltr" placeholder="1405-06-05" autocomplete="off" required value="'+esc(state.date)+'"><small>YYYY-MM-DD · entered manually</small></label></div>'
       +'<div class="daily-oven-grid">'+ovens.map(cardHTML).join('')+'</div>'
       +'<div class="daily-report-footer"><p class="daily-report-error" role="alert"></p><button type="submit" class="primary-action">Download daily summary PDF <span aria-hidden="true">→</span></button><small>Only uploaded ovens are included · A4 landscape</small></div></form></div>';
     const form=host.querySelector('.daily-report-form'),date=form.querySelector('#daily-date'),error=form.querySelector('.daily-report-error'),button=form.querySelector('[type="submit"]');
@@ -88,7 +88,7 @@
       event.preventDefault();if(generating)return;error.textContent='';
       const reportDate=normalizeDate(date.value);
       if(!reportDate){error.textContent='Enter a valid report date, for example 1405-06-05.';date.focus();return;}
-      state.date=reportDate;date.value=reportDate;
+      state.date=reportDate;date.value=window.BamcoI18n.formatDigits(reportDate);
       try{
         const pages=entries();
         generating=true;button.disabled=true;button.setAttribute('aria-busy','true');button.textContent='Creating summary PDF…';

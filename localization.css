@@ -43,17 +43,6 @@ input[type=file]::file-selector-button{font-family:var(--bamco-font)}
 @media(max-width:760px){html[lang=fa] .workspace-nav-link{font-size:14px}html[lang=fa] .app-header{flex-wrap:wrap}}
 
 .window-spec b,.probe-numbers b,.probe-margins b,.rule-explanation span{direction:ltr;unicode-bidi:isolate}
-/* Keep the reference geometry and equations unchanged, but localize its captions. */
-.localized-reference{margin:0;min-width:0;width:100%;align-self:stretch;background:#fff;border:1px solid #dce8e1;border-radius:18px;padding:18px;overflow:hidden}
-.reference-fa{display:none}.reference-en{display:block}
-html[lang=fa] .reference-fa{display:block}html[lang=fa] .reference-en{display:none!important}
-html[lang=en] .reference-fa{display:none!important}
-.reference-fa .window-svg{display:block;width:100%;height:auto;max-height:430px}
-.reference-fa figcaption{display:grid;grid-template-columns:1fr 1fr;gap:16px;text-align:right;background:#f4faf6;border:1px solid #dbece0;border-radius:12px;padding:16px}
-.reference-fa h3{font-size:19px;line-height:1.7;margin:0 0 4px}.reference-fa p{font-size:15px;color:#667c6d;margin:0 0 8px}
-.reference-values{display:flex;gap:8px 16px;flex-wrap:wrap;justify-content:flex-start;direction:ltr}
-.reference-values bdi{font-size:17px;white-space:nowrap;unicode-bidi:isolate}
-.reference-fa svg text{font-size:16px}
 html[lang=fa] #bamco-gateway .gate-intro h1{font-size:clamp(28px,3.8vw,48px);line-height:1.65;margin:0;text-wrap:balance}
 html[lang=fa] .brand{line-height:1.5}html[lang=fa] .app-header h1{line-height:1.6}
 html[lang=fa] .eval-matrix td{text-align:center;direction:ltr;unicode-bidi:isolate}
@@ -64,6 +53,27 @@ html[lang=fa] .window-spec b{direction:rtl;unicode-bidi:plaintext;text-align:end
 .daily-file-button:has(+input:disabled){opacity:.45;pointer-events:none}
 .daily-file-button:has(+input:focus-visible){outline:2px solid #176d5b;outline-offset:2px}
 html[lang=fa] .probe-location,html[lang=fa] .probe-reason,html[lang=fa] .compare-control-header h3,html[lang=fa] .compare-file-choice,html[lang=fa] .window-supplier{font-size:16px;line-height:1.6}
-@media(max-width:760px){.reference-fa figcaption{grid-template-columns:1fr}.localized-reference{padding:10px}.reference-fa svg text{font-size:18px}html[lang=fa] .app-header h1{font-size:21px}.language-switch{max-width:calc(100vw - 20px)}}
 
-.localized-reference{display:flex;flex-direction:column;justify-content:center}.reference-fa{width:100%}.rule-explanation p{width:100%;margin:5px 0;font-size:15px;line-height:1.7}.rule-explanation span{display:flex;gap:10px;align-items:center}.rule-explanation bdi{direction:ltr;unicode-bidi:isolate}.rule-explanation span b{font-size:15px;font-weight:600}
+.rule-explanation p{width:100%;margin:5px 0;font-size:15px;line-height:1.7}.rule-explanation span{display:flex;gap:10px;align-items:center}.rule-explanation bdi{direction:ltr;unicode-bidi:isolate}.rule-explanation span b{font-size:15px;font-weight:600}
+
+/* Language selection occupies the former workspace badge in every header. */
+.language-switch{position:relative;inset:auto;bottom:auto;z-index:1;display:inline-flex;align-items:center;flex:0 0 auto;gap:3px;padding:4px;background:#ffffff12;border-color:#ffffff40;border-radius:12px;box-shadow:none;max-width:none;direction:ltr}
+.language-switch button{min-width:58px;padding:8px 14px;color:#e5f2ef;font-size:16px;line-height:1.3}
+.language-switch button[aria-pressed=true]{color:#175844;background:#effaf5;box-shadow:0 2px 6px #082e2519}
+html[lang=en] .language-switch [data-language=en]{order:0}html[lang=en] .language-switch [data-language=fa]{order:1}
+html[lang=fa] .language-switch{direction:rtl}html[lang=fa] .language-switch [data-language=fa]{order:0}html[lang=fa] .language-switch [data-language=en]{order:1}
+.app-header>.language-switch{align-self:center;margin:0}
+.window-topbar .language-switch{background:#edf6f1;border-color:#cfdfd5;margin-bottom:8px}.window-topbar .language-switch button{color:#285e4e}.window-topbar .language-switch button[aria-pressed=true]{background:#176d5b;color:#fff}
+body{padding-bottom:0}
+/* One border and one radius around the complete Excel picker. */
+.upload-panel .input-group{display:flex;align-items:stretch;gap:0;height:50px;width:100%;min-width:0;border:1px solid #cedfd5;border-radius:11px;overflow:hidden;background:#fbfdfc}
+.upload-panel .input-group .input-group-btn{display:flex;flex:0 0 auto;min-width:112px}
+.upload-panel .input-group .input-group-btn .btn{height:100%;min-height:0;border:0;border-radius:0;padding:0 20px;margin:0;box-shadow:none;line-height:1.4}
+.upload-panel .input-group .form-control{flex:1 1 0;min-width:0;width:0;height:100%;min-height:0;margin:0;padding:0 16px;border:0!important;border-radius:0!important;box-shadow:none;background:transparent;font-size:16px;box-sizing:border-box}
+.workspace-nav{display:grid;grid-template-columns:minmax(175px,210px) minmax(0,1fr) max-content;align-items:stretch;gap:12px;height:auto;min-height:80px;padding:8px 12px;overflow:visible}
+.workspace-nav .nav-oven{width:auto;min-width:0;height:auto;min-height:62px;flex:auto;border-radius:10px;padding:10px 14px}
+.workspace-nav .nav-links{padding:0;min-width:0}
+.workspace-nav .change-oven{margin:0;min-width:220px;height:48px;max-width:none;padding:10px 18px;align-self:center;line-height:1.4}
+#daily-date{font-variant-numeric:tabular-nums;font-size:19px!important;letter-spacing:1px;text-align:center}
+@media(max-width:1100px){.workspace-nav{grid-template-columns:minmax(0,1fr) max-content;grid-template-rows:auto auto;gap:10px}.workspace-nav .nav-oven{grid-column:1;grid-row:1}.workspace-nav .change-oven{grid-column:2;grid-row:1;min-width:210px}.workspace-nav .nav-links{grid-column:1/-1;grid-row:2;display:flex;overflow-x:auto;padding:0 0 4px}.workspace-nav-link{flex:1 0 auto;min-width:132px}.app-header .language-switch{display:inline-flex}}
+@media(max-width:620px){.app-header{flex-wrap:wrap;gap:15px}.app-header .language-switch{margin-inline-start:auto}.language-switch button{min-width:52px;padding:7px 10px}.workspace-nav{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto}.workspace-nav .nav-oven{grid-column:1;grid-row:1}.workspace-nav .nav-links{grid-column:1;grid-row:2}.workspace-nav .change-oven{grid-column:1;grid-row:3;min-width:0;width:100%}.upload-panel .input-group .input-group-btn{min-width:96px}.upload-panel .input-group .input-group-btn .btn{padding:0 12px}.upload-panel .input-group .form-control{padding:0 10px;font-size:15px}}

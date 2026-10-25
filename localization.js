@@ -472,6 +472,7 @@ function original(state,value){return state&&value===state.display?state.source:
 function localize(){
  scheduled=false;if(!window.document?.body)return;
  observer?.disconnect();
+ mountLanguageControls();
  const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let node;
  while((node=walker.nextNode())){
   if(!node.parentElement||node.parentElement.closest(skip)||!node.nodeValue.trim())continue;
@@ -487,8 +488,9 @@ function localize(){
   }
   attributeState.set(el,states);
  });
- document.querySelector('.language-switch')?.setAttribute('aria-label',language==='fa'?'انتخاب زبان':'Select language');
- document.querySelectorAll('.language-switch button').forEach(button=>{button.setAttribute('aria-pressed',String(button.dataset.language===language));button.textContent=button.dataset.language==='fa'?'فارسی':language==='fa'?'انگلیسی':'English'});
+ document.querySelectorAll('.language-switch').forEach(control=>control.setAttribute('aria-label',language==='fa'?'انتخاب زبان':'Select language'));
+ document.querySelectorAll('[data-localized-digits]').forEach(formatDigitInput);
+ document.querySelectorAll('.language-switch button').forEach(button=>{button.setAttribute('aria-pressed',String(button.dataset.language===language));button.textContent=button.dataset.language==='fa'?(language==='fa'?'فارسی':'Per'):(language==='fa'?'انگلیسی':'Eng')});
  observer?.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['title','aria-label','placeholder','alt','data-title']});
 }
 function queue(){if(!scheduled){scheduled=true;queueMicrotask(localize)}}
@@ -512,7 +514,7 @@ function cloneLocalized(element){
  const originals=[element,...element.querySelectorAll('*')],copies=[copy,...copy.querySelectorAll('*')];
  originals.forEach((node,index)=>{const state=attributeState.get(node);if(state)attributeState.set(copies[index],structuredClone(state))});return copy;
 }
-window.BamcoI18n={t:translate,refresh:localize,setLanguage,clone:cloneLocalized,get language(){return language},font,
+window.BamcoI18n={t:translate,formatDigits,refresh:localize,setLanguage,clone:cloneLocalized,get language(){return language},font,
  newPlot:(target,data,layout,...args)=>{
   const localized=localizePlot(layout),traces=localizePlot(data);
   if(language==='fa'&&localized.xaxis?.type==='category'){
@@ -523,10 +525,25 @@ window.BamcoI18n={t:translate,refresh:localize,setLanguage,clone:cloneLocalized,
  }};
 for(const name of ['alert','confirm']){const native=window[name].bind(window);window[name]=message=>native(translate(message))}
 document.documentElement.lang=language;document.documentElement.dir=language==='fa'?'rtl':'ltr';
+function formatDigits(value){
+ const latin=String(value??'').replace(/[۰-۹٠-٩]/g,char=>String(char.charCodeAt(0)-(char>='۰'?'۰'.charCodeAt(0):'٠'.charCodeAt(0))));
+ return language==='fa'?faNumber(latin):latin;
+}
+function formatDigitInput(input){
+ const start=input.selectionStart,end=input.selectionEnd,value=formatDigits(input.value);
+ if(input.value!==value){input.value=value;if(document.activeElement===input&&start!==null)input.setSelectionRange(start,end)}
+ if(input.hasAttribute('placeholder'))input.setAttribute('placeholder',formatDigits(input.getAttribute('placeholder')));
+}
+function mountLanguageControls(){
+ document.querySelectorAll('.header-tag,.window-eyebrow').forEach(slot=>{
+  const control=document.createElement('div');control.className='language-switch';control.setAttribute('role','group');
+  control.innerHTML='<button type="button" data-language="en" lang="en">Eng</button><button type="button" data-language="fa" lang="fa">Per</button>';
+  slot.replaceWith(control);
+ });
+}
 function init(){
- const control=document.createElement('div');control.className='language-switch';control.setAttribute('role','group');control.setAttribute('aria-label','Language / زبان');
- control.innerHTML='<button type="button" data-language="fa" lang="fa">فارسی</button><button type="button" data-language="en" lang="en">English</button>';
- control.addEventListener('click',event=>{const button=event.target.closest('[data-language]');if(button)setLanguage(button.dataset.language)});document.body.append(control);
+ document.addEventListener('click',event=>{const button=event.target.closest('.language-switch [data-language]');if(button)setLanguage(button.dataset.language)});
+ document.addEventListener('input',event=>{if(event.target.matches('[data-localized-digits]'))formatDigitInput(event.target)});
  observer=new MutationObserver(queue);document.title=translate(pageTitle);localize();
  window.addEventListener('storage',event=>{if(event.key===KEY)setLanguage(event.newValue)});
 }

@@ -133,7 +133,7 @@ function stageHTML(){return `<div class="stage-layout"><aside class="upload-pane
  
  <div class="upload-control"><label class="control-label" for="files">Excel files</label>
  <div class="upload-file-stack">
-  <div class="input-group"><span class="input-group-btn"><label class="btn" for="files">Browse files</label></span><input class="form-control" id="filename" type="text" readonly value="No files selected"></div>
+  <div class="input-group"><span class="input-group-btn"><label class="btn" for="files">Browse files</label></span><input class="form-control" id="filename" type="text" dir="auto" readonly value="No files selected"></div>
   <input class="hidden-file" type="file" id="files" multiple accept=".xls,.xlsx">
   <div id="file-list"></div>
  </div></div>
