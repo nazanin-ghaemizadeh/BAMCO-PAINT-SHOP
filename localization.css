@@ -109,3 +109,6 @@ html[lang=fa] #source-sections .source-section>h4{direction:rtl;text-align:right
 .js-plotly-plot .hoverlayer .hovertext rect{fill:#fff !important;stroke:#b8d8ca !important;stroke-width:1.2px}.js-plotly-plot .hoverlayer .hovertext text{font-family:Arial,sans-serif !important;fill:#24554b !important;font-size:12px !important}
 
 .chart-tooltip-dot{display:inline-block;width:9px;height:9px;border-radius:50%;flex:0 0 9px}.js-plotly-plot:has(>.bamco-compare-tooltip:not([hidden])) .hoverlayer{opacity:0;pointer-events:none}
+
+/* Match pinned baking-window cards to Plotly comparison cards. */
+.window-analysis-plot .baking-svg-tooltip{z-index:40;max-width:min(280px,calc(100% - 12px))}.baking-data-point{cursor:pointer;outline-offset:3px}.baking-data-point:focus-visible{outline:2px solid #198a66}
