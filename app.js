@@ -287,6 +287,37 @@ function segments(r,ch){const out=[];let part=[],last=null;
   part.push(d);last=d.ts;
  }if(part.length)out.push(part);return out;
 }
+function plotWithUnifiedCard(target,data,layout){
+ return Promise.resolve(window.BamcoI18n.newPlot(target,data,layout,config)).then(plot=>{
+  if(!plot||typeof plot.on!=='function')return plot;
+  plot.querySelectorAll('.bamco-compare-tooltip').forEach(n=>n.remove());
+  const tip=document.createElement('div');tip.className='bamco-compare-tooltip';tip.hidden=true;plot.appendChild(tip);
+  plot.on('plotly_hover',event=>{
+   const points=(event.points||[]).filter(p=>p&&p.y!==undefined);
+   if(!points.length){tip.hidden=true;return;}
+   const first=points[0],time=first.x,units=target==='plot-bands'?'':target==='plot-peaks'?'':' min';
+   const heading=String(time??'')+units;
+   const rows=points.map(p=>{
+    const name=String(p.data?.name||p.x||'Temperature');
+    const v=target==='plot-bands'?p.z:p.y;
+    const numeric=Number(v);
+    const value=Number.isFinite(numeric)?numeric.toFixed(target==='plot-bands'?2:1):String(v??'');
+    const color=p.fullData?.line?.color||p.fullData?.marker?.color||'#167f83';
+    const swatch='<span class="chart-tooltip-dot" style="background:'+String(color).replace(/[^#a-zA-Z0-9(),.% ]/g,'')+'"></span>';
+    return '<div class="tooltip-line"><span class="tooltip-channel">'+swatch+name.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</span><span>'+value+(target==='plot-bands'?' min':' °C')+'</span></div>';
+   });
+   tip.innerHTML='<div class="tooltip-value">'+heading.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div><div class="tooltip-groups"><div class="tooltip-file">'+rows.join('')+'</div></div>';
+   tip.hidden=false;
+   const rect=plot.getBoundingClientRect(),e=event.event,x=Number.isFinite(e?.clientX)?e.clientX-rect.left:rect.width/2,y=Number.isFinite(e?.clientY)?e.clientY-rect.top:rect.height/2;
+   tip.style.left=Math.max(6,Math.min(x+14,rect.width-tip.offsetWidth-6))+'px';
+   tip.style.top=Math.max(6,Math.min(y+12,rect.height-tip.offsetHeight-6))+'px';
+  });
+  plot.on('plotly_unhover',()=>{if(!tip.matches(':hover'))tip.hidden=true});
+  tip.addEventListener('mouseleave',()=>{tip.hidden=true});
+  plot.addEventListener('mouseleave',()=>{tip.hidden=true});
+  return plot;
+ });
+}
 function profile(r,chs){
  const data=[];for(const ch of chs){segments(r,ch).forEach((seg,i)=>data.push({
   x:seg.map(d=>d.elapsed),y:seg.map(d=>d.values[ch]),type:'scatter',mode:seg.length===1?'markers':'lines',name:ch,legendgroup:ch,showlegend:i===0,
@@ -299,14 +330,14 @@ function profile(r,chs){
   const span=Math.max(1,hi-lo);lay.xaxis.range=[0,r.duration];lay.yaxis.range=[lo-span*.08,hi+span*.14];
   lay.annotations=[{x:p.x,y:p.y,text:'Peak: '+p.y.toFixed(1)+' C ('+p.ch+')',showarrow:true,arrowhead:2,ax:p.x>r.duration/2?-65:65,ay:-38,font:{family:window.BamcoI18n.font,size:13,color:'#243247'}}];
  }
- return window.BamcoI18n.newPlot('plot-profile',data,lay,config);
+ return plotWithUnifiedCard('plot-profile',data,lay,config);
 }
 function spread(r,chs){
  let traces=[],part=[];function add(){if(part.length)traces.push({x:part.map(d=>d.x),y:part.map(d=>d.y),type:'scatter',mode:'lines+markers',showlegend:false,line:{color:'#167F83',width:2.7},marker:{size:3,color:'#167F83'},fill:'tozeroy',fillcolor:'rgba(22,127,131,.10)',hovertemplate:'%{x:.2f} min<br>Spread: %{y:.1f} °C<extra></extra>'});part=[];}
  r.reads.forEach((d,i)=>{const v=chs.map(c=>d.values[c]),ok=chs.length>=2&&v.every(num),gap=i>0&&d.ts-r.reads[i-1].ts>r.step*1500+1;if(gap||!ok)add();if(ok)part.push({x:d.elapsed,y:Math.max(...v)-Math.min(...v)});});add();
  const lay=plotLayout('Elapsed time (min)','Channel spread (°C)');lay.showlegend=false;
  if(chs.length<2)lay.annotations=[{text:'Select at least two channels to calculate spread.',xref:'paper',yref:'paper',x:.5,y:.5,showarrow:false}];
- return window.BamcoI18n.newPlot('plot-spread',traces,lay,config);
+ return plotWithUnifiedCard('plot-spread',traces,lay,config);
 }
 function validIntervals(r,ch){
  let out=[];for(let i=1;i<r.reads.length;i++){const a=r.reads[i-1],b=r.reads[i],dt=(b.ts-a.ts)/60000;
@@ -335,7 +366,7 @@ function heatmap(chs,b){
   texttemplate:'%{text}',textfont:{family:window.BamcoI18n.font,size:12,color:'#14283F'}}];
  const lay=plotLayout('Channel','Temperature band (°C)');lay.showlegend=false;
  lay.xaxis={type:'category',title:'Channel',automargin:true};lay.yaxis={type:'category',categoryorder:'array',categoryarray:b.labels,title:'Temperature band (°C)',automargin:true};
- return window.BamcoI18n.newPlot('plot-bands',data,lay,config);
+ return plotWithUnifiedCard('plot-bands',data,lay,config);
 }
 function peaks(records,chs){
  const data=[];
@@ -350,7 +381,7 @@ function peaks(records,chs){
  const lay=plotLayout('File name','Peak temperature (°C)',125);lay.showlegend=false;
  lay.xaxis.tickmode='array';lay.xaxis.tickvals=records.map((r,i)=>i+1);lay.xaxis.ticktext=records.map(r=>r.fileName);lay.xaxis.range=[.5,records.length+.5];lay.xaxis.tickangle=records.some(r=>r.fileName.length>20)?-20:0;
 
- return window.BamcoI18n.newPlot('plot-peaks',data,lay,config);
+ return plotWithUnifiedCard('plot-peaks',data,lay,config);
 }
 function sourceSections(r){
  const text=r.rows.map(row=>row.map(display)),occ=text.map(x=>x.some(y=>y.length)),titles=[],summaries=[];
