@@ -89,7 +89,7 @@
       if(!Number.isFinite(p.d)||!Number.isFinite(p.t))return;
       const x=X(p.d),y=Y(p.t),c=channelColor(p.ch);
       // One precise, small colored circle per channel; no attached label or halo.
-      dots+='<circle cx="'+x+'" cy="'+y+'" r="4" fill="'+c+'" stroke="white" stroke-width="0.7"/>'
+      dots+='<circle class="baking-data-point" tabindex="0" role="button" data-channel="'+esc(p.ch)+'" data-duration="'+mmss(p.d)+'" data-temperature="'+fmt(p.t,1)+'" data-status="'+esc(p.status)+'" cx="'+x+'" cy="'+y+'" r="6" fill="'+c+'" stroke="white" stroke-width="1"/>'
         +'<title>'+esc(p.ch)+' — '+mmss(p.d)+', '+fmt(p.t,1)+'°C — '+esc(p.status)+'</title>';
       const column=i%5,row=Math.floor(i/5);
       const lx=L+20+column*133,ly=h-34+row*18;
@@ -106,6 +106,23 @@
       +'<text transform="translate(19 '+((h-B+top)/2)+') rotate(-90)" text-anchor="middle" fill="#344b52" font-size="14">Peak Temperature (°C)</text>'
       +legend+'</svg>';
   }
+
+  // Shared pinned information panel for baking window SVG markers.
+  document.addEventListener('click',event=>{
+    const dot=event.target.closest?.('.baking-data-point');
+    document.querySelectorAll('.baking-svg-tooltip').forEach(panel=>{if(!dot||!panel.parentElement?.contains(dot))panel.remove()});
+    if(!dot)return;
+    const svg=dot.closest('.window-svg'),container=svg?.parentElement;if(!container)return;
+    container.style.position='relative';
+    let panel=container.querySelector('.baking-svg-tooltip');if(!panel){panel=document.createElement('div');panel.className='bamco-compare-tooltip baking-svg-tooltip';container.append(panel)}
+    const escAttr=value=>String(value||'').replace(/&/g,'&amp;').replace(/</g,'&lt;');
+    panel.innerHTML='<div class="tooltip-value">'+escAttr(dot.dataset.duration)+'</div><div class="tooltip-groups"><div class="tooltip-file"><div class="tooltip-line"><span class="tooltip-channel"><span class="chart-tooltip-dot" style="background:'+dot.getAttribute('fill')+'"></span>'+escAttr(dot.dataset.channel)+'</span><span>'+escAttr(dot.dataset.temperature)+' °C</span></div><div class="tooltip-line">'+escAttr(dot.dataset.status)+'</div></div></div>';
+    panel.hidden=false;
+    const bounds=container.getBoundingClientRect(),point=dot.getBoundingClientRect();
+    panel.style.left=Math.max(6,Math.min(point.left-bounds.left+16,bounds.width-panel.offsetWidth-6))+'px';
+    panel.style.top=Math.max(6,Math.min(point.top-bounds.top+12,bounds.height-panel.offsetHeight-6))+'px';
+  });
+  document.addEventListener('keydown',event=>{if((event.key==='Enter'||event.key===' ')&&event.target.matches?.('.baking-data-point')){event.preventDefault();event.target.dispatchEvent(new MouseEvent('click',{bubbles:true}))}});
   function preview(stage=choice){
     const config=getWindow(stage);if(!config)return '';
     return '<div class="window-photo-card ed-reference-image"><img src="'+config.image+'" alt="'+esc(config.name+' — '+config.manufacturer)+'" class="window-photo" width="1448" height="1086" decoding="async" loading="eager"></div>';
