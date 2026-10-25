@@ -556,8 +556,8 @@ async function downloadPNG(){
  const btn=$('download-png');btn.disabled=true;
  try{let imgs=await images(),names=['Temperature profile','Channel temperature spread','Time in temperature bands','Peak temperatures by uploaded file'];
   const h=[810,810,900,810],gap=96,c=document.createElement('canvas');c.width=1800;c.height=h.reduce((a,b)=>a+b,0)+gap*5;
-  const ctx=c.getContext('2d');ctx.fillStyle='white';ctx.fillRect(0,0,c.width,c.height);ctx.fillStyle='#14283f';ctx.font='bold 32px Times New Roman';let y=gap;
-  for(let i=0;i<4;i++){ctx.fillText(names[i],45,y-24);const img=new Image();img.src=imgs[i];await img.decode();ctx.drawImage(img,0,y,1800,h[i]);y+=h[i]+gap;}
+  const ctx=c.getContext('2d');ctx.fillStyle='white';ctx.fillRect(0,0,c.width,c.height);ctx.fillStyle='#14283f';ctx.font='bold 32px '+window.BamcoI18n.font;let y=gap;
+  for(let i=0;i<4;i++){ctx.direction=window.BamcoI18n.language==='fa'?'rtl':'ltr';ctx.textAlign=window.BamcoI18n.language==='fa'?'right':'left';ctx.fillText(window.BamcoI18n.t(names[i]),window.BamcoI18n.language==='fa'?1755:45,y-24);const img=new Image();img.src=imgs[i];await img.decode();ctx.drawImage(img,0,y,1800,h[i]);y+=h[i]+gap;}
   const blob=await new Promise(resolve=>c.toBlob(resolve,'image/png'));if(!blob)throw Error('PNG canvas could not be exported.');saveBlob(blob,fileName(record())+'_all_charts.png');
  }catch(e){alert('PNG export failed: '+e.message);}finally{btn.disabled=false;}
 }
@@ -594,23 +594,24 @@ async function downloadExcel(){
    catch(e){({wb,sh}=newSourceWorkbook(r));}
   }else({wb,sh}=newSourceWorkbook(r));
   recolor(sh,r);
-  const charts=wb.addWorksheet(sh.name==='Charts'?'Report Charts':'Charts');charts.getColumn(1).width=22;charts.getColumn(2).width=22;
-  charts.getCell('A1').value='BAM Automotive Company — '+STAGES[tab];charts.getCell('A1').font={name:'Times New Roman',size:18,bold:true,color:{argb:'FF14283F'}};
+  const charts=wb.addWorksheet(window.BamcoI18n.language==='fa'?'گزارش نمودارها':sh.name==='Charts'?'Report Charts':'Charts');charts.views=[{rightToLeft:window.BamcoI18n.language==='fa'}];charts.getColumn(1).width=22;charts.getColumn(2).width=22;
+  charts.getCell('A1').value=window.BamcoI18n.t('BAM Automotive Company')+' — '+window.BamcoI18n.t(STAGES[tab]);charts.getCell('A1').font={name:'Times New Roman',size:18,bold:true,color:{argb:'FF14283F'}};
+  charts.eachRow(row=>row.eachCell(cell=>{if(typeof cell.value==='string'&&/[\u0600-\u06ff]/.test(cell.value))cell.font={...cell.font,name:'B Nazanin'};}));
   const names=['Temperature profile','Channel temperature spread','Time in temperature bands','Peak temperatures by uploaded file'];let row=3;
-  for(let i=0;i<4;i++){let c=charts.getCell('A'+row);c.value=names[i];c.font={name:'Times New Roman',bold:true,size:14,color:{argb:'FF14283F'}};
+  for(let i=0;i<4;i++){let c=charts.getCell('A'+row);c.value=window.BamcoI18n.t(names[i]);c.font={name:window.BamcoI18n.language==='fa'?'B Nazanin':'Times New Roman',bold:true,size:14,color:{argb:'FF14283F'}};
    const id=wb.addImage({base64:imgs[i],extension:'png'});charts.addImage(id,{tl:{col:0,row:row+1},ext:{width:1200,height:i===2?600:540}});row+=i===2?43:39;
   }
   const evaluation=window.BAMCOEnhance?.evaluationForExport?.();
   if(evaluation){
     let erow=row+4;
     const headerAt=erow+2;
-    charts.getCell(erow,1).value=evaluation.window+' — Channel Evaluation';
-    charts.getCell(erow,1).font={name:'Times New Roman',size:16,bold:true,color:{argb:'FF14283F'}};
+    charts.getCell(erow,1).value=window.BamcoI18n.t(evaluation.window+' — Channel Evaluation');
+    charts.getCell(erow,1).font={name:window.BamcoI18n.language==='fa'?'B Nazanin':'Times New Roman',size:16,bold:true,color:{argb:'FF14283F'}};
     erow=headerAt;
     for(const entry of [evaluation.headers,...evaluation.rows]){
       for(let k=0;k<entry.length;k++){
-        const cell=charts.getCell(erow,k+1);const v=entry[k];cell.value=v===null?'N/A':v;
-        cell.font={name:'Times New Roman',size:11,bold:erow===headerAt,color:{argb:'FF20354B'}};
+        const cell=charts.getCell(erow,k+1);const v=entry[k];cell.value=v===null?window.BamcoI18n.t('N/A'):typeof v==='string'?window.BamcoI18n.t(v):v;
+        cell.font={name:typeof cell.value==='string'&&/[\u0600-\u06ff]/.test(cell.value)?'B Nazanin':'Times New Roman',size:11,bold:erow===headerAt,color:{argb:'FF20354B'}};
         cell.fill={type:'pattern',pattern:'solid',fgColor:{argb:erow===headerAt?'FFE3F1E8':erow%2===0?'FFF4F9F7':'FFFFFFFF'}};
         cell.alignment={vertical:'middle'};
         if(typeof v==='number')cell.numFmt='0.000';

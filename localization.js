@@ -2,8 +2,9 @@
 (()=>{'use strict';
 const dictionary={
  "BAM Automotive Company": "خودروسازان بم",
+ "BAC — BAM Automotive Company logo": "نشان خودروسازان بم",
  "Statistical Process Control": "کنترل آماری فرایند",
- "Temperature profiles": "پروفایل‌های دما",
+ "Temperature profiles": "پایش دمای کوره",
  "THERMAL DATA WORKSPACE": "سامانه پایش حرارتی",
  "Precision starts with every": "دقت آغاز می‌شود با هر",
  "measurement.": "اندازه‌گیری.",
@@ -100,17 +101,17 @@ const dictionary={
  "SESSION ERROR": "خطای نشست کاربری",
  "Local copy saved, but cloud sync failed. Check your connection and save again.": "نسخه محلی ذخیره شد؛ همگام‌سازی انجام نشد. اتصال را بررسی و دوباره ذخیره کنید.",
  "Open SPC from Task Management to connect your session.": "کنترل آماری را از سامانه مدیریت عملیات باز کنید تا نشست متصل شود.",
- "ED Oven": "کوره ED",
+ "ED Oven": "کوره الکتروفورز",
  "Primer Oven": "کوره آستر",
  "Sealer Oven": "کوره سیلر",
  "Base Coat Oven": "کوره رنگ پایه",
- "Electrodeposition coating": "پوشش‌دهی الکتریکی",
- "Primer curing process": "پخت رنگ آستر",
- "Sealing and thermal treatment": "آب‌بندی و عملیات حرارتی",
- "Base coat temperature profiles": "پروفایل‌های دمای رنگ پایه",
+ "Electrodeposition coating": "پخت پوشش الکتروفورز",
+ "Primer curing process": "پخت پوشش آستر",
+ "Sealing and thermal treatment": "پخت مواد آب‌بندی",
+ "Base coat temperature profiles": "پخت لایه رنگ پایه",
  "Select oven →": "انتخاب کوره ←",
  "Daily report": "گزارش روزانه",
- "Four oven summaries in one PDF.": "خلاصه چهار کوره در یک فایل PDF.",
+ "Four oven summaries in one PDF.": "خلاصه عملکرد چهار کوره در یک گزارش.",
  "Create daily report →": "تهیه گزارش روزانه ←",
  "THERMAL WORKSPACE": "سامانه پایش حرارتی",
  "← Change oven": "تغییر کوره →",
@@ -119,26 +120,26 @@ const dictionary={
  "Minimum duration": "حداقل زمان",
  "Maximum duration": "حداکثر زمان",
  "Peak temperature": "دمای اوج",
- "REFERENCE PENDING": "در انتظار مرجع",
+ "REFERENCE PENDING": "در انتظار تعریف مرجع",
  "Explore your recordings": "بررسی داده‌های ثبت‌شده",
- "Baking-window evaluation will show “Not configured”.": "ارزیابی محدوده پخت با وضعیت «تنظیم نشده» نمایش داده می‌شود.",
+ "Baking-window evaluation will show “Not configured”.": "تا زمان تعریف مرجع، ارزیابی شرایط پخت با وضعیت «تعریف نشده» نمایش داده می‌شود.",
  "Continue to workspace": "ورود به محیط کار",
  "Upload & File Management": "بارگذاری و مدیریت فایل‌ها",
  "Upload & Files": "بارگذاری و فایل‌ها",
  "Information Tables": "جداول اطلاعات",
  "Information": "اطلاعات",
  "Charts": "نمودارها",
- "Baking Window Analysis": "تحلیل محدوده پخت",
- "File & Window Comparison": "مقایسه فایل و محدوده پخت",
- "Baking Analysis": "تحلیل پخت",
+ "Baking Window Analysis": "ارزیابی شرایط پخت",
+ "File & Window Comparison": "مقایسه فایل‌ها و شرایط پخت",
+ "Baking Analysis": "ارزیابی پخت",
  "Comparison": "مقایسه",
  "Temperature analytics": "تحلیل دما",
  "↻ Change oven / window": "↻ تغییر کوره / محدوده پخت",
  "Workspace navigation": "پیمایش محیط کار",
  "Process workspaces": "فرایندهای کاری",
  "Workspace": "محیط کار",
- "ED Baking Window": "محدوده پخت ED",
- "Gamma Thinner Baking Window": "محدوده پخت گاما تینر",
+ "ED Baking Window": "محدوده مجاز پخت الکتروفورز",
+ "Gamma Thinner Baking Window": "محدوده مجاز پخت گاما تینر",
  "Kansai Paint Iranian Co": "شرکت رنگ کانسای ایران",
  "Kansai Paint": "رنگ کانسای",
  "Gamma Thinner": "گاما تینر",
@@ -146,12 +147,12 @@ const dictionary={
  "Go to uploads →": "رفتن به بارگذاری ←",
  "No worksheet loaded yet": "هنوز کاربرگی بارگذاری نشده است",
  "Choose Upload & File Management to add a workbook.": "برای افزودن فایل، بخش بارگذاری و مدیریت فایل‌ها را انتخاب کنید.",
- "NOT CONFIGURED": "تنظیم نشده",
- "No validated baking window for this oven": "محدوده پخت تأییدشده‌ای برای این کوره وجود ندارد",
- "The ED reference is never applied to another process. Configure the manufacturer-approved polygon before enabling pass/fail decisions here.": "مرجع ED برای فرایند دیگر استفاده نمی‌شود. پیش از ارزیابی قبول یا رد، چندضلعی مورد تأیید سازنده را تنظیم کنید.",
+ "NOT CONFIGURED": "تعریف نشده",
+ "No validated baking window for this oven": "محدوده مجاز پخت این کوره هنوز تعریف نشده است.",
+ "The ED reference is never applied to another process. Configure the manufacturer-approved polygon before enabling pass/fail decisions here.": "برای ارزیابی این کوره، ابتدا محدوده پخت تأییدشده سازنده را تعریف کنید. مرجع کوره الکتروفورز برای سایر کوره‌ها استفاده نمی‌شود.",
  "Upload a workbook →": "بارگذاری فایل اکسل ←",
- "Baking Window Evaluation": "ارزیابی محدوده پخت",
- "Summary PDF": "خلاصه PDF",
+ "Baking Window Evaluation": "ارزیابی شرایط پخت",
+ "Summary PDF": "دریافت گزارش خلاصه",
  "Total probes": "تعداد حسگرها",
  "Passed": "قبول",
  "Failed": "رد",
@@ -159,7 +160,7 @@ const dictionary={
  "NO DATA": "بدون داده",
  "PASS": "قبول",
  "FAIL": "رد",
- "Channel Comparison Matrix": "ماتریس مقایسه کانال‌ها",
+ "Channel Comparison Matrix": "جدول مقایسه کانال‌ها",
  "Evaluation parameter": "پارامتر ارزیابی",
  "Probe location": "محل حسگر",
  "ALLOWED BAKING WINDOW": "محدوده مجاز پخت",
@@ -167,27 +168,27 @@ const dictionary={
  "Max duration at peak temperature": "حداکثر زمان در دمای اوج",
  "Min temperature at actual duration": "حداقل دما در زمان واقعی",
  "Max temperature at actual duration": "حداکثر دما در زمان واقعی",
- "DISTANCE TO LIMITS (SIGNED MARGINS)": "فاصله تا حدود مجاز (حاشیه علامت‌دار)",
- "Minimum duration margin": "حاشیه حداقل زمان",
- "Maximum duration margin": "حاشیه حداکثر زمان",
+ "DISTANCE TO LIMITS (SIGNED MARGINS)": "فاصله تا حدود مجاز",
+ "Minimum duration margin": "فاصله تا حداقل زمان مجاز",
+ "Maximum duration margin": "فاصله تا حداکثر زمان مجاز",
  "Minimum peak temperature margin": "حاشیه حداقل دمای اوج",
  "Maximum temperature margin": "حاشیه حداکثر دما",
- "RULE EVALUATION": "ارزیابی قواعد",
+ "RULE EVALUATION": "بررسی قواعد پخت",
  "Violated rules": "قواعد نقض‌شده",
- "Final status": "وضعیت نهایی",
- "Min time margin": "حاشیه حداقل زمان",
- "Max time margin": "حاشیه حداکثر زمان",
- "Min temp margin": "حاشیه حداقل دما",
- "Max temp margin": "حاشیه حداکثر دما",
- "No numeric samples to evaluate": "نمونه عددی برای ارزیابی وجود ندارد",
- "All baking window rules satisfied": "تمام قواعد محدوده پخت رعایت شده‌اند",
- "Rule logic": "منطق قواعد",
+ "Final status": "نتیجه نهایی",
+ "Min time margin": "فاصله تا حداقل زمان",
+ "Max time margin": "فاصله تا حداکثر زمان",
+ "Min temp margin": "فاصله تا حداقل دما",
+ "Max temp margin": "فاصله تا حداکثر دما",
+ "No numeric samples to evaluate": "داده عددی کافی برای ارزیابی وجود ندارد.",
+ "All baking window rules satisfied": "تمام شرایط مجاز پخت رعایت شده‌اند.",
+ "Rule logic": "شرایط عدم انطباق",
  "Measured Channel Points": "نقاط اندازه‌گیری کانال‌ها",
  "Duration at or above": "مدت زمان در دمای حداقل",
- "Peak Temperature (°C)": "دمای اوج (°C)",
- "Peak temperature (°C)": "دمای اوج (°C)",
- "Temperature (°C)": "دما (°C)",
- "Temperature band (°C)": "بازه دما (°C)",
+ "Peak Temperature (°C)": "دمای اوج (درجه سانتی‌گراد)",
+ "Peak temperature (°C)": "دمای اوج (درجه سانتی‌گراد)",
+ "Temperature (°C)": "دما (درجه سانتی‌گراد)",
+ "Temperature band (°C)": "بازه دما (درجه سانتی‌گراد)",
  "Channel": "کانال",
  "Minutes": "دقیقه",
  "Elapsed time (min)": "زمان سپری‌شده (دقیقه)",
@@ -200,9 +201,9 @@ const dictionary={
  "Channel temperature spread": "اختلاف دمای کانال‌ها",
  "Time in temperature bands": "زمان در بازه‌های دمایی",
  "Peak temperatures by uploaded file": "دمای اوج به تفکیک فایل",
- "Download Excel": "دریافت اکسل",
- "Download PNG": "دریافت PNG",
- "Download all charts (PNG)": "دریافت همه نمودارها (PNG)",
+ "Download Excel": "دریافت فایل اکسل",
+ "Download PNG": "دریافت تصویر نمودار",
+ "Download all charts (PNG)": "دریافت تصویر همه نمودارها",
  "Visible channels": "کانال‌های قابل نمایش",
  "Recorded duration": "مدت ثبت داده",
  "Time samples": "تعداد نقاط زمانی",
@@ -221,16 +222,16 @@ const dictionary={
  "readable worksheet(s)": "کاربرگ قابل خواندن",
  "recordings": "داده‌های ثبت‌شده",
  "No readable worksheets": "کاربرگ قابل خواندنی وجود ندارد",
- "Every channel. One clear view.": "نمایی روشن از تمام کانال‌ها.",
+ "Every channel. One clear view.": "همه کانال‌ها، در یک نمای روشن.",
  "Review the import notes for this file, or choose another uploaded file.": "نکات ورود داده را بررسی یا فایل دیگری انتخاب کنید.",
- "Upload your Excel files, then select a file from the list on the left.": "فایل‌های اکسل را بارگذاری و سپس یک فایل را از فهرست انتخاب کنید.",
+ "Upload your Excel files, then select a file from the list on the left.": "فایل‌های اکسل را بارگذاری کنید؛ سپس فایل موردنظر را از فهرست انتخاب کنید.",
  "Upload Excel": "بارگذاری اکسل",
  "Select a file": "انتخاب فایل",
  "Explore your profile": "بررسی پروفایل دما",
  "Select at least one channel.": "حداقل یک کانال انتخاب کنید.",
  "Chart library unavailable.": "ابزار رسم نمودار در دسترس نیست.",
- "Temperature profiles — overlay curves": "پروفایل دما — هم‌پوشانی منحنی‌ها",
- "Temperature spread — compare files": "اختلاف دما — مقایسه فایل‌ها",
+ "Temperature profiles — overlay curves": "مقایسه منحنی‌های دما",
+ "Temperature spread — compare files": "مقایسه اختلاف دما بین فایل‌ها",
  "Choose recordings": "انتخاب داده‌های ثبت‌شده",
  "Channels": "کانال‌ها",
  "Chart type": "نوع نمودار",
@@ -239,7 +240,7 @@ const dictionary={
  "Clear": "پاک کردن",
  "Uploaded file": "فایل بارگذاری‌شده",
  "Chart comparison": "مقایسه نمودارها",
- "Baking-window comparison": "مقایسه محدوده پخت",
+ "Baking-window comparison": "مقایسه شرایط پخت",
  "Select uploaded files and channels to compare baking-window compliance.": "فایل‌ها و کانال‌ها را برای مقایسه انطباق با محدوده پخت انتخاب کنید.",
  "Choose at least one file and one channel to draw the comparison.": "برای مقایسه، حداقل یک فایل و یک کانال انتخاب کنید.",
  "Select at least two channels to compare temperature spread.": "برای مقایسه اختلاف دما، حداقل دو کانال انتخاب کنید.",
@@ -248,14 +249,14 @@ const dictionary={
  "Chart library unavailable. Upload an Excel file to load plotting tools.": "ابزار نمودار در دسترس نیست. برای بارگذاری ابزار رسم، یک فایل اکسل بارگذاری کنید.",
  "Plotting library unavailable.": "ابزار رسم نمودار در دسترس نیست.",
  "Please render the comparison chart first.": "ابتدا نمودار مقایسه را رسم کنید.",
- "Baking-window manufacturer": "سازنده مرجع محدوده پخت",
+ "Baking-window manufacturer": "سازنده مرجع پخت",
  "Excel recording": "فایل اکسل ثبت دما",
  "← Back to ovens": "بازگشت به کوره‌ها →",
- "Daily oven summary": "خلاصه روزانه کوره‌ها",
+ "Daily oven summary": "خلاصه روزانه عملکرد کوره‌ها",
  "Report date": "تاریخ گزارش",
- "YYYY-MM-DD · entered manually": "سال-ماه-روز · ورود دستی",
- "Download daily summary PDF": "دریافت خلاصه روزانه PDF",
- "Only uploaded ovens are included · A4 landscape": "فقط کوره‌های بارگذاری‌شده · A4 افقی",
+ "YYYY-MM-DD · entered manually": "تاریخ شمسی با ترتیب سال، ماه و روز",
+ "Download daily summary PDF": "دریافت گزارش روزانه",
+ "Only uploaded ovens are included · A4 landscape": "گزارش فقط شامل کوره‌های دارای فایل است؛ اندازه صفحه: آ۴ افقی",
  "Reading workbook…": "در حال خواندن فایل اکسل…",
  "Upload at least one valid Excel file.": "حداقل یک فایل اکسل معتبر بارگذاری کنید.",
  "Insufficient Duration": "زمان ناکافی",
@@ -265,11 +266,11 @@ const dictionary={
  "Outside Sloped Boundary": "خارج از مرز شیب‌دار",
  "Outside Upper Sloped Boundary": "خارج از مرز شیب‌دار بالا",
  "Outside Lower Sloped Boundary": "خارج از مرز شیب‌دار پایین",
- "Summary": "خلاصه",
+ "Summary": "خلاصه ارزیابی پخت",
  "Date:": "تاریخ:",
  "Not available": "در دسترس نیست",
- "Peak": "اوج",
- "Spread": "اختلاف",
+ "Peak": "اوج دما",
+ "Spread": "اختلاف دما",
  "Parameter": "پارامتر",
  "Readings": "اندازه‌گیری‌ها",
  "Channel summary — from workbook": "خلاصه کانال‌ها — از فایل اکسل",
@@ -279,46 +280,197 @@ const dictionary={
  "Middle": "میانه",
  "Bottom": "پایین",
  "Elapsed time from first reading (min)": "زمان از نخستین اندازه‌گیری (دقیقه)",
- "Recorded temperature (°C)": "دمای ثبت‌شده (°C)",
- "Channel spread (°C)": "اختلاف دمای کانال‌ها (°C)",
+ "Recorded temperature (°C)": "دمای ثبت‌شده (درجه سانتی‌گراد)",
+ "Channel spread (°C)": "اختلاف دمای کانال‌ها (درجه سانتی‌گراد)",
  "File name": "نام فایل",
  "Time ≥": "زمان ≥",
  "with measured channel points": "همراه با نقاط اندازه‌گیری کانال‌ها",
- "Visible channels for all four charts": "کانال‌های قابل نمایش در هر چهار نمودار",
- "Channel colors for temperature profile": "رنگ کانال‌ها در پروفایل دما",
- "Channel colors for peak temperatures": "رنگ کانال‌ها در نمودار دمای اوج",
+ "Visible channels for all four charts": "انتخاب کانال‌های قابل نمایش در هر چهار نمودار",
+ "Channel colors for temperature profile": "راهنمای رنگ کانال‌های نمودار دما",
+ "Channel colors for peak temperatures": "راهنمای رنگ کانال‌های نمودار دمای اوج",
  "Remove": "حذف",
  "unlabelled": "بدون برچسب",
  "No validated baking window has been configured for": "محدوده پخت تأییدشده‌ای تنظیم نشده است برای",
  "You can upload recordings and explore temperature tables and charts.": "می‌توانید داده‌ها را بارگذاری و جداول و نمودارهای دما را بررسی کنید.",
  "Ready to evaluate": "آماده ارزیابی",
- "Rules (failure conditions)": "قواعد (شرایط عدم انطباق)",
+ "Rules (failure conditions)": "قواعد عدم انطباق",
  "Oven": "کوره",
  "→": "←",
- "←": "→"
+ "←": "→",
+ "Precision starts with every degree.": "کیفیت از کنترل دقیق دما آغاز می‌شود.",
+ "BAM Automotive Company | Temperature Profiles": "خودروسازان بم | پایش دمای کوره",
+ "Temperature Profiles": "پایش دمای کوره",
+ "ED": "الکتروفورز",
+ "Primer": "آستر",
+ "Sealer": "سیلر",
+ "BC": "رنگ پایه",
+ "Base Coat": "رنگ پایه",
+ "NOT AVAILABLE": "در دسترس نیست",
+ "N/A": "ناموجود",
+ "Download daily summary PDF →": "دریافت گزارش روزانه ←",
+ "↓ Download PNG": "↓ دریافت تصویر نمودار",
+ "↓ Window PNG": "↓ دریافت تصویر محدوده پخت",
+ "Enter a valid report date, for example 1405-06-05.": "تاریخ گزارش را به‌درستی وارد کنید؛ مانند ۱۴۰۵-۰۶-۰۵.",
+ "Creating summary PDF…": "در حال تهیه گزارش…",
+ "Insufficient numeric samples": "تعداد داده‌های عددی کافی نیست.",
+ "Temperature spread (°C)": "اختلاف دما (درجه سانتی‌گراد)",
+ "Select at least two channels to calculate spread.": "برای محاسبه اختلاف دما، حداقل دو کانال انتخاب کنید.",
+ "No Elcometer readings table found (Date & Time, Ch1...).": "جدول اندازه‌گیری دستگاه یافت نشد. وجود ستون تاریخ و ساعت و ستون‌های کانال را بررسی کنید.",
+ "Duplicate channel names.": "نام کانال‌ها تکراری است.",
+ "Fahrenheit temperatures are unsupported. Export in Celsius.": "واحد دما باید سانتی‌گراد باشد؛ فایل را با این واحد خروجی بگیرید.",
+ "At least two valid readings with timestamps are required.": "حداقل دو اندازه‌گیری معتبر همراه با زمان ثبت لازم است.",
+ "Reading timestamps must be strictly increasing.": "زمان اندازه‌گیری‌ها باید به‌ترتیب و بدون تکرار ثبت شده باشد.",
+ "No numeric channel temperatures were found.": "داده عددی دما برای کانال‌ها یافت نشد.",
+ "Only .xls and .xlsx are supported.": "فقط فایل‌های اکسل با پسوند xls و xlsx پذیرفته می‌شوند.",
+ "Long sampling gaps are displayed as breaks in the curves.": "وقفه‌های طولانی اندازه‌گیری به‌صورت گسست در منحنی نمایش داده می‌شوند.",
+ "Keep at most 30 workbooks in each process tab.": "برای هر کوره حداکثر ۳۰ فایل اکسل بارگذاری کنید.",
+ "Unknown error": "خطای ناشناخته",
+ "PNG canvas could not be exported.": "تهیه تصویر نمودار انجام نشد.",
+ "Select channels and ensure that all four charts have rendered.": "کانال‌ها را انتخاب کنید و تا نمایش کامل هر چهار نمودار منتظر بمانید.",
+ "ExcelJS unavailable.": "ابزار تهیه فایل اکسل در دسترس نیست.",
+ "Unable to load ExcelJS.": "بارگذاری ابزار تهیه فایل اکسل انجام نشد.",
+ "No valid readings table was found.": "جدول اندازه‌گیری معتبر یافت نشد.",
+ "01 · Choose recordings": "۱ · انتخاب فایل‌ها",
+ "02 · Channels": "۲ · انتخاب کانال‌ها",
+ "03 · Chart type": "۳ · انتخاب نوع نمودار",
+ "Project": "پروژه",
+ "Gauge": "دستگاه اندازه‌گیری",
+ "Batch": "دسته تولید",
+ "Paint Type": "نوع رنگ",
+ "Logger": "ثبت‌کننده دما",
+ "Triggers": "شرایط آغاز ثبت",
+ "Note": "یادداشت",
+ "Name": "نام",
+ "Type": "نوع",
+ "Date & Time": "تاریخ و ساعت",
+ "Timestamp": "زمان ثبت",
+ "Number": "ردیف",
+ "Description": "شرح",
+ "Min": "حداقل",
+ "Max": "حداکثر",
+ "Minimum": "حداقل",
+ "Maximum": "حداکثر",
+ "Average": "میانگین",
+ "Duration": "مدت زمان",
+ "Temperature": "دما",
+ "Time": "زمان",
+ "Start": "شروع",
+ "End": "پایان",
+ "Time at threshold": "زمان در دمای آستانه",
+ "Polygon vertices": "مختصات رأس‌های محدوده پخت",
+ "Boundary equations": "روابط حدود مجاز پخت",
+ "Duration D (min); peak T (°C)": "مدت زمان پخت: دقیقه؛ دمای اوج: درجه سانتی‌گراد",
+ "Manufacturer reference": "مرجع سازنده",
+ "min": "دقیقه",
+ "s": "ثانیه",
+ "mm:ss": "دقیقه:ثانیه",
+ "°C": "درجه سانتی‌گراد",
+ "Choose file": "انتخاب فایل",
+ "Channel Evaluation": "ارزیابی کانال‌ها",
+ "Peak temperature (C)": "دمای اوج (درجه سانتی‌گراد)",
+ "Min duration at peak (min)": "حداقل زمان در دمای اوج (دقیقه)",
+ "Max duration at peak (min)": "حداکثر زمان در دمای اوج (دقیقه)",
+ "Min peak temperature at duration (C)": "حداقل دمای اوج در زمان ثبت‌شده (درجه سانتی‌گراد)",
+ "Max temperature at duration (C)": "حداکثر دما در زمان ثبت‌شده (درجه سانتی‌گراد)",
+ "Min duration margin (min)": "حاشیه حداقل زمان (دقیقه)",
+ "Max duration margin (min)": "حاشیه حداکثر زمان (دقیقه)",
+ "Min temperature margin (C)": "حاشیه حداقل دما (درجه سانتی‌گراد)",
+ "Max temperature margin (C)": "حاشیه حداکثر دما (درجه سانتی‌گراد)",
+ "Download plot as a png": "دریافت تصویر نمودار",
+ "Zoom": "بزرگ‌نمایی",
+ "Pan": "جابه‌جایی نمودار",
+ "Box Select": "انتخاب محدوده",
+ "Lasso Select": "انتخاب آزاد",
+ "Zoom in": "بزرگ‌تر کردن",
+ "Zoom out": "کوچک‌تر کردن",
+ "Autoscale": "مقیاس خودکار",
+ "Reset axes": "بازنشانی محورها",
+ "Toggle Spike Lines": "نمایش خط راهنما",
+ "Show closest data on hover": "نمایش نزدیک‌ترین داده",
+ "Compare data on hover": "مقایسه داده‌های هم‌زمان",
+ "Double-click to reset": "برای بازنشانی، دوبار کلیک کنید",
+ "Produced with Plotly": "ترسیم نمودار",
+ "Summary PDF export failed": "خطا در تهیه گزارش خلاصه",
+ "No channel cards are available to export.": "داده‌ای برای تهیه گزارش وجود ندارد.",
+ "The PDF canvas is unavailable.": "ابزار ترسیم گزارش در دسترس نیست.",
+ "PDF export is unavailable. Reload the page and try again.": "تهیه گزارش در دسترس نیست. صفحه را تازه‌سازی و دوباره تلاش کنید.",
+ "Peak: %{y:.1f} °C": "اوج دما: %{y:.1f} درجه سانتی‌گراد",
+ "Spread: %{y:.1f} °C": "اختلاف دما: %{y:.1f} درجه سانتی‌گراد",
+ "%{x:.2f} min": "%{x:.2f} دقیقه",
+ "%{y} °C": "%{y} درجه سانتی‌گراد",
+ "%{z:.2f} min": "%{z:.2f} دقیقه",
+ "%{y:.1f} °C": "%{y:.1f} درجه سانتی‌گراد",
+ "Peak:": "اوج دما:",
+ "Threshold duration": "زمان پخت",
+ "Duration D is measured in minutes; T is the peak temperature in degrees Celsius.": "نماد D نشان‌دهنده مدت زمان پخت بر حسب دقیقه و نماد T نشان‌دهنده دمای اوج بر حسب درجه سانتی‌گراد است.",
+ "Date": "تاریخ",
+ "Upload between one and four oven recordings.": "برای گزارش روزانه، فایل یک تا چهار کوره را بارگذاری کنید.",
+ "Enter the report date.": "تاریخ گزارش را وارد کنید."
 };
 const pageTitle=document.title;
 const KEY='bamco.ui.language',font="'Bamco Nazanin', 'Times New Roman', Times, serif";
 let language='fa';try{language=localStorage.getItem(KEY)==='en'?'en':'fa'}catch{}
 const textState=new WeakMap(),attributeState=new WeakMap();let observer,scheduled=false;
-const phrases=Object.entries(dictionary).filter(([key])=>(key.length>=4||['Air','Top'].includes(key))).sort((a,b)=>b[0].length-a[0].length);
+// Translate complete messages and explicit parameterized labels; never splice words.
+const faNumber=value=>String(value).replace(/\d/g,x=>'۰۱۲۳۴۵۶۷۸۹'[x]);
+const patterns=[
+ [/^Rule (\d+)$/,m=>'قاعده '+faNumber(m[1])],
+ [/^D = time ≥([\d.]+)°C \(min\); T = peak temperature \(°C\)$/,m=>'D: زمان در دمای حداقل '+faNumber(m[1])+' درجه (دقیقه)؛ T: دمای اوج (درجه سانتی‌گراد)'],
+ [/^Ch(\d+) \(unlabelled\)$/,m=>'کانال '+faNumber(m[1])+' (بدون نام)'],
+ [/^(.+) with measured channel points$/,m=>'نقاط اندازه‌گیری‌شده روی '+translate(m[1])],
+ [/^(.+\.xlsx?): (.+)$/,m=>m[1]+': '+translate(m[2])],
+ [/^Summary PDF export failed: (.+)$/,m=>'خطا در تهیه گزارش خلاصه: '+translate(m[1])],
+ [/^[+−\-]?[0-9]+(?:[.:][0-9]+)*(?:–[0-9.]+)?$/,m=>faNumber(m[0])],
+ [/^([\d.]+)–([\d.]+)°C$/,m=>faNumber(m[1])+' تا '+faNumber(m[2])+' درجه سانتی‌گراد'],
+ [/^(.+) — Channel Evaluation$/,m=>'ارزیابی کانال‌ها بر اساس '+translate(m[1])],
+ [/^Time at or above ([\d.]+)C \(min\)$/,m=>'زمان در دمای '+faNumber(m[1])+' درجه یا بیشتر (دقیقه)'],
+ [/^(.+) recordings$/,m=>'فایل‌های ثبت دمای کوره '+translate(m[1])],
+ [/^(.+) WORKSPACE$/,m=>'محیط کار کوره '+translate(m[1])],
+ [/^(.+) \/ TEMPERATURE PROFILE$/,m=>'پروفایل دمای کوره '+translate(m[1])],
+ [/^(.+ Oven) baking window$/,m=>'محدوده مجاز پخت '+translate(m[1])],
+ [/^Start (.+) analysis$/,m=>'شروع تحلیل کوره '+translate(m[1])],
+ [/^No validated baking window has been configured for (.+)\. You can upload recordings and explore temperature tables and charts\.$/,m=>'برای '+translate(m[1])+' هنوز محدوده مجاز پخت تعریف نشده است. می‌توانید فایل‌ها را بارگذاری و جدول‌ها و نمودارهای دما را بررسی کنید.'],
+ [/^Ready to evaluate (.+)\.$/,m=>'آماده ارزیابی بر اساس '+translate(m[1])],
+ [/^(.+) — Measured Channel Points$/,m=>'نقاط اندازه‌گیری‌شده روی '+translate(m[1])],
+ [/^(.+) · selected files$/,m=>translate(m[1])+'؛ فایل‌های انتخاب‌شده'],
+ [/^Duration at or above ([\d.]+)°C \(mm:ss\)$/,m=>'مدت زمان در دمای '+faNumber(m[1])+' درجه یا بیشتر (دقیقه:ثانیه)'],
+ [/^Duration at or above ([\d.]+)°C$/,m=>'مدت زمان در دمای '+faNumber(m[1])+' درجه یا بیشتر'],
+ [/^Time ≥([\d.]+)°C$/,m=>'زمان در دمای '+faNumber(m[1])+' درجه یا بیشتر'],
+ [/^(\d+) uploaded file\(s\)$/,m=>faNumber(m[1])+' فایل بارگذاری‌شده'],
+ [/^(\d+) readable worksheet\(s\)$/,m=>faNumber(m[1])+' کاربرگ قابل خواندن'],
+ [/^(\d+) files uploaded$/,m=>faNumber(m[1])+' فایل بارگذاری‌شده'],
+ [/^Ch(\d+)\s*[-–]\s*(.+)$/,m=>'کانال '+faNumber(m[1])+' ـ '+translate(m[2])],
+ [/^Ch(\d+)$/,m=>'کانال '+faNumber(m[1])],
+ [/^(?:Channel )?(\d+)$/,m=>faNumber(m[1])],
+ [/^([+−\-]?[\d.]+) (min|s)$/,m=>faNumber(m[1])+' '+translate(m[2])],
+ [/^([+−\-]?[\d.]+)\s*(?:°C| C)$/,m=>faNumber(m[1])+' درجه سانتی‌گراد'],
+ [/^Peak:? ([\d.]+)(?:°C| C)(?: \((Ch\d+)\))?$/,m=>'اوج دما: '+faNumber(m[1])+' درجه'+(m[2]?' ('+translate(m[2])+')':'')],
+ [/^Peak (.+)°C · (.+)$/,m=>'اوج دما: '+faNumber(m[1])+' درجه؛ '+translate(m[2])],
+ [/^Remove (.+)$/,m=>'حذف فایل '+m[1]],
+ [/^Clear (.+ Oven) file$/,m=>'پاک کردن فایل '+translate(m[1])],
+ [/^Wait for (.+ Oven) to finish loading\.$/,m=>'تا پایان بارگذاری فایل '+translate(m[1])+' منتظر بمانید.'],
+ [/^No active baking window is available for (.+ Oven)\.$/,m=>'برای '+translate(m[1])+' مرجع پخت فعالی تعریف نشده است.'],
+ [/^No channel cards are available for (.+ Oven)\.$/,m=>'برای '+translate(m[1])+' داده‌ای جهت ارزیابی کانال‌ها وجود ندارد.'],
+ [/^(Chart error|Chart PNG export failed|PNG export failed|Excel export failed|Comparison chart error|Unable to export PNG): (.+)$/,m=>'خطا در '+({'Chart error':'رسم نمودار','Comparison chart error':'نمودار مقایسه','Excel export failed':'تهیه فایل اکسل'}[m[1]]||'تهیه تصویر نمودار')+': '+translate(m[2])],
+ [/^Unable to load (.+)\. Check your network connection and retry\.$/,m=>'بارگذاری ابزار موردنیاز انجام نشد. اتصال اینترنت را بررسی و دوباره تلاش کنید.'],
+ [/^Ch(\d+) contains missing readings; shown as gaps\.$/,m=>'بخشی از داده‌های کانال '+faNumber(m[1])+' موجود نیست و به‌صورت گسست نمایش داده می‌شود.'],
+ [/^(.+) — (.+)$/,m=>translate(m[1])+' — '+translate(m[2])],
+ [/^(.+) · (.+)$/,m=>translate(m[1])+' · '+translate(m[2])],
+ [/^(.+): (.+)$/,m=>dictionary[m[1]]?translate(m[1])+': '+translate(m[2]):m[0]],
+];
 function translate(value){
  const source=String(value??'');if(language==='en')return source;
- const trimmed=source.trim();if(dictionary[trimmed])return source.replace(trimmed,dictionary[trimmed]);
- if(/^Start (.+) analysis$/.test(trimmed))return 'شروع تحلیل '+translate(trimmed.match(/^Start (.+) analysis$/)[1]);
- if(/^Value \d+$/.test(trimmed))return source.replace('Value','مقدار');
- if(/^Chassis number \d+$/.test(trimmed))return source.replace('Chassis number','شماره شاسی');
- let result=source;
- for(const [en,fa] of phrases){
-  const escaped=en.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
-  result=result.replace(new RegExp('(?<![A-Za-z])'+escaped+'(?![A-Za-z])','g'),()=>fa);
- }
- return result;
+ const key=source.trim();if(!key)return source;
+ let result=dictionary[key];
+ if(result===undefined){for(const [pattern,format] of patterns){const match=key.match(pattern);if(match){result=format(match);break}}}
+ if(result===undefined&&/<(?:br|extra|b|span)\b/i.test(key))result=key.split(/(<[^>]+>)/g).map(part=>part.startsWith('<')?part:translate(part)).join('');
+ if(result===undefined)result=key;
+ return source.slice(0,source.indexOf(key))+result+source.slice(source.indexOf(key)+key.length);
 }
-const skip='.rule-explanation span,script,style,noscript,textarea,[data-i18n-skip],.language-switch,#title,#subtitle,#meta b,.folder-copy strong,.folder-copy small:first-of-type,.latin-data,.uploaded-select,.compare-filename,.device-label,.chart-heading h2,.chart-heading .secondary,#source-sections td,.daily-slot-status:not(.has-error)';
+const skip='script,style,noscript,textarea,[data-i18n-skip],.language-switch,#title,#subtitle,#meta b,.folder-copy strong,.folder-copy small:first-of-type,.latin-data,.uploaded-select,.compare-filename,.device-label,.chart-heading h2,.chart-heading .secondary,.daily-slot-status[data-filename],.tooltip-file strong,.comparison-file-name span';
 function original(state,value){return state&&value===state.display?state.source:value}
 function localize(){
- scheduled=false;if(!document.body)return;
+ scheduled=false;if(!window.document?.body)return;
  observer?.disconnect();
  const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let node;
  while((node=walker.nextNode())){
@@ -326,19 +478,20 @@ function localize(){
   const source=original(textState.get(node),node.nodeValue),display=translate(source);
   textState.set(node,{source,display});if(node.nodeValue!==display)node.nodeValue=display;
  }
- document.querySelectorAll('[title],[aria-label],[placeholder],input[readonly]').forEach(el=>{
+ document.querySelectorAll('[title],[aria-label],[placeholder],[alt],[data-title],input[readonly]').forEach(el=>{
   if(el.closest(skip))return;let states=attributeState.get(el)||{};
-  for(const attr of ['title','aria-label','placeholder']){if(!el.hasAttribute(attr))continue;const source=original(states[attr],el.getAttribute(attr)),display=translate(source);states[attr]={source,display};if(el.getAttribute(attr)!==display)el.setAttribute(attr,display)}
+  for(const attr of ['title','aria-label','placeholder','alt','data-title']){if(!el.hasAttribute(attr))continue;const source=original(states[attr],el.getAttribute(attr)),display=translate(source);states[attr]={source,display};if(el.getAttribute(attr)!==display)el.setAttribute(attr,display)}
   // The upload picker has a fixed UI value, distinct from imported filenames.
   if(el.id==='filename'){
    const source=original(states.value,el.value),display=translate(source);states.value={source,display};if(el.value!==display)el.value=display;
   }
   attributeState.set(el,states);
  });
- document.querySelectorAll('.language-switch button').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.language===language)));
- observer?.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['title','aria-label','placeholder']});
+ document.querySelector('.language-switch')?.setAttribute('aria-label',language==='fa'?'انتخاب زبان':'Select language');
+ document.querySelectorAll('.language-switch button').forEach(button=>{button.setAttribute('aria-pressed',String(button.dataset.language===language));button.textContent=button.dataset.language==='fa'?'فارسی':language==='fa'?'انگلیسی':'English'});
+ observer?.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['title','aria-label','placeholder','alt','data-title']});
 }
-function queue(){if(!scheduled){scheduled=true;requestAnimationFrame(localize)}}
+function queue(){if(!scheduled){scheduled=true;queueMicrotask(localize)}}
 function setLanguage(value){
  language=value==='en'?'en':'fa';try{localStorage.setItem(KEY,language)}catch{}
  document.documentElement.lang=language;document.documentElement.dir=language==='fa'?'rtl':'ltr';document.title=translate(pageTitle);
@@ -350,7 +503,7 @@ function setLanguage(value){
 function localizePlot(value,key=''){
  if(Array.isArray(value))return value.map(item=>localizePlot(item,key));
  if(value&&typeof value==='object'){const output={};for(const [k,v] of Object.entries(value))output[k]=localizePlot(v,k);return output}
- if(typeof value==='string'&&['title','text','hovertemplate','hovertext'].includes(key))return translate(value);
+ if(typeof value==='string'&&['title','text','hovertemplate','hovertext','ticktext','name'].includes(key))return translate(value);
  return value;
 }
 function cloneLocalized(element){
@@ -359,15 +512,22 @@ function cloneLocalized(element){
  const originals=[element,...element.querySelectorAll('*')],copies=[copy,...copy.querySelectorAll('*')];
  originals.forEach((node,index)=>{const state=attributeState.get(node);if(state)attributeState.set(copies[index],structuredClone(state))});return copy;
 }
-window.BamcoI18n={t:translate,setLanguage,clone:cloneLocalized,get language(){return language},font,
- newPlot:(target,data,layout,...args)=>window.Plotly.newPlot(target,localizePlot(data),localizePlot(layout),...args)};
+window.BamcoI18n={t:translate,refresh:localize,setLanguage,clone:cloneLocalized,get language(){return language},font,
+ newPlot:(target,data,layout,...args)=>{
+  const localized=localizePlot(layout),traces=localizePlot(data);
+  if(language==='fa'&&localized.xaxis?.type==='category'){
+   const categories=[...new Set(data.flatMap(trace=>Array.from(trace.x||[])))];
+   if(categories.length&&categories.every(value=>/^Ch\d+$/.test(String(value))))Object.assign(localized.xaxis,{tickmode:'array',tickvals:categories,ticktext:categories.map(translate)});
+  }
+  return window.Plotly.newPlot(target,traces,localized,...args);
+ }};
 for(const name of ['alert','confirm']){const native=window[name].bind(window);window[name]=message=>native(translate(message))}
 document.documentElement.lang=language;document.documentElement.dir=language==='fa'?'rtl':'ltr';
 function init(){
  const control=document.createElement('div');control.className='language-switch';control.setAttribute('role','group');control.setAttribute('aria-label','Language / زبان');
  control.innerHTML='<button type="button" data-language="fa" lang="fa">فارسی</button><button type="button" data-language="en" lang="en">English</button>';
  control.addEventListener('click',event=>{const button=event.target.closest('[data-language]');if(button)setLanguage(button.dataset.language)});document.body.append(control);
- observer=new MutationObserver(queue);localize();
+ observer=new MutationObserver(queue);document.title=translate(pageTitle);localize();
  window.addEventListener('storage',event=>{if(event.key===KEY)setLanguage(event.newValue)});
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();

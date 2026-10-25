@@ -37,7 +37,7 @@
     const disabled=references.length?'':' disabled';
     return '<section class="daily-oven-card daily-oven-'+oven.id+'" data-daily-slot="'+oven.id+'"><div class="daily-oven-heading"><span class="daily-oven-icon" aria-hidden="true">'+window.BAMCOEnhance.ovenIcon(oven.id)+'</span><h3>'+oven.name+'</h3></div>'
       +'<label for="daily-reference-'+oven.id+'">Baking-window manufacturer</label><select id="daily-reference-'+oven.id+'" data-daily-reference="'+oven.id+'"'+disabled+'>'+(references.length?references.map(ref=>'<option value="'+ref.id+'" '+(slot.reference===ref.id?'selected':'')+'>'+esc(ref.name)+'</option>').join(''):'<option value=""></option>')+'</select>'
-      +'<label for="daily-file-'+oven.id+'">Excel recording</label><input id="daily-file-'+oven.id+'" data-daily-file="'+oven.id+'" type="file" accept=".xls,.xlsx"'+disabled+'><div class="daily-file-status"><div class="daily-slot-status" aria-live="polite"></div><button type="button" class="daily-clear-file" data-daily-clear="'+oven.id+'" aria-label="Clear '+oven.name+' file" hidden>×</button></div><div class="daily-sheet-picker"></div></section>';
+      +'<label for="daily-file-'+oven.id+'">Excel recording</label><label class="daily-file-button" for="daily-file-'+oven.id+'">Choose file</label><input class="daily-native-file" id="daily-file-'+oven.id+'" data-daily-file="'+oven.id+'" type="file" accept=".xls,.xlsx"'+disabled+'><div class="daily-file-status"><div class="daily-slot-status" aria-live="polite"></div><button type="button" class="daily-clear-file" data-daily-clear="'+oven.id+'" aria-label="Clear '+oven.name+' file" hidden>×</button></div><div class="daily-sheet-picker"></div></section>';
   }
   function open(host,onBack){
     host.innerHTML='<div class="daily-report-container"><div class="window-topbar"><div><span class="window-eyebrow">THERMAL WORKSPACE</span><h1>Daily report</h1></div><button type="button" class="window-change-oven" data-daily-back>← Back to ovens</button></div>'
@@ -52,7 +52,7 @@
       const slot=slots[id],card=form.querySelector('[data-daily-slot="'+id+'"]');
       card.querySelector('.daily-slot-status').textContent=slot.pending?'Reading workbook…':slot.error||slot.name;
       card.querySelector('.daily-slot-status').classList.toggle('has-error',!!slot.error);
-      card.querySelector('.daily-slot-status').title=slot.error||slot.name;
+      card.querySelector('.daily-slot-status').title=slot.error||slot.name;card.querySelector('.daily-slot-status').toggleAttribute('data-filename',!!slot.name&&!slot.error&&!slot.pending);
       card.querySelector('.daily-clear-file').hidden=!slot.name;
       card.querySelector('.daily-sheet-picker').innerHTML=slot.records.length>1?'<label for="daily-sheet-'+id+'">Worksheet</label><select id="daily-sheet-'+id+'" data-daily-sheet="'+id+'">'+slot.records.map((record,i)=>'<option value="'+i+'" '+(slot.sheet===i?'selected':'')+'>'+esc(record.sheetName)+'</option>').join('')+'</select>':slot.warnings.length?'<small>'+esc(slot.warnings.join('; '))+'</small>':'';
       button.disabled=generating||Object.values(slots).some(s=>s.pending);

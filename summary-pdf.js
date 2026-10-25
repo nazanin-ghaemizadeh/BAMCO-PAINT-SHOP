@@ -1,6 +1,7 @@
 /* Single-page A4 landscape export of baking-analysis cards. No remote dependencies. */
 'use strict';
 (function(){
+  const tr=value=>/^[+\-]?[\d.]+ °C$/.test(String(value))&&window.BamcoI18n.language==='fa'?String(value).replace(/\d/g,d=>'۰۱۲۳۴۵۶۷۸۹'[d]):window.BamcoI18n.t(value);
   const PAGE_W=841.8898,PAGE_H=595.2756,SCALE=4,CONTENT_TOP=86;
   function details(options={}){
     const ovenName=String(options.ovenName||'Oven');
@@ -29,10 +30,11 @@
     return best;
   }
   function draw(ctx,results,info){
+    const rtl=window.BamcoI18n.language==='fa';ctx.save();if(rtl){ctx.translate(PAGE_W,0);ctx.scale(-1,1);}
     ctx.fillStyle='#fff';ctx.fillRect(0,0,PAGE_W,PAGE_H);
-    const font=(size,bold=false)=>{ctx.font=(bold?'bold ':'')+size+'px "Times New Roman", Times, serif';};
+    const font=(size,bold=false)=>{ctx.font=(bold?'bold ':'')+size+'px '+window.BamcoI18n.font;};
     const text=(s,x,y,size=10,color='#25443b',bold=false,align='left')=>{
-      font(size,bold);ctx.fillStyle=color;ctx.textAlign=align;ctx.fillText(String(s),x,y);ctx.textAlign='left';
+      font(size,bold);ctx.fillStyle=color;const label=tr(s);ctx.direction=/[\u0600-\u06ff]/.test(label)?'rtl':'ltr';if(rtl){ctx.save();ctx.translate(x,y);ctx.scale(-1,1);ctx.textAlign=align==='left'?'right':align==='right'?'left':align;ctx.fillText(label,0,0);ctx.restore()}else{ctx.textAlign=align;ctx.fillText(label,x,y)}ctx.textAlign='left';
     };
     const box=(x,y,w,h,r,fill,stroke)=>{
       ctx.beginPath();ctx.roundRect(x,y,w,h,r);
@@ -41,7 +43,7 @@
     };
     const wrap=(value,maxWidth,size)=>{
       font(size);const out=[];let line='';
-      for(const word of String(value).split(/\s+/)){
+      for(const word of tr(value).split(/\s+/)){
         const candidate=line?line+' '+word:word;
         if(ctx.measureText(candidate).width<=maxWidth){line=candidate;continue;}
         if(line){out.push(line);line='';}
@@ -77,12 +79,12 @@
       box(0,0,240,280,12,'#fff',good?'#bbdfca':invalid?'#ebd5aa':'#efbdc3');
       ctx.strokeStyle=accent;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(13,1);ctx.lineTo(227,1);ctx.stroke();
       text(v.ch,14,27,18,'#25443b',true);
-      font(9,true);const badgeWidth=ctx.measureText(v.status).width+16;
+      font(9,true);const badgeWidth=ctx.measureText(tr(v.status)).width+16;
       box(226-badgeWidth,13,badgeWidth,21,6,pale);
       text(v.status,226-badgeWidth/2,27,9,accent,true,'center');
       wrapped(v.label||v.ch,14,46,212,23,10,'#708078');
       box(14,70,102,49,7,'#f1f7f4');box(122,70,104,49,7,'#f1f7f4');
-      text('Time ≥'+(v.threshold??165)+'°C',23,85,9,'#6b8075');
+      text(window.BamcoI18n.language==='fa'?'Threshold duration':'Time ≥'+(v.threshold??165)+'°C',23,85,9,'#6b8075');
       text(time(v.D),23,106,17,'#25443b',true);
       text('mm:ss',105,106,7,'#6b8075',false,'right');
       text('Peak temperature',131,85,9,'#6b8075');
@@ -110,9 +112,10 @@
       const threshold=finite(info.threshold)?info.threshold:results.find(v=>finite(v.threshold))?.threshold;
       text('D = time'+(finite(threshold)?' ≥'+threshold+'°C':' above threshold')+' (min); T = peak temperature (°C)',PAGE_W-24,y+12,8,'#708078',false,'right');
       info.rules.forEach(([id,description,formula],i)=>{
-        wrapped(id+' - '+description+': '+formula,24+(i%3)*columnWidth,y+26+Math.floor(i/3)*18,columnWidth-12,17,8,'#536d60');
+        wrapped(id+' - '+tr(description)+': '+formula.replace(/Peak/g,'T').replace(/ min/g,''),24+(i%3)*columnWidth,y+26+Math.floor(i/3)*18,columnWidth-12,17,8,'#536d60');
       });
     }
+    ctx.restore();
   }
   // One image per landscape A4 page; every oven retains its own summary page.
   function pdfBytes(pages,title){

@@ -108,7 +108,12 @@
   }
   function preview(stage=choice){
     const config=getWindow(stage);if(!config)return '';
-    return '<div class="window-photo-card ed-reference-image"><img src="'+config.image+'" alt="'+esc(config.name+' — '+config.manufacturer)+'" class="window-photo" width="1448" height="1086" decoding="async" loading="eager"></div>';
+    const vertices=config.vertices.map(([d,t])=>'<bdi dir="ltr">('+d+', '+t+')</bdi>').join('');
+    const equations=config.rules.map(([id,description,formula])=>'<bdi dir="ltr" data-i18n-skip>'+esc(formula.replace(/Peak/g,'T').replace(/ min/g,'').replace(/ > /g,' ≤ ').replace(/ < /g,' ≥ '))+'</bdi>').join('');
+    return '<figure class="localized-reference"><div class="reference-fa" lang="fa">'+svgChart([],true,config)
+      +'<figcaption><section><h3>مختصات رأس‌های محدوده پخت</h3><p>مدت زمان بر حسب دقیقه؛ دمای اوج بر حسب درجه سانتی‌گراد</p><div class="reference-values">'+vertices+'</div></section>'
+      +'<section><h3>روابط حدود مجاز پخت</h3><div class="reference-values">'+equations+'</div></section></figcaption></div>'
+      +'<div class="reference-en window-photo-card ed-reference-image" lang="en"><img src="'+config.image+'" alt="'+esc(config.name+' — '+config.manufacturer)+'" class="window-photo" width="1448" height="1086" decoding="async" loading="eager"></div></figure>';
   }
   function applyGatewayHeader(){
     const slot=gateway?.querySelector('.gate-header-slot');
@@ -124,7 +129,7 @@
     const oven=ovens.find(x=>x.id===choice),config=getWindow(choice);
     if(step===1){
       gateway.innerHTML='<div class="gate-container"><div class="gate-header-slot"></div>'
-      +'<div class="gate-intro"><h1>Precision starts with <span>every degree.</span></h1></div>'
+      +'<div class="gate-intro"><h1>Precision starts with every degree.</h1></div>'
       +'<div class="oven-grid">'+ovens.map(o=>'<button class="oven-choice" data-oven="'+o.id+'"><span class="oven-number">'+o.symbol+'</span><span class="oven-graphic" aria-hidden="true">'+ovenIcon(o.id)+'</span><strong>'+o.name+'</strong><small>'+o.description+'</small><span class="oven-cta">Select oven →</span></button>').join('')+'</div>'
       +'<div class="daily-entry"><div><h2>Daily report</h2><p>Four oven summaries in one PDF.</p></div><button type="button" class="primary-action" data-open-daily>Create daily report →</button></div>'
       +'</div>';
@@ -286,7 +291,7 @@
       +'<div class="analysis-table-title"><h3>Channel Comparison Matrix</h3></div>'
       +summaryRows(results,config)
       +'<div class="probe-grid">'+cards+'</div>'
-      +'<div class="rule-explanation"><strong>Rule logic</strong>'+config.rules.map(([id,description,formula])=>'<span>'+esc(id+': '+formula)+'</span>').join('')+'</div>';
+      +'<div class="rule-explanation"><strong>Rule logic</strong><p>Duration D is measured in minutes; T is the peak temperature in degrees Celsius.</p>'+config.rules.map(([id,description,formula],index)=>'<span><b>Rule '+(index+1)+'</b><bdi dir="ltr" data-i18n-skip>'+esc(formula.replace(/Peak/g,'T').replace(/ min/g,''))+'</bdi></span>').join('')+'</div>';
 
   }
   // Use the date in the uploaded filename shown in Upload & Files.
