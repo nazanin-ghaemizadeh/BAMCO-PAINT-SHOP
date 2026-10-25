@@ -272,7 +272,7 @@ const dictionary={
  "Spread": "اختلاف دما",
  "Parameter": "پارامتر",
  "Readings": "اندازه‌گیری‌ها",
- "Channel summary — from workbook": "خلاصه کانال‌ها — از فایل اکسل",
+ "Channel summary — from workbook": "خلاصه کانال‌ها",
  "Worksheet content": "محتوای کاربرگ",
  "Air": "هوا",
  "Top": "بالا",
