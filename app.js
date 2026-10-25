@@ -292,7 +292,9 @@ function plotWithUnifiedCard(target,data,layout){
   if(!plot||typeof plot.on!=='function')return plot;
   plot.querySelectorAll('.bamco-compare-tooltip').forEach(n=>n.remove());
   const tip=document.createElement('div');tip.className='bamco-compare-tooltip';tip.hidden=true;plot.appendChild(tip);
-  plot.on('plotly_hover',event=>{
+  let pinned=false;
+  const showCard=event=>{
+
    const points=(event.points||[]).filter(p=>p&&p.y!==undefined);
    if(!points.length){tip.hidden=true;return;}
    const first=points[0],time=first.x,units=target==='plot-bands'?'':target==='plot-peaks'?'':' min';
@@ -311,10 +313,14 @@ function plotWithUnifiedCard(target,data,layout){
    const rect=plot.getBoundingClientRect(),e=event.event,x=Number.isFinite(e?.clientX)?e.clientX-rect.left:rect.width/2,y=Number.isFinite(e?.clientY)?e.clientY-rect.top:rect.height/2;
    tip.style.left=Math.max(6,Math.min(x+14,rect.width-tip.offsetWidth-6))+'px';
    tip.style.top=Math.max(6,Math.min(y+12,rect.height-tip.offsetHeight-6))+'px';
-  });
-  plot.on('plotly_unhover',()=>{if(!tip.matches(':hover'))tip.hidden=true});
-  tip.addEventListener('mouseleave',()=>{tip.hidden=true});
-  plot.addEventListener('mouseleave',()=>{tip.hidden=true});
+  };
+  plot.on('plotly_hover',event=>{if(!pinned)showCard(event)});
+  plot.on('plotly_click',event=>{pinned=true;showCard(event)});
+  plot.on('plotly_unhover',()=>{if(!pinned&&!tip.matches(':hover'))tip.hidden=true});
+  tip.addEventListener('mouseleave',()=>{if(!pinned)tip.hidden=true});
+  plot.addEventListener('mouseleave',()=>{if(!pinned)tip.hidden=true});
+  plot.addEventListener('click',event=>{if(event.target===plot||event.target.closest('.draglayer')){pinned=false;tip.hidden=true}},true);
+  document.addEventListener('pointerdown',event=>{if(!plot.isConnected)return;if(!plot.contains(event.target)){pinned=false;tip.hidden=true}});
   return plot;
  });
 }
