@@ -391,7 +391,7 @@ function sourceSections(r){
  const start=[...new Set([0,...titles,...summaries,r.head])].sort((a,b)=>a-b);
  return start.map((n,i)=>({start:n,end:i+1<start.length?start[i+1]-1:r.rows.length-1,
   kind:n===r.head?'readings':summaries.includes(n)?'summary':'metadata',skip:titles.includes(n),
-  title:n===r.head?'Readings':summaries.includes(n)?'Channel summary — from workbook':titles.includes(n)?text[n][0]:'Worksheet content'}));
+  title:n===r.head?'Readings':summaries.includes(n)?'Channel summary':titles.includes(n)?text[n][0]:'Worksheet content'}));
 }
 
  // Compact workbook channel-summary display. The original sheet cells remain
