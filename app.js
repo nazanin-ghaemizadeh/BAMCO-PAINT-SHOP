@@ -314,7 +314,7 @@ function plotWithUnifiedCard(target,data,layout){
     const number=Number(v);
     const value=Number.isFinite(number)?number.toFixed(isBands?2:1):String(v??'');
     const rawColor=p.fullData?.line?.color||p.fullData?.marker?.color||'#167f83';
-    const color=typeof rawColor==='string'&&/^(#[0-9a-fA-F]{3,8}|rgb[a]?\\([0-9.,% ]+\\)|[a-zA-Z]+)$/.test(rawColor)?rawColor:'#167f83';
+    const color=typeof rawColor==='string'&&(rawColor.startsWith('#')||rawColor.startsWith('rgb')||/^[a-zA-Z]+$/.test(rawColor))?rawColor:'#167f83';
     return '<div class="tooltip-line"><span class="tooltip-channel"><span class="chart-tooltip-dot" style="background:'+color+'"></span>'+name+'</span><span>'+escapeHtml(value)+(isBands?' min':' °C')+'</span></div>';
    }).join('');
    tip.innerHTML='<div class="tooltip-value">'+heading+'</div><div class="tooltip-groups"><div class="tooltip-file">'+rows+'</div></div>';
