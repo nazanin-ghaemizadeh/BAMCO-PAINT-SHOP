@@ -315,6 +315,7 @@ function plotWithUnifiedCard(target,data,layout){
    tip.style.top=Math.max(6,Math.min(y+12,rect.height-tip.offsetHeight-6))+'px';
   };
   plot.on('plotly_hover',event=>{pinned=false;showCard(event)});
+  // Preserve Plotly's built-in hover as a safe fallback on every chart.
   plot.on('plotly_click',event=>{pinned=false;showCard(event)});
   plot.on('plotly_unhover',()=>{if(!pinned&&!tip.matches(':hover'))tip.hidden=true});
   tip.addEventListener('mouseleave',()=>{if(!pinned)tip.hidden=true});
