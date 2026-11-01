@@ -180,7 +180,7 @@ function renderMain(){
  <div class="chart-topbar"><div class="chart-topbar-title"><h3>Temperature analysis</h3></div><div class="chart-actions"><button class="btn" id="download-xlsx" disabled>Download Excel</button><button class="btn" id="download-png" disabled>Download all charts (PNG)</button></div></div>
  <section class="chart-channel-controls" aria-label="Visible channels for all four charts"><div class="chart-channel-heading"><h3>Visible channels</h3></div><div id="channel-picker" class="chart-channel-options"></div></section>
  <div class="analysis-card"><div class="chart-card-heading"><h3>Temperature profile</h3><button type="button" class="btn chart-png-btn" data-download-chart="profile" disabled>Download PNG</button></div><div class="plot-surface" id="plot-profile" style="height:650px"></div><div class="channel-legend" id="legend-profile" aria-label="Channel colors for temperature profile"></div></div>
- <div class="analysis-card"><div class="chart-card-heading"><h3>Channel temperature spread</h3><button type="button" class="btn chart-png-btn" data-download-chart="spread" disabled>Download PNG</button></div><div class="plot-surface" id="plot-spread" style="height:370px"></div></div>
+ <div class="analysis-card"><div class="chart-card-heading"><h3>Channel temperature spread</h3><p class="secondary">Estimated position assumes the first reading is at the oven entrance and a constant conveyor speed of 2 m/min.</p><button type="button" class="btn chart-png-btn" data-download-chart="spread" disabled>Download PNG</button></div><div class="plot-surface" id="plot-spread" style="height:370px"></div></div>
  <div class="analysis-card"><div class="chart-card-heading"><h3>Time in temperature bands</h3><button type="button" class="btn chart-png-btn" data-download-chart="bands" disabled>Download PNG</button></div><div class="plot-surface" id="plot-bands" style="height:420px"></div></div>
  <div class="analysis-card"><div class="chart-card-heading"><h3>Peak temperatures by uploaded file</h3><button type="button" class="btn chart-png-btn" data-download-chart="peaks" disabled>Download PNG</button></div><div class="plot-surface" id="plot-peaks" style="height:360px"></div><div class="channel-legend" id="legend-peaks" aria-label="Channel colors for peak temperatures"></div></div>
  <h3 class="section-title">Uploaded worksheet</h3><div id="source-sections"></div>`;
@@ -307,7 +307,10 @@ function plotWithUnifiedCard(target,data,layout){
    if(!points.length)return;
    const first=points[0],isBands=target==='plot-bands',isPeaks=target==='plot-peaks';
    const x=isBands?first.y:first.x;
-   const heading=escapeHtml(String(x??'')+(isBands||isPeaks?'':' min'));
+   const distance=target==='plot-spread'?Number(x)*2:null;
+    const ovenLength={ed:100,primer:100,sealer:80,bc:100}[tab];
+    const position=Number.isFinite(distance)&&distance>=0&&distance<=ovenLength?' · Estimated position: '+distance.toFixed(1)+' m':target==='plot-spread'?' · Outside assumed oven length':'';
+    const heading=escapeHtml(String(x??'')+(isBands||isPeaks?'':' min')+position);
    const rows=points.map(p=>{
     const name=escapeHtml(p.data?.name||(isBands?p.x:'Temperature'));
     const v=isBands?p.z:p.y;
@@ -351,7 +354,11 @@ function profile(r,chs){
 function spread(r,chs){
  let traces=[],part=[];function add(){if(part.length)traces.push({x:part.map(d=>d.x),y:part.map(d=>d.y),type:'scatter',mode:'lines+markers',showlegend:false,line:{color:'#167F83',width:2.7},marker:{size:3,color:'#167F83'},fill:'tozeroy',fillcolor:'rgba(22,127,131,.10)',hovertemplate:'%{x:.2f} min<br>Spread: %{y:.1f} °C<extra></extra>'});part=[];}
  r.reads.forEach((d,i)=>{const v=chs.map(c=>d.values[c]),ok=chs.length>=2&&v.every(num),gap=i>0&&d.ts-r.reads[i-1].ts>r.step*1500+1;if(gap||!ok)add();if(ok)part.push({x:d.elapsed,y:Math.max(...v)-Math.min(...v)});});add();
- const lay=plotLayout('Elapsed time (min)','Channel spread (°C)');lay.showlegend=false;
+ const lay=plotLayout('Elapsed time from first reading (min)','Channel spread (°C)');lay.showlegend=false;
+  const ovenLength={ed:100,primer:100,sealer:80,bc:100}[tab],travel=ovenLength/2;
+  lay.xaxis.range=[0,Math.max(r.duration,0.01)];
+  lay.xaxis2={overlaying:'x',side:'top',range:lay.xaxis.range,tickmode:'array',tickvals:Array.from({length:Math.floor(travel/5)+1},(_,i)=>i*5),ticktext:Array.from({length:Math.floor(travel/5)+1},(_,i)=>String(i*10)),title:{text:'Estimated position from entrance (m)',standoff:8},showgrid:false,zeroline:false};
+  lay.margin.t=85;
  if(chs.length<2)lay.annotations=[{text:'Select at least two channels to calculate spread.',xref:'paper',yref:'paper',x:.5,y:.5,showarrow:false}];
  return plotWithUnifiedCard('plot-spread',traces,lay,config);
 }
