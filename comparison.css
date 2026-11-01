@@ -579,3 +579,9 @@ body[data-section="comparison"] .bamco-views {width:100%}
 /* Match channel summary typography to the other information tables. */
 #source-sections .source-grid .source-compact-summary{font-family:inherit;font-size:14px}
 #source-sections .source-compact-summary th,#source-sections .source-compact-summary td,#source-sections .source-compact-summary .source-measure-value,#source-sections .source-compact-summary .source-measure-unit{font-family:inherit;font-size:inherit}
+
+/* Point information remains fully visible without an inner scrollbar. */
+.bamco-chart-overlay { width:min(310px,calc(100vw - 16px)); min-width:0; max-width:calc(100vw - 16px); max-height:none; }
+.bamco-chart-overlay .tooltip-groups { display:block; width:100%; max-width:none; max-height:none; overflow:visible; padding:0; }
+.bamco-chart-overlay .tooltip-file { width:100%; box-sizing:border-box; }
+.bamco-chart-overlay .tooltip-line { white-space:normal; overflow-wrap:anywhere; }
