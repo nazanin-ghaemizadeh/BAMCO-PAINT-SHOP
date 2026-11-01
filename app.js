@@ -179,7 +179,7 @@ function renderMain(){
  ${r.notes.length?'<div class="import-errors"><ul>'+r.notes.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></div>':''}
  <div class="chart-topbar"><div class="chart-topbar-title"><h3>Temperature analysis</h3></div><div class="chart-actions"><button class="btn" id="download-xlsx" disabled>Download Excel</button><button class="btn" id="download-png" disabled>Download all charts (PNG)</button></div></div>
  <section class="chart-channel-controls" aria-label="Visible channels for all four charts"><div class="chart-channel-heading"><h3>Visible channels</h3></div><div id="channel-picker" class="chart-channel-options"></div></section>
- <div class="analysis-card"><div class="chart-card-heading"><h3>Temperature profile</h3><button type="button" class="btn chart-png-btn" data-download-chart="profile" disabled>Download PNG</button></div><div class="plot-surface" id="plot-profile" style="height:650px"></div><div class="channel-legend" id="legend-profile" aria-label="Channel colors for temperature profile"></div></div>
+ <div class="analysis-card"><div class="chart-card-heading"><h3>Temperature profile</h3><p class="secondary">Estimated position assumes the first reading is at the oven entrance and a constant conveyor speed of 2 m/min.</p><button type="button" class="btn chart-png-btn" data-download-chart="profile" disabled>Download PNG</button></div><div class="plot-surface" id="plot-profile" style="height:650px"></div><div class="channel-legend" id="legend-profile" aria-label="Channel colors for temperature profile"></div></div>
  <div class="analysis-card"><div class="chart-card-heading"><h3>Channel temperature spread</h3><p class="secondary">Estimated position assumes the first reading is at the oven entrance and a constant conveyor speed of 2 m/min.</p><button type="button" class="btn chart-png-btn" data-download-chart="spread" disabled>Download PNG</button></div><div class="plot-surface" id="plot-spread" style="height:370px"></div></div>
  <div class="analysis-card"><div class="chart-card-heading"><h3>Time in temperature bands</h3><button type="button" class="btn chart-png-btn" data-download-chart="bands" disabled>Download PNG</button></div><div class="plot-surface" id="plot-bands" style="height:420px"></div></div>
  <div class="analysis-card"><div class="chart-card-heading"><h3>Peak temperatures by uploaded file</h3><button type="button" class="btn chart-png-btn" data-download-chart="peaks" disabled>Download PNG</button></div><div class="plot-surface" id="plot-peaks" style="height:360px"></div><div class="channel-legend" id="legend-peaks" aria-label="Channel colors for peak temperatures"></div></div>
@@ -307,10 +307,11 @@ function plotWithUnifiedCard(target,data,layout){
    if(!points.length)return;
    const first=points[0],isBands=target==='plot-bands',isPeaks=target==='plot-peaks';
    const x=isBands?first.y:first.x;
-   const distance=target==='plot-spread'?Number(x)*2:null;
+   const hasPosition=target==='plot-spread'||target==='plot-profile';
+    const distance=hasPosition?Number(x)*2:null;
     const ovenLength={ed:100,primer:100,sealer:80,bc:100}[tab];
-    const position=Number.isFinite(distance)&&distance>=0&&distance<=ovenLength?' · Estimated position: '+distance.toFixed(1)+' m':target==='plot-spread'?' · Outside assumed oven length':'';
-    const heading=escapeHtml(String(x??'')+(isBands||isPeaks?'':' min')+position);
+    const position=hasPosition?(Number.isFinite(distance)&&distance>=0&&distance<=ovenLength?'Estimated position: '+distance.toFixed(1)+' m from entrance':'Outside assumed oven length'):'';
+    const heading=escapeHtml(String(x??'')+(isBands||isPeaks?'':' min'));
    const rows=points.map(p=>{
     const name=escapeHtml(p.data?.name||(isBands?p.x:'Temperature'));
     const v=isBands?p.z:p.y;
@@ -320,7 +321,7 @@ function plotWithUnifiedCard(target,data,layout){
     const color=typeof rawColor==='string'&&(rawColor.startsWith('#')||rawColor.startsWith('rgb')||/^[a-zA-Z]+$/.test(rawColor))?rawColor:'#167f83';
     return '<div class="tooltip-line"><span class="tooltip-channel"><span class="chart-tooltip-dot" style="background:'+color+'"></span>'+name+'</span><span>'+escapeHtml(value)+(isBands?' min':' °C')+'</span></div>';
    }).join('');
-   tip.innerHTML='<div class="tooltip-value">'+heading+'</div><div class="tooltip-groups"><div class="tooltip-file">'+rows+'</div></div>';
+   tip.innerHTML='<div class="tooltip-value">'+heading+'</div><div class="tooltip-groups"><div class="tooltip-file">'+rows+(position?'<div class="tooltip-line" style="margin-top:8px;padding-top:7px;border-top:1px solid #dce9e1"><span>📍 '+escapeHtml(position)+'</span></div>':'')+'</div></div>';
    tip.hidden=false;
    const e=event.event;
    const bounds=plot.getBoundingClientRect();
