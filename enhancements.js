@@ -71,6 +71,7 @@
   function channelColor(ch){const n=Number(String(ch).replace(/\D/g,''));return CHANNEL_COLORS[(Number.isFinite(n)&&n>0?n-1:0)%CHANNEL_COLORS.length];}
   function svgChart(points=[],small=false,config=getWindow()){
     if(!config)return '';
+    if(config.empirical){const end=Math.max(40,...points.map(p=>Number.isFinite(p.d)?Math.ceil(p.d/10)*10:0));config={...config,xRange:[0,end],xTicks:Array.from({length:Math.floor(end/10)+1},(_,i)=>i*10),vertices:[[20,120],[20,150],[end,150],[end,120]]};}
     const w=790,h=small?340:485,L=65,R=23,top=26,B=small?82:126;
     const X=x=>L+(x-config.xRange[0])/(config.xRange[1]-config.xRange[0])*(w-L-R),Y=y=>h-B-(y-config.yRange[0])/(config.yRange[1]-config.yRange[0])*(h-top-B);
     const poly=config.vertices.map(p=>X(p[0])+','+Y(p[1])).join(' ');
@@ -128,6 +129,7 @@
   document.addEventListener('keydown',event=>{if((event.key==='Enter'||event.key===' ')&&event.target.matches?.('.baking-data-point')){event.preventDefault();event.target.dispatchEvent(new MouseEvent('click',{bubbles:true}))}});
   function preview(stage=choice){
     const config=getWindow(stage);if(!config)return '';
+    if(config.empirical)return '<div class="window-photo-card">'+svgChart([],true,config)+'<p>Empirical / Expert-Based: at least 20 minutes at or above 120°C; peak must not exceed 150°C. No maximum duration specified. Shaded region continues beyond the chart.</p></div>';
     return '<div class="window-photo-card ed-reference-image"><img src="'+config.image+'" alt="'+esc(config.name+' — '+config.manufacturer)+'" class="window-photo" width="1448" height="1086" decoding="async" loading="eager"></div>';
   }
   function applyGatewayHeader(){
@@ -152,7 +154,7 @@
       gateway.innerHTML='<div class="gate-container gate-window-container">'
       +'<div class="window-topbar"><div><span class="window-eyebrow">THERMAL WORKSPACE</span><h1>'+oven.name+'</h1></div><button class="window-change-oven" data-go-back>← Change oven</button></div>'
       +(config
-        ?'<div class="window-selection"><section class="window-description"><span class="approved-flag">VALIDATED REFERENCE</span><h2>'+esc(oven.name)+' baking window</h2><p class="window-supplier">'+esc(config.manufacturer)+'</p><div class="window-spec"><span>Minimum duration <b>'+mmss(config.minDuration)+'</b></span><span>Maximum duration <b>'+mmss(config.maxDuration)+'</b></span><span>Peak temperature <b>'+config.minTemp+'–'+config.maxTemp+'°C</b></span></div><div class="window-actions"><button class="primary-action" data-enter>Start '+esc(oven.name.replace(' Oven',''))+' analysis <span aria-hidden="true">→</span></button></div></section>'+preview()+'</div>'
+        ?'<div class="window-selection"><section class="window-description"><span class="approved-flag">'+(config.empirical?'EMPIRICAL / EXPERT-BASED':'VALIDATED REFERENCE')+'</span><h2>'+esc(oven.name)+' baking window</h2><p class="window-supplier">'+esc(config.manufacturer)+'</p><div class="window-spec"><span>Minimum duration <b>'+mmss(config.minDuration)+'</b></span><span>Maximum duration <b>'+(config.empirical?'Not specified':mmss(config.maxDuration))+'</b></span><span>Peak temperature <b>'+config.minTemp+'–'+config.maxTemp+'°C</b></span></div><div class="window-actions"><button class="primary-action" data-enter>Start '+esc(oven.name.replace(' Oven',''))+' analysis <span aria-hidden="true">→</span></button></div></section>'+preview()+'</div>'
         :'<div class="window-selection no-window"><section class="window-description"><span class="pending-flag">REFERENCE PENDING</span><h2>Explore your recordings</h2><p>No validated baking window has been configured for '+oven.name+'. You can upload recordings and explore temperature tables and charts.</p><p class="window-pending-note">Baking-window evaluation will show “Not configured”.</p><div class="window-actions"><button class="primary-action" data-enter>Continue to workspace <span aria-hidden="true">→</span></button></div></section></div>')
       +'</div>';
     }
@@ -247,7 +249,7 @@
         mdMax:Number.isFinite(D)&&dMax!==null?dMax-D:null,
         mtMin:Number.isFinite(T)&&tMin!==null?T-tMin:null,
         mtMax:Number.isFinite(T)&&tMax!==null?tMax-T:null,
-        mdAbs:Number.isFinite(D)?config.maxDuration-D:null,
+        mdAbs:Number.isFinite(D)&&Number.isFinite(config.maxDuration)?config.maxDuration-D:null,
         mtAbs:Number.isFinite(T)?config.maxTemp-T:null};
     });
   }
@@ -301,7 +303,7 @@
       +'<div class="probe-reason">'+(v.violations.length?esc(v.violations.join('; ')):v.status==='NO DATA'?'No numeric samples to evaluate':'All baking window rules satisfied')+'</div></article>').join('');
     return '<div class="analysis-titlebar"><div><h2>Baking Window Evaluation</h2></div><div class="chart-actions"><button type="button" class="btn" data-download-summary>Summary PDF</button>'+tag(overall)+'</div></div>'
       +'<div class="eval-stats"><div><small>Total probes</small><strong>'+results.length+'</strong></div><div><small>Passed</small><strong class="text-green">'+pass+'</strong></div><div><small>Failed</small><strong class="text-red">'+fail+'</strong></div><div><small>No data</small><strong>'+invalid+'</strong></div></div>'
-      +'<div class="window-analysis-plot"><h3>'+esc(config.name)+' — Measured Channel Points</h3>'+svgChart(results.map(v=>({ch:v.ch,d:v.D,t:v.T,status:v.status})),false,config)
+      +(config.empirical?'<p>Empirical / Expert-Based criteria. No maximum duration specified; shaded region continues beyond the chart.</p>':'')+'<div class="window-analysis-plot"><h3>'+esc(config.name)+' — Measured Channel Points</h3>'+svgChart(results.map(v=>({ch:v.ch,d:v.D,t:v.T,status:v.status})),false,config)
       +'</div>'
       +'<div class="analysis-table-title"><h3>Channel Comparison Matrix</h3></div>'
       +summaryRows(results,config)
