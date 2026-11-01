@@ -42,7 +42,21 @@
       ['R06','Outside Lower Sloped Boundary','3D + T < 200',(D,T)=>3*D+T<200-1e-8]
     ]
   };
-  const windows={ed,primer:gamma,bc:gamma};
+  // Empirical, expert-based criteria supplied by the user. No maximum duration was specified.
+  const sealer={
+    name:'Sealer Baking Window — Empirical / Expert-Based',manufacturer:'Empirical / Expert-Based',shortManufacturer:'Empirical / Expert-Based',
+    empirical:true,threshold:120,minDuration:20,maxDuration:null,minTemp:120,maxTemp:150,
+    vertices:[[20,120],[20,150],[40,150],[40,120]],
+    xRange:[0,40],yRange:[110,160],xTicks:[0,10,20,30,40],yTicks:[110,120,130,140,150,160],
+    durationMin:()=>20,durationMax:()=>null,
+    temperatureMin:()=>120,temperatureMax:()=>150,
+    rules:[
+      ['R01','Insufficient Duration','D < 20 min',(D,T)=>D<20-1e-9],
+      ['R02','Insufficient Temperature','Peak < 120°C',(D,T)=>T<120-1e-9],
+      ['R03','Excessive Temperature','Peak > 150°C',(D,T)=>T>150+1e-9]
+    ]
+  };
+  const windows={ed,primer:gamma,sealer,bc:gamma};
   window.BAMCOBakingWindows={get:stage=>windows[stage]||null,
     references:stage=>windows[stage]?[{id:stage,name:windows[stage].manufacturer}]:[]};
 })();
